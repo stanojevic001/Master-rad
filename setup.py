@@ -42,12 +42,17 @@ if CURRENT_OS == SupportedOS.WINDOWS:
 elif CURRENT_OS == SupportedOS.LINUX:
     print("Setting up on Linux...")
     try:
-        print("Enter root password:")
-        runCmd(SUDO_ROOT_LINUX)
-        runCmd("apt install python-pip")
-        runCmd("apt install python3-pip")
-        runCmd("python3 -m pip install invoke")
-        runCmd("python -m pip install invoke")
+        runCmd("sudo apt-get update && sudo apt-get upgrade")
+        runCmd("sudo apt install -y python-pip")
+        runCmd("sudo apt install -y python3-pip")
+        runCmd("sudo python3 -m pip install invoke")
+        runCmd("sudo python -m pip install invoke")
+        runCmd("sudo apt-get -y install cmake")
+        runCmd("sudo apt-get update && sudo apt-get install -y gcc")
+        runCmd("sudo apt-get update && sudo apt-get install -y g++")
+        runCmd("sudo apt install -y doxygen")
+        runCmd("sudo apt install -y texlive-latex-base")
+        runCmd("sudo apt install -y texlive-latex-extra")
 
         current_GPUs = get_current_GPU_names()
 
@@ -59,11 +64,25 @@ elif CURRENT_OS == SupportedOS.LINUX:
             runCmd(INSTALL_NVML)
         if SupportedGPU.AMD in current_GPUs:
             print("Installing AMD ROCm library...")
-            runCmd("apt-get install wget -y")
-            runCmd("cd \"{}\"".format(CURRENT_FILE_DIR))
-            runCmd("wget https://github.com/RadeonOpenCompute/rocm_smi_lib/archive/refs/heads/master.zip -O rocmsmi.zip")
-            runCmd("apt install unzip -y")
-            runCmd("unzip \"{}/rocmsmi.zip\"".format(CURRENT_FILE_DIR))
+            runCmd("sudo rm -r rocm_smi_lib-master")
+            runCmd("sudo rm rocmsmi.zip")
+            runCmd("sudo apt-get install wget -y")
+            runCmd("sudo wget https://github.com/RadeonOpenCompute/rocm_smi_lib/archive/refs/heads/master.zip -O rocmsmi.zip")
+            runCmd("sudo apt install unzip -y")
+            runCmd("sudo unzip \"{}/rocmsmi.zip\"".format(CURRENT_FILE_DIR))
+            runCmd("pwd")
+            runCmd("cd ../")
+            runCmd("pwd")
+            runCmd("sudo chmod -R 777 ")
+            runCmd("cd rocm_smi_lib-master")
+            #runCmd("sudo mkdir -p build")
+            #runCmd("cd build")
+            #runCmd("sudo cmake ../")
+            #runCmd("sudo make") 
+            #runCmd("sudo make install")
+            runCmd("sudo rm rocmsmi.zip")
+
+
             runCmd("Finished installing AMD ROCm library!")
 
         if (SupportedGPU.NVIDIA not in current_GPUs) and (SupportedGPU.AMD not in current_GPUs):
