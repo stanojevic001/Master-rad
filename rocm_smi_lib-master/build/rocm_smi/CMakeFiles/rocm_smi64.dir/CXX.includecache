@@ -1,0 +1,614 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../include/rocm_smi/kfd_ioctl.h
+linux/types.h
+-
+linux/ioctl.h
+-
+
+../include/rocm_smi/rocm_smi.h
+cstdint
+-
+stdint.h
+-
+stddef.h
+-
+stdbool.h
+-
+rocm_smi/kfd_ioctl.h
+../include/rocm_smi/rocm_smi/kfd_ioctl.h
+
+../include/rocm_smi/rocm_smi64Config.h
+
+../include/rocm_smi/rocm_smi_common.h
+memory
+-
+map
+-
+vector
+-
+string
+-
+
+../include/rocm_smi/rocm_smi_counters.h
+linux/perf_event.h
+-
+cstdint
+-
+vector
+-
+unordered_set
+-
+string
+-
+rocm_smi/rocm_smi.h
+../include/rocm_smi/rocm_smi/rocm_smi.h
+
+../include/rocm_smi/rocm_smi_device.h
+pthread.h
+-
+string
+-
+memory
+-
+utility
+-
+cstdint
+-
+vector
+-
+unordered_set
+-
+map
+-
+rocm_smi/rocm_smi_monitor.h
+../include/rocm_smi/rocm_smi/rocm_smi_monitor.h
+rocm_smi/rocm_smi_power_mon.h
+../include/rocm_smi/rocm_smi/rocm_smi_power_mon.h
+rocm_smi/rocm_smi_common.h
+../include/rocm_smi/rocm_smi/rocm_smi_common.h
+rocm_smi/rocm_smi.h
+../include/rocm_smi/rocm_smi/rocm_smi.h
+rocm_smi/rocm_smi_counters.h
+../include/rocm_smi/rocm_smi/rocm_smi_counters.h
+shared_mutex.h
+../include/rocm_smi/shared_mutex.h
+
+../include/rocm_smi/rocm_smi_exception.h
+exception
+-
+string
+-
+rocm_smi/rocm_smi.h
+../include/rocm_smi/rocm_smi/rocm_smi.h
+
+../include/rocm_smi/rocm_smi_io_link.h
+string
+-
+vector
+-
+unordered_set
+-
+memory
+-
+map
+-
+utility
+-
+rocm_smi/rocm_smi.h
+../include/rocm_smi/rocm_smi/rocm_smi.h
+
+../include/rocm_smi/rocm_smi_kfd.h
+string
+-
+vector
+-
+unordered_set
+-
+memory
+-
+map
+-
+rocm_smi/rocm_smi.h
+../include/rocm_smi/rocm_smi/rocm_smi.h
+rocm_smi/rocm_smi_device.h
+../include/rocm_smi/rocm_smi/rocm_smi_device.h
+rocm_smi/rocm_smi_io_link.h
+../include/rocm_smi/rocm_smi/rocm_smi_io_link.h
+
+../include/rocm_smi/rocm_smi_main.h
+vector
+-
+memory
+-
+functional
+-
+set
+-
+string
+-
+cstdint
+-
+unordered_map
+-
+map
+-
+mutex
+-
+utility
+-
+rocm_smi/rocm_smi_io_link.h
+../include/rocm_smi/rocm_smi/rocm_smi_io_link.h
+rocm_smi/rocm_smi_kfd.h
+../include/rocm_smi/rocm_smi/rocm_smi_kfd.h
+rocm_smi/rocm_smi_device.h
+../include/rocm_smi/rocm_smi/rocm_smi_device.h
+rocm_smi/rocm_smi_monitor.h
+../include/rocm_smi/rocm_smi/rocm_smi_monitor.h
+rocm_smi/rocm_smi_power_mon.h
+../include/rocm_smi/rocm_smi/rocm_smi_power_mon.h
+rocm_smi/rocm_smi_common.h
+../include/rocm_smi/rocm_smi/rocm_smi_common.h
+
+../include/rocm_smi/rocm_smi_monitor.h
+string
+-
+cstdint
+-
+map
+-
+rocm_smi/rocm_smi_common.h
+../include/rocm_smi/rocm_smi/rocm_smi_common.h
+rocm_smi/rocm_smi.h
+../include/rocm_smi/rocm_smi/rocm_smi.h
+
+../include/rocm_smi/rocm_smi_power_mon.h
+string
+-
+cstdint
+-
+rocm_smi/rocm_smi_common.h
+../include/rocm_smi/rocm_smi/rocm_smi_common.h
+
+../include/rocm_smi/rocm_smi_utils.h
+pthread.h
+-
+string
+-
+cstdint
+-
+vector
+-
+rocm_smi/rocm_smi_device.h
+../include/rocm_smi/rocm_smi/rocm_smi_device.h
+
+../third_party/shared_mutex/shared_mutex.h
+sys/stat.h
+-
+pthread.h
+-
+
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi.cc
+assert.h
+-
+errno.h
+-
+sys/utsname.h
+-
+pthread.h
+-
+string.h
+-
+unistd.h
+-
+poll.h
+-
+fcntl.h
+-
+sys/ioctl.h
+-
+sstream
+-
+algorithm
+-
+cerrno
+-
+bitset
+-
+cstdint
+-
+unordered_map
+-
+unordered_set
+-
+map
+-
+fstream
+-
+iostream
+-
+rocm_smi/rocm_smi_common.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi/rocm_smi_common.h
+rocm_smi/rocm_smi.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi/rocm_smi.h
+rocm_smi/rocm_smi_main.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi/rocm_smi_main.h
+rocm_smi/rocm_smi_device.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi/rocm_smi_device.h
+rocm_smi/rocm_smi_utils.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi/rocm_smi_utils.h
+rocm_smi/rocm_smi_exception.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi/rocm_smi_exception.h
+rocm_smi/rocm_smi_counters.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi/rocm_smi_counters.h
+rocm_smi/rocm_smi_kfd.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi/rocm_smi_kfd.h
+rocm_smi/rocm_smi_io_link.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi/rocm_smi_io_link.h
+rocm_smi/rocm_smi64Config.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi/rocm_smi64Config.h
+
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi_counters.cc
+assert.h
+-
+string.h
+-
+linux/perf_event.h
+-
+unistd.h
+-
+asm/unistd.h
+-
+sys/ioctl.h
+-
+sys/stat.h
+-
+stdio.h
+-
+map
+-
+sstream
+-
+algorithm
+-
+iostream
+-
+fstream
+-
+unordered_set
+-
+rocm_smi/rocm_smi.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi/rocm_smi.h
+rocm_smi/rocm_smi_counters.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi/rocm_smi_counters.h
+rocm_smi/rocm_smi_utils.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi/rocm_smi_utils.h
+rocm_smi/rocm_smi_exception.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi/rocm_smi_exception.h
+rocm_smi/rocm_smi_main.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi/rocm_smi_main.h
+rocm_smi/rocm_smi_device.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi/rocm_smi_device.h
+
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi_device.cc
+pthread.h
+-
+unistd.h
+-
+sys/types.h
+-
+assert.h
+-
+sys/stat.h
+-
+stdint.h
+-
+string
+-
+map
+-
+fstream
+-
+cstdint
+-
+iostream
+-
+sstream
+-
+vector
+-
+memory
+-
+algorithm
+-
+iterator
+-
+rocm_smi/rocm_smi_main.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi/rocm_smi_main.h
+rocm_smi/rocm_smi_device.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi/rocm_smi_device.h
+rocm_smi/rocm_smi.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi/rocm_smi.h
+rocm_smi/rocm_smi_exception.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi/rocm_smi_exception.h
+rocm_smi/rocm_smi_utils.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi/rocm_smi_utils.h
+rocm_smi/rocm_smi_kfd.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi/rocm_smi_kfd.h
+shared_mutex.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/shared_mutex.h
+
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi_gpu_metrics.cc
+assert.h
+-
+dirent.h
+-
+fstream
+-
+string
+-
+cstdint
+-
+map
+-
+iostream
+-
+algorithm
+-
+regex
+-
+vector
+-
+pthread.h
+-
+rocm_smi/rocm_smi_common.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi/rocm_smi_common.h
+rocm_smi/rocm_smi_main.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi/rocm_smi_main.h
+rocm_smi/rocm_smi_monitor.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi/rocm_smi_monitor.h
+rocm_smi/rocm_smi_utils.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi/rocm_smi_utils.h
+rocm_smi/rocm_smi_exception.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi/rocm_smi_exception.h
+
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi_io_link.cc
+assert.h
+-
+sys/stat.h
+-
+dirent.h
+-
+algorithm
+-
+string
+-
+unordered_set
+-
+fstream
+-
+cstdint
+-
+iostream
+-
+sstream
+-
+rocm_smi/rocm_smi.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi/rocm_smi.h
+rocm_smi/rocm_smi_exception.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi/rocm_smi_exception.h
+rocm_smi/rocm_smi_utils.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi/rocm_smi_utils.h
+rocm_smi/rocm_smi_io_link.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi/rocm_smi_io_link.h
+
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi_kfd.cc
+assert.h
+-
+sys/stat.h
+-
+dirent.h
+-
+algorithm
+-
+string
+-
+unordered_set
+-
+fstream
+-
+cstdint
+-
+iostream
+-
+sstream
+-
+rocm_smi/rocm_smi_io_link.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi/rocm_smi_io_link.h
+rocm_smi/rocm_smi_kfd.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi/rocm_smi_kfd.h
+rocm_smi/rocm_smi.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi/rocm_smi.h
+rocm_smi/rocm_smi_exception.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi/rocm_smi_exception.h
+rocm_smi/rocm_smi_utils.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi/rocm_smi_utils.h
+rocm_smi/rocm_smi_device.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi/rocm_smi_device.h
+rocm_smi/rocm_smi_main.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi/rocm_smi_main.h
+
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi_main.cc
+dirent.h
+-
+assert.h
+-
+string.h
+-
+unistd.h
+-
+sys/types.h
+-
+stdlib.h
+-
+string
+-
+cstdint
+-
+memory
+-
+fstream
+-
+vector
+-
+set
+-
+utility
+-
+functional
+-
+cerrno
+-
+unordered_map
+-
+iostream
+-
+rocm_smi/rocm_smi.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi/rocm_smi.h
+rocm_smi/rocm_smi_device.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi/rocm_smi_device.h
+rocm_smi/rocm_smi_main.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi/rocm_smi_main.h
+rocm_smi/rocm_smi_exception.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi/rocm_smi_exception.h
+rocm_smi/rocm_smi_utils.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi/rocm_smi_utils.h
+rocm_smi/rocm_smi_kfd.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi/rocm_smi_kfd.h
+
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi_monitor.cc
+assert.h
+-
+dirent.h
+-
+fstream
+-
+string
+-
+cstdint
+-
+map
+-
+iostream
+-
+algorithm
+-
+regex
+-
+vector
+-
+rocm_smi/rocm_smi_main.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi/rocm_smi_main.h
+rocm_smi/rocm_smi_monitor.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi/rocm_smi_monitor.h
+rocm_smi/rocm_smi_utils.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi/rocm_smi_utils.h
+rocm_smi/rocm_smi_exception.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi/rocm_smi_exception.h
+
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi_power_mon.cc
+assert.h
+-
+fstream
+-
+string
+-
+cstdint
+-
+map
+-
+iostream
+-
+sstream
+-
+rocm_smi/rocm_smi_main.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi/rocm_smi_main.h
+rocm_smi/rocm_smi_monitor.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi/rocm_smi_monitor.h
+rocm_smi/rocm_smi_utils.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi/rocm_smi_utils.h
+rocm_smi/rocm_smi_common.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi/rocm_smi_common.h
+rocm_smi/rocm_smi_exception.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi/rocm_smi_exception.h
+
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi_utils.cc
+assert.h
+-
+errno.h
+-
+sys/stat.h
+-
+fstream
+-
+string
+-
+cstdint
+-
+iostream
+-
+sstream
+-
+algorithm
+-
+vector
+-
+rocm_smi/rocm_smi.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi/rocm_smi.h
+rocm_smi/rocm_smi_utils.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi/rocm_smi_utils.h
+rocm_smi/rocm_smi_exception.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi/rocm_smi_exception.h
+rocm_smi/rocm_smi_main.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi/rocm_smi_main.h
+rocm_smi/rocm_smi_device.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/src/rocm_smi/rocm_smi_device.h
+
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/third_party/shared_mutex/shared_mutex.cc
+shared_mutex.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/third_party/shared_mutex/shared_mutex.h
+errno.h
+-
+fcntl.h
+-
+linux/limits.h
+-
+sys/mman.h
+-
+unistd.h
+-
+stdio.h
+-
+stdlib.h
+-
+string.h
+-
+time.h
+-
+assert.h
+-
+rocm_smi/rocm_smi_exception.h
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/third_party/shared_mutex/rocm_smi/rocm_smi_exception.h
+
+/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/third_party/shared_mutex/shared_mutex.h
+sys/stat.h
+-
+pthread.h
+-
+
