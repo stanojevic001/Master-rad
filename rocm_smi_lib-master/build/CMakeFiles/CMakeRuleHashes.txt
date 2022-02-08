@@ -1,0 +1,7 @@
+# Hashes of file build rules.
+c77176d9318e5a95ac3251842bb3f66b rocm_smi/CMakeFiles/bindings_link
+d19c526f527f1cc1f3f59bca403c4e4a rocm_smi/CMakeFiles/docs
+c98550c875f84e072c2db1749cb5f6d2 rocm_smi/CMakeFiles/so-link
+e4dd4a011ac44860d1fb44fb7849bc09 rocm_smi/CMakeFiles/so-major-link
+ff3550e399a4d0e6dd58829fed505094 rocm_smi/latex/refman.pdf
+70432c8393956650163f29c0e052d01c rocm_smi/latex/refman.tex

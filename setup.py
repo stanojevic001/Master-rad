@@ -73,13 +73,8 @@ elif CURRENT_OS == SupportedOS.LINUX:
             runCmd("pwd")
             runCmd("cd ../")
             runCmd("pwd")
-            runCmd("sudo chmod -R 777 ")
-            runCmd("cd rocm_smi_lib-master")
-            #runCmd("sudo mkdir -p build")
-            #runCmd("cd build")
-            #runCmd("sudo cmake ../")
-            #runCmd("sudo make") 
-            #runCmd("sudo make install")
+            runCmd("sh linux_rocm.sh")
+            runCmd("sudo chmod -R 777 ../")
             runCmd("sudo rm rocmsmi.zip")
 
 
