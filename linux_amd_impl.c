@@ -43,11 +43,3 @@ int get_number_of_devices(uint32_t* device_num) {
         return ret_status;
     }
 }
-
-int main() {
-    initialize();
-    uint32_t size;
-    get_number_of_devices(&size);
-    printf("Size: %u", size);
-    finish();
-}
