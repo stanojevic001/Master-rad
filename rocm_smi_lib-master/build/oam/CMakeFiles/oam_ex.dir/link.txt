@@ -1,1 +1,0 @@
-/usr/bin/cc    CMakeFiles/oam_ex.dir/example/oam_example.c.o  -o oam_ex  -Wl,-rpath,"/home/stefan/Desktop/Master rad Github/Master-rad/rocm_smi_lib-master/build/oam" liboam.so.1.0 -lpthread -lrt 
