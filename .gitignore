@@ -1,1 +1,5 @@
 #Ignore files
+
+rocm_smi_lib-master/
+__pycache__/
+display-library-master/
