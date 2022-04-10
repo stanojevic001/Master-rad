@@ -1,10 +1,13 @@
+from ast import arg
 from os import umask
+import this
 from defines import CURRENT_OS, SupportedGPU, SupportedOS, StatusCode, MAX_USER_INPUT_ATTEMPTS
 from utils import get_current_GPU_names
 from common_api import CommonAPI
 from windows_linux_nvidia_impl import WindowsLinux_NVIDIA_API
-from linux_amd_impl import LinuxAMD_API
+from linux_rocm_smi_wrapper import Linux_ROCm_SMI_Wrapper
 from windows_amd_wrapper import WindowsAMD_API
+import sys
 
 class Request():
     current_os = CURRENT_OS
@@ -14,6 +17,13 @@ class Request():
 
     def __init__(self, args) -> None:
         self.calling_args = args
+
+    def process_command_name(self, arguments) -> StatusCode:
+        command_argument = arguments[0]
+        if command_argument == "static":
+            pass
+        elif command_argument == "dynamic":
+            pass
     
     def process_request(self) -> StatusCode:
 
@@ -32,7 +42,7 @@ class Request():
                         break
                     elif self.current_os == SupportedOS.LINUX:
                         # Linux
-                        self.apiObject = LinuxAMD_API()
+                        self.apiObject = Linux_ROCm_SMI_Wrapper()
                         break
 
                 elif choice.upper() == "N":
@@ -56,16 +66,15 @@ class Request():
                 self.apiObject = WindowsAMD_API()
             elif self.current_os == SupportedOS.LINUX:
                 # Linux
-                self.apiObject = LinuxAMD_API()
+                self.apiObject = Linux_ROCm_SMI_Wrapper()
 
-
-        self.apiObject.initialize()
-        
-        # Process given arguments
-
-        # Define what functions to call from the common api
-
-
-        self.apiObject.finish()
+        try:
+            self.apiObject.initialize()
+            self.process_command_name(sys.argv)
+            command = None
+        except Exception as e:
+            print(e)
+        finally:
+            self.apiObject.finish()
 
         return StatusCode.SUCCESS
