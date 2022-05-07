@@ -7,5 +7,8 @@ Device {index}: {name}\
 "
 
 driver_info_console = "\n\
-Driver version: {version}\
+Driver info:\
+  Version: {version}\
+  Current model: {current_model}\
+  Pending model: {pending_model}\
 "
