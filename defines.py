@@ -28,6 +28,7 @@ class StatusCode(Enum):
 
 #--------COMMAND CONSTANTS-------#
 INSTALL_NVML = "pip install nvidia-ml-py"
+INSTALL_IGNORE_OPTION_NVML = "pip install --ignore-installed nvidia-ml-py"
 WINDOWS_GET_GPU_INFO = "wmic path win32_VideoController get name"
 LINUX_GET_GPU_INFO = "lshw -numeric -C display | grep vendor"
 WINDOWS_DOWNLOAD_ADL = 'Invoke-WebRequest -Uri https://github.com/GPUOpen-LibrariesAndSDKs/display-library/archive/refs/heads/master.zip -OutFile "master.zip"'

@@ -6,6 +6,6 @@ catalog_console_device = "\
 Device {index}: {name}\
 "
 
-driver_info_console = "\
+driver_info_console = "\n\
 Driver version: {version}\
 "

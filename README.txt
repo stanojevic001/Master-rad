@@ -6,3 +6,10 @@ https://www.python.org/downloads/
 
 For Linux run the command:
 sudo apt install python3
+
+
+**NOTE**:
+When installing Nvidia package, when running the app module pynvml (Python nvidia module) is not found, type this command:
+pip install --ignore-installed nvidia-ml-py
+
+After that, app should work just fine!
