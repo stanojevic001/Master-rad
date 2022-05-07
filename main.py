@@ -21,7 +21,5 @@ if __name__ == '__main__':
         if result != StatusCode.SUCCESS:
             print("Failed! User had too many failed input attempts!")
 
-        print("\n*** SUCCESS ***\n")
-
     except Exception as e:
         raise(e)

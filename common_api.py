@@ -26,3 +26,23 @@ class CommonAPI():
     def get_library_version(self) -> str:
         ''' Get library version '''
         pass
+
+    def get_device_handle_by_index(self, index) -> Any:
+        ''' Get device handle by index '''
+        pass
+    
+    def get_device_serial_by_handle(self, handle) -> Any:
+        ''' Get device serial number by handle '''
+        pass
+
+    def get_device_uuid_by_handle(self, handle) -> Any:
+        ''' Get device UUID by handle '''
+        pass
+
+    def get_device_name_by_handle(self, handle) -> Any:
+        ''' Get device name by handle '''
+        pass
+
+    def get_device_temperature_info(self, handle) -> Any:
+        ''' Get device temperature information '''
+        pass

@@ -34,3 +34,6 @@ LINUX_GET_GPU_INFO = "lshw -numeric -C display | grep vendor"
 WINDOWS_DOWNLOAD_ADL = 'Invoke-WebRequest -Uri https://github.com/GPUOpen-LibrariesAndSDKs/display-library/archive/refs/heads/master.zip -OutFile "master.zip"'
 WINDOWS_DOWNLOAD_PYTHON = 'Invoke-WebRequest -Uri https://www.python.org/ftp/python/3.10.1/python-3.10.1-amd64.exe -OutFile "python.exe"'
 PIP_NOT_INSTALLED = subprocess.getoutput("pip").upper().find("not recognized".upper()) != -1
+
+
+

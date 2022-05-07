@@ -20,11 +20,7 @@ class CommandObject():
         self.calling_args = args
 
     def process_command_name(self) -> StatusCode:
-        command_argument = self.calling_args[1]
-        if command_argument == "driver":
-            self.called_command_name = command_argument
-        elif command_argument == "dynamic":
-            pass
+        self.called_command_name = self.calling_args[1]
     
     def prepare_command_object(self) -> StatusCode:
 
