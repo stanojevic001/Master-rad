@@ -46,3 +46,7 @@ class CommonAPI():
     def get_device_temperature_info(self, handle) -> Any:
         ''' Get device temperature information '''
         pass
+
+    def get_device_power_info(self, handle) -> Any:
+        ''' Get device power information '''
+        pass

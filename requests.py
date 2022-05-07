@@ -50,7 +50,9 @@ class Request():
                 output += temperature_console_element.format(name=name, value=value)
             
             print(output)
-                
+
+    def process_command_power(self) -> StatusCode:
+        pass                
 
     def process_request(self) -> StatusCode:
         try:
@@ -61,8 +63,8 @@ class Request():
                 self.process_command_catalog()
             elif self.commandObj.called_command_name == "temperature":
                 self.process_command_temperature()
-            elif self.commandObj.called_command_name == "4":
-                pass
+            elif self.commandObj.called_command_name == "power":
+                self.process_command_power()
             elif self.commandObj.called_command_name == "5":
                 pass
 

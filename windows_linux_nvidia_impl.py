@@ -103,3 +103,5 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
             else:
                 raise NVMLError(e)
         
+    def get_device_power_info(self, handle) -> Any:
+        pass
