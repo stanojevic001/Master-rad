@@ -24,7 +24,8 @@ MAX_USER_INPUT_ATTEMPTS = 5
 class StatusCode(Enum):
     TOO_MANY_FAILED_ATTEMPTS = -1
     SUCCESS = 0
-    API_FAILED = 1
+    API_FAILED = 1,
+    INVALID_REQUEST =2
 
 #--------COMMAND CONSTANTS-------#
 INSTALL_NVML = "pip install nvidia-ml-py"

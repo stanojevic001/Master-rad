@@ -53,6 +53,7 @@ elif CURRENT_OS == SupportedOS.LINUX:
         runCmd("sudo apt install -y doxygen")
         runCmd("sudo apt install -y texlive-latex-base")
         runCmd("sudo apt install -y texlive-latex-extra")
+        runCmd("sudo pip3 install cython")
 
         current_GPUs = get_current_GPU_names()
 
@@ -76,7 +77,7 @@ elif CURRENT_OS == SupportedOS.LINUX:
             runCmd("sh linux_rocm.sh")
             runCmd("sudo chmod -R 777 ../")
             runCmd("sudo rm rocmsmi.zip")
-
+            runCmd("gcc -fPIC -shared -o  rocm_out.so linux_amd_impl.c -I rocm_smi_lib-master/include/")
 
             runCmd("Finished installing AMD ROCm library!")
 

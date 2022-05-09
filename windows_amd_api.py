@@ -21,3 +21,21 @@ class WindowsAMD_API(CommonAPI):
 
     def get_library_version(self) -> str:
         pass
+
+    def get_device_handle_by_index(self, index) -> Any:
+        pass
+    
+    def get_device_serial_by_handle(self, handle) -> Any:
+        pass
+
+    def get_device_uuid_by_handle(self, handle) -> Any:
+        pass
+
+    def get_device_name_by_handle(self, handle) -> Any:
+        pass
+
+    def get_device_temperature_info(self, handle) -> Any:
+        pass
+
+    def get_device_power_info(self, handle) -> Any:
+        pass

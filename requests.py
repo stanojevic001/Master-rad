@@ -65,8 +65,9 @@ class Request():
                 self.process_command_temperature()
             elif self.commandObj.called_command_name == "power":
                 self.process_command_power()
-            elif self.commandObj.called_command_name == "5":
-                pass
+            else:
+                print("Invalid command " % self.commandObj.called_command_name)
+                return StatusCode.INVALID_REQUEST
 
             return StatusCode.SUCCESS
         except Exception as e:

@@ -4,8 +4,8 @@ from defines import CURRENT_OS, SupportedGPU, SupportedOS, StatusCode, MAX_USER_
 from utils import get_current_GPU_names
 from common_api import CommonAPI
 from windows_linux_nvidia_impl import WindowsLinux_NVIDIA_API
-from linux_rocm_smi_wrapper import Linux_ROCm_SMI_Wrapper
-from windows_amd_wrapper import WindowsAMD_API
+from linux_rocm_smi_api import Linux_ROCm_SMI_Wrapper
+from windows_amd_api import WindowsAMD_API
 import sys
 from output_templates import *
 
