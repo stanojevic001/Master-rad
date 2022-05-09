@@ -5,19 +5,16 @@ from pynvml import *
 
 class WindowsLinux_NVIDIA_API(CommonAPI):
     error_dict = NVMLError._errcode_to_string
-    def initialize(self) -> StatusCode:
+    def initialize(self) -> None:
         nvmlInit()
-        return StatusCode.SUCCESS
 
-    def initialize_with_flags(self, flags: Any) -> StatusCode:
+    def initialize_with_flags(self, flags: Any) -> None:
         # maybe process flags in some way
         flags_send = flags
         nvmlInitWithFlags(flags_send)
-        return StatusCode.SUCCESS
 
-    def finish(self) -> StatusCode:
+    def finish(self) -> None:
         nvmlShutdown()
-        return StatusCode.SUCCESS
 
     def get_number_of_devices(self) -> int:
         num_devices = nvmlDeviceGetCount()

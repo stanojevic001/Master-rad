@@ -1,31 +1,35 @@
+import ctypes
 from typing import Any
 from common_api import CommonAPI
 from defines import *
-import ctypes
-
-rocm_lib = ctypes.CDLL("rocm_out.so")
+import linux_rocm_smi_bindings
 
 class Linux_ROCm_SMI_Wrapper(CommonAPI):
 
-    def initialize(self) -> StatusCode:
-        ret_status = StatusCode.SUCCESS
+    def initialize(self) -> None:
+        
+        linux_rocm_smi_bindings.rocm_initialize()
 
-        rocm_lib.initialize.argtypes = []
-        rocm_lib.initialize.restype = ctypes.c_int
-        universal_initialize = rocm_lib.initialize
-        universal_initialize()
-
-    def finish(self) -> StatusCode:
-        pass
+    def finish(self) -> None:
+        
+        linux_rocm_smi_bindings.rocm_finish()
 
     def get_number_of_devices(self) -> int:
-        pass
+        
+        number_of_devices = ctypes.c_uint32
+        linux_rocm_smi_bindings.rocm_get_number_of_devices(ctypes.POINTER(number_of_devices))
+        ret_value = number_of_devices.value
 
-    def initialize_with_flags(self, flags: Any) -> StatusCode:
+        return ret_value
+
+    def initialize_with_flags(self, flags: Any) -> None:
         pass
 
     def get_driver_version(self) -> str:
-        pass
+        
+        drv_version = ctypes.c_char * 200
+        linux_rocm_smi_bindings.rocm_get_driver_version(ctypes.POINTER(drv_version))
+        return (str(drv_version)).decode('ASCII')
 
     def get_library_version(self) -> str:
         pass

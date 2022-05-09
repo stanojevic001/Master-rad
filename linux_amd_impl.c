@@ -46,6 +46,8 @@ int get_number_of_devices(uint32_t* device_num) {
         return ret_status;
     }
 
+    *device_num = number_of_devices;
+
     return ret_status;
 }
 
@@ -61,7 +63,7 @@ int initialize_with_flags(uint64_t flags) {
     return ret_status;
 }
 
-int get_driver_version() {
+int get_driver_version(char* drv_version) {
     rsmi_status_t ret_status = RSMI_STATUS_SUCCESS;
     char name_buffer[200] = ""; 
     ret_status = rsmi_version_str_get(RSMI_SW_COMP_DRIVER, &name_buffer, 200);
@@ -69,6 +71,9 @@ int get_driver_version() {
         printf("Get driver version API failed. Return code %d", ret_status);
         return ret_status;
     }
+
+    drv_version = &name_buffer;
+
     return ret_status;
 }
 

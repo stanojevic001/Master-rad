@@ -1,5 +1,4 @@
 from email.policy import default
-from click import command
 from defines import CURRENT_OS, SupportedGPU, SupportedOS, StatusCode, MAX_USER_INPUT_ATTEMPTS
 from utils import get_current_GPU_names
 from common_api import CommonAPI

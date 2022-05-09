@@ -4,16 +4,16 @@ from ctypes import *
 
 class WindowsAMD_API(CommonAPI):
 
-    def initialize(self) -> StatusCode:
+    def initialize(self) -> None:
         pass
 
-    def finish(self) -> StatusCode:
+    def finish(self) -> None:
         pass
 
     def get_number_of_devices(self) -> int:
         pass
 
-    def initialize_with_flags(self, flags: Any) -> StatusCode:
+    def initialize_with_flags(self, flags: Any) -> None:
         pass
 
     def get_driver_version(self) -> str:

@@ -3,11 +3,11 @@ from defines import StatusCode
 
 class CommonAPI():
 
-    def initialize(self) -> StatusCode:
+    def initialize(self) -> None:
         ''' Initialize driver of the GPU '''
         pass
 
-    def finish(self) -> StatusCode:
+    def finish(self) -> None:
         ''' Cleanup and finish using driver of the GPU '''
         pass
 
@@ -15,7 +15,7 @@ class CommonAPI():
         ''' Get number of devices '''
         pass
 
-    def initialize_with_flags(self, flags: Any) -> StatusCode:
+    def initialize_with_flags(self, flags: Any) -> None:
         ''' Initialize driver of the GPU with forwarded flags '''
         pass
 
