@@ -1,19 +1,28 @@
 import ctypes
 
-rocm_lib = ctypes.CDLL("rocm_out.so")
+class Ctypes_ROCm():
+    rocm_lib = None
+    functions = {
+        "rocm_initialize": None,
+        "rocm_finish": None,
+        "rocm_get_number_of_devices": None,
+        "rocm_get_driver_version": None
+    }
+    def __init__(self) -> None:
+        self.rocm_lib = ctypes.CDLL("librocm_smi64.so")
 
-rocm_lib.initialize.argtypes = []
-rocm_lib.initialize.restype = ctypes.c_int
-rocm_initialize = rocm_lib.initialize
+        self.rocm_lib.initialize.argtypes = []
+        self.rocm_lib.initialize.restype = ctypes.c_int
+        self.functions["rocm_initialize"] = self.rocm_lib.initialize
 
-rocm_lib.finish.argtypes = []
-rocm_lib.finish.restype = ctypes.c_int
-rocm_finish = rocm_lib.finish
+        self.rocm_lib.finish.argtypes = []
+        self.rocm_lib.finish.restype = ctypes.c_int
+        self.functions["rocm_finish"] = self.rocm_lib.finish
 
-rocm_lib.get_number_of_devices.argtypes = [ctypes.POINTER(ctypes.c_uint32)]
-rocm_lib.get_number_of_devices.restype = ctypes.c_int
-rocm_get_number_of_devices = rocm_lib.get_number_of_devices
+        self.rocm_lib.get_number_of_devices.argtypes = [ctypes.POINTER(ctypes.c_uint32)]
+        self.rocm_lib.get_number_of_devices.restype = ctypes.c_int
+        self.functions["rocm_get_number_of_devices"] = self.rocm_lib.get_number_of_devices
 
-rocm_lib.get_driver_version.argtypes = [ctypes.POINTER(ctypes.c_char)]
-rocm_lib.get_driver_version.restype = ctypes.c_int
-rocm_get_driver_version = rocm_lib.get_driver_version
+        self.rocm_lib.get_driver_version.argtypes = [ctypes.POINTER(ctypes.c_char)]
+        self.rocm_lib.get_driver_version.restype = ctypes.c_int
+        self.functions["rocm_get_driver_version"] = self.rocm_lib.get_driver_version

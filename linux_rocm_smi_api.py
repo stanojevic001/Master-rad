@@ -2,22 +2,25 @@ import ctypes
 from typing import Any
 from common_api import CommonAPI
 from defines import *
-import linux_rocm_smi_bindings
+from linux_rocm_smi_bindings import Ctypes_ROCm as crocm
 
 class Linux_ROCm_SMI_Wrapper(CommonAPI):
+    rocm_clib = None
 
+    def __init__(self) -> None:
+        self.rocm_clib = crocm()
     def initialize(self) -> None:
         
-        linux_rocm_smi_bindings.rocm_initialize()
+        self.rocm_clib.functions["rocm_initialize"]()
 
     def finish(self) -> None:
         
-        linux_rocm_smi_bindings.rocm_finish()
+        self.rocm_clib.functions["rocm_finish"]()
 
     def get_number_of_devices(self) -> int:
         
         number_of_devices = ctypes.c_uint32
-        linux_rocm_smi_bindings.rocm_get_number_of_devices(ctypes.POINTER(number_of_devices))
+        self.rocm_clib.functions["rocm_get_number_of_devices"](ctypes.POINTER(number_of_devices))
         ret_value = number_of_devices.value
 
         return ret_value
@@ -28,7 +31,7 @@ class Linux_ROCm_SMI_Wrapper(CommonAPI):
     def get_driver_version(self) -> str:
         
         drv_version = ctypes.c_char * 200
-        linux_rocm_smi_bindings.rocm_get_driver_version(ctypes.POINTER(drv_version))
+        self.rocm_clib.functions["rocm_get_driver_version"](ctypes.POINTER(drv_version))
         return (str(drv_version)).decode('ASCII')
 
     def get_library_version(self) -> str:

@@ -4,7 +4,6 @@ cd build
 sudo cmake ../
 sudo make
 sudo make install
-sudo rm rocmsmi.zip
-make doc
-cd latex
-make
+sudo cp /opt/rocm/lib/librocm_smi64.so ../../
+sudo cp -r /opt/rocm/rocm_smi/ ../../
+cd ../../

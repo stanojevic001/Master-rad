@@ -5,14 +5,13 @@ from common_api import CommonAPI
 from windows_linux_nvidia_impl import WindowsLinux_NVIDIA_API
 from linux_rocm_smi_api import Linux_ROCm_SMI_Wrapper
 from windows_amd_api import WindowsAMD_API
-import sys
 from output_templates import *
 
 class CommandObject():
     current_os = CURRENT_OS
     current_GPUs = get_current_GPU_names()
     called_command_name = ""
-    calling_args = list[str]
+    calling_args = []
     apiObject = CommonAPI()
 
     def __init__(self, args) -> None:
