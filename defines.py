@@ -25,7 +25,8 @@ class StatusCode(Enum):
     TOO_MANY_FAILED_ATTEMPTS = -1
     SUCCESS = 0
     API_FAILED = 1,
-    INVALID_REQUEST =2
+    INVALID_REQUEST =2,
+    NOT_SUPPORTED_FEATURE =3
 
 #--------COMMAND CONSTANTS-------#
 INSTALL_NVML = "pip install nvidia-ml-py"
@@ -34,6 +35,7 @@ WINDOWS_GET_GPU_INFO = "wmic path win32_VideoController get name"
 LINUX_GET_GPU_INFO = "lshw -numeric -C display | grep vendor"
 WINDOWS_DOWNLOAD_ADL = 'Invoke-WebRequest -Uri https://github.com/GPUOpen-LibrariesAndSDKs/display-library/archive/refs/heads/master.zip -OutFile "master.zip"'
 WINDOWS_DOWNLOAD_PYTHON = 'Invoke-WebRequest -Uri https://www.python.org/ftp/python/3.10.1/python-3.10.1-amd64.exe -OutFile "python.exe"'
+CYGWIN_INSTALL = 'Invoke-WebRequest -Uri http://cygwin.com/setup-x86_64.exe -OutFile "cygwin_setup.exe"'
 PIP_NOT_INSTALLED = subprocess.getoutput("pip").upper().find("not recognized".upper()) != -1
 
 

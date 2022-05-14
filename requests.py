@@ -22,8 +22,14 @@ class Request():
         for i in range(0, device_count):
             handle = self.commandObj.apiObject.get_device_handle_by_index(i)
             name = self.commandObj.apiObject.get_device_name_by_handle(handle)
+            if name is None:
+                name = "Not supported"
             serial_number = self.commandObj.apiObject.get_device_serial_by_handle(handle)
+            if serial_number is None:
+                serial_number = "Not supported"
             uuid = self.commandObj.apiObject.get_device_uuid_by_handle(handle)
+            if uuid is None:
+                uuid = "Not supported"
             output += catalog_console_device.format(index=i, name=name, serial_num=serial_number, uuid=uuid)
             output += "\n"
         print(output)
@@ -38,6 +44,8 @@ class Request():
             handle = self.commandObj.apiObject.get_device_handle_by_index(i)
             temperature_info = self.commandObj.apiObject.get_device_temperature_info(handle)
             output += temperature_console_readings_title
+            if temperature_info is None:
+                return StatusCode.NOT_SUPPORTED_FEATURE
             for j in range(0, len(temperature_info["temp_readings_values"])):
                 name = temperature_info["temp_readings_sensor_types"][j]
                 value = temperature_info["temp_readings_values"][j]

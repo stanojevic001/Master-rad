@@ -81,11 +81,9 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
             
             for j in range(0, temp_thresholds_count):
                 try:
-                    print(j)
                     threshold = self.pynvml_lib.nvmlDeviceGetTemperatureThreshold(handle, j)
                     temp_thresholds.append(threshold)
                 except self.pynvml_lib.NVMLError as e:
-                    print(e)
                     error_code = e.args[0]
                     if error_code in (self.pynvml_lib.NVML_ERROR_NOT_SUPPORTED, self.pynvml_lib.NVML_ERROR_INVALID_ARGUMENT):
                         temp_thresholds.append("Not supported")
@@ -105,4 +103,4 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
                 raise self.pynvml_lib.NVMLError(e)
         
     def get_device_power_info(self, handle) -> Any:
-        pass
+        return None

@@ -1,3 +1,4 @@
+/*
 int initialize() {
 
 
@@ -116,3 +117,4 @@ int get_device_power_info(uint32_t handle) {
 
     return ret_status;
 }
+*/

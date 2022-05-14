@@ -21,10 +21,14 @@ if CURRENT_OS == SupportedOS.WINDOWS:
         if SupportedGPU.NVIDIA in current_GPUs:
             print("Installing Nvidia NVML library...")
             runCmd(INSTALL_NVML)
+            print("Finished loading NVML library!")
         if SupportedGPU.AMD in current_GPUs:
             print("Installing AMD ADL Display library...")
             runCmd("rmdir /Q /S \"{}\display-library-master\" > nul".format(CURRENT_FILE_DIR))
             runCmd("del /f \"{}\master.zip\" > nul".format(CURRENT_FILE_DIR))
+            subprocess.run(["powershell", "-Command", CYGWIN_INSTALL])
+            subprocess.run(["powershell", "-Command", ".\cygwin_setup.exe"])
+            print("When Cygwin installation begins, click through all already recommended functions!")
             subprocess.run(["powershell", "-Command", WINDOWS_DOWNLOAD_ADL])
             COPY_COMMAND = "move .\master.zip \"{}\"".format(CURRENT_FILE_DIR)
             subprocess.run(["powershell", "-Command", COPY_COMMAND]) 
@@ -63,6 +67,7 @@ elif CURRENT_OS == SupportedOS.LINUX:
         if SupportedGPU.NVIDIA in current_GPUs:
             print("Installing Nvidia NVML library...")
             runCmd(INSTALL_NVML)
+            print("Finished loading NVML library!")
         if SupportedGPU.AMD in current_GPUs:
             print("Installing AMD ROCm library...")
             runCmd("sudo rm -r rocm_smi_lib-master")
@@ -75,8 +80,8 @@ elif CURRENT_OS == SupportedOS.LINUX:
             runCmd("sudo sh linux_rocm.sh")
             runCmd("sudo chmod -R 777 ../")
             runCmd("sudo rm rocmsmi.zip")
-            runCmd("sudo rm rocm_out*")
-            runCmd("sudo gcc -fPIC -shared -o  rocm_out.so linux_amd_impl.c")
+            #runCmd("sudo rm rocm_out*")
+            #runCmd("sudo gcc -fPIC -shared -o  rocm_out.so linux_amd_impl.c")
             print("Finished installing AMD ROCm library!")
 
         if (SupportedGPU.NVIDIA not in current_GPUs) and (SupportedGPU.AMD not in current_GPUs):

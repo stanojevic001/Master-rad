@@ -4,6 +4,7 @@ cd build
 sudo cmake ../
 sudo make
 sudo make install
-sudo cp /opt/rocm/lib/librocm_smi64.so ../../../
-sudo cp -r /opt/rocm/rocm_smi/ ../../../
-cd ../../../
+sudo make package
+sudo cp /opt/rocm/lib/librocm_smi64.so ../../
+sudo cp -r /opt/rocm/rocm_smi/ ../../
+cd ../../
