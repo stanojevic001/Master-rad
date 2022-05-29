@@ -1,0 +1,1 @@
+Da se umesto skidanja nekih setup fajlova, prenesu instalacije za Windows neke, kao za mingw itd. kako bi se na taj nacin lakse instaliralo ako link nema direktan pristup do konkretnog fajla!!!
