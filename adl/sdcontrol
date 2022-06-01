@@ -1,0 +1,31 @@
+######################################################
+#
+# Source Drop Control File (ADL)
+#
+######################################################
+
+DEPTH = $(shell find_depth)
+
+include $(DEPTH)/make/sddefs
+
+###
+# Remove unneeded source (runs last)
+###
+
+RMFILES = src/thirdparty \
+          7z.exe \
+          7za.exe \
+          test \
+          doc \
+          Sample \
+          doxygen.exe \
+          doxytag.exe \
+          adl_sdk_partner.zip
+
+DONT_RMFILES = test/Makefile
+
+######################################################
+
+include $(DEPTH)/make/sdrules
+
+

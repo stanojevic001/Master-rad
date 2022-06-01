@@ -1,5 +1,14 @@
-#include "adl_sdk.h"
+#pragma once
+
+#ifdef WINDOWS_AMD_IMPL_EXPORTS
+#define WINDOWS_AMD_IMPL_API __declspec(dllexport)
+#else
+#define WINDOWS_AMD_IMPL_API __declspec(dllimport)
+#endif
+
+#include "adl/include/adl_sdk.h"
 #include <Windows.h>
+#include <stdio.h>
 
 extern HINSTANCE AdlDll;
 extern ADL_CONTEXT_HANDLE context;
@@ -28,3 +37,7 @@ extern ADL2_Adapter_MemoryInfo2_Get_Func Smi_ADL2_Adapter_MemoryInfo2_Get;
 extern ADL_Adapter_MemoryInfo2_Get_Func Smi_ADL_Adapter_MemoryInfo2_Get;
 extern ADL_Adapter_VideoBiosInfo_Get_Func Smi_ADL_Adapter_VideoBiosInfo_Get;
 extern ADL2_Graphics_VersionsX2_Get_Func Smi_ADL2_Graphics_VersionsX2_Get;
+
+extern "C" WINDOWS_AMD_IMPL_API int initialize();
+extern "C" WINDOWS_AMD_IMPL_API int finish();
+extern "C" WINDOWS_AMD_IMPL_API int get_driver_version(ADLVersionsInfoX2* versionInfo);
