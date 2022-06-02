@@ -1,2 +1,0 @@
-Napomena: mora da se ubaci u shell sve one komande, zbog cd komande, koja ovako
-nece da radi!
