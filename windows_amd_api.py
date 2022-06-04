@@ -1,14 +1,20 @@
 from typing import Any
 from common_api import CommonAPI, StatusCode
 from ctypes import *
+from windows_amd_bindings import Ctypes_ADL as cadl_win
 
 class WindowsAMD_API(CommonAPI):
 
+    adl_clib = None
+
+    def __init__(self) -> None:
+        self.adl_clib = cadl_win()
+
     def initialize(self) -> None:
-        pass
+        self.adl_clib.functions["adl_initialize"]()
 
     def finish(self) -> None:
-        pass
+        self.adl_clib.functions["adl_finish"]()
 
     def get_number_of_devices(self) -> int:
         pass

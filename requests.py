@@ -11,13 +11,13 @@ class Request():
         driver_version = self.commandObj.apiObject.get_driver_version()
         current_driver_model = "/"
         pending_driver_model = "/"
-        output += driver_info_console.format(version=driver_version, current_model=current_driver_model, pending_model = pending_driver_model)
+        output += OutputTemplates.driver_info_console.format(version=driver_version, current_model=current_driver_model, pending_model = pending_driver_model)
         print(output)
     
     def process_command_catalog(self) -> StatusCode:
         output = ""
         device_count = self.commandObj.apiObject.get_number_of_devices()
-        output += catalog_console_device_num.format(device_num=device_count)
+        output += OutputTemplates.catalog_console_device_num.format(device_num=device_count)
         i = 0
         for i in range(0, device_count):
             handle = self.commandObj.apiObject.get_device_handle_by_index(i)
@@ -30,7 +30,7 @@ class Request():
             uuid = self.commandObj.apiObject.get_device_uuid_by_handle(handle)
             if uuid is None:
                 uuid = "Not supported"
-            output += catalog_console_device.format(index=i, name=name, serial_num=serial_number, uuid=uuid)
+            output += OutputTemplates.catalog_console_device.format(index=i, name=name, serial_num=serial_number, uuid=uuid)
             output += "\n"
         print(output)
     
@@ -38,24 +38,24 @@ class Request():
         output = ""
         device_count = self.commandObj.apiObject.get_number_of_devices()
         i = 0
-        output += temperature_console_header
+        output += OutputTemplates.temperature_console_header
         for i in range(0, device_count):
-            output += device_console_index.format(index=i)
+            output += OutputTemplates.device_console_index.format(index=i)
             handle = self.commandObj.apiObject.get_device_handle_by_index(i)
             temperature_info = self.commandObj.apiObject.get_device_temperature_info(handle)
-            output += temperature_console_readings_title
+            output += OutputTemplates.temperature_console_readings_title
             if temperature_info is None:
                 return StatusCode.NOT_SUPPORTED_FEATURE
             for j in range(0, len(temperature_info["temp_readings_values"])):
                 name = temperature_info["temp_readings_sensor_types"][j]
                 value = temperature_info["temp_readings_values"][j]
-                output += temperature_console_element.format(name=name, value=value)
+                output += OutputTemplates.temperature_console_element.format(name=name, value=value)
             
-            output += temperature_console_thresholds_title
+            output += OutputTemplates.temperature_console_thresholds_title
             for k in range(0, len(temperature_info["temp_thresholds_values"])):
                 name = temperature_info["temp_thresholds_types"][k]
                 value = temperature_info["temp_thresholds_values"][k]
-                output += temperature_console_element.format(name=name, value=value)
+                output += OutputTemplates.temperature_console_element.format(name=name, value=value)
             
             print(output)
 
@@ -64,7 +64,7 @@ class Request():
 
     def process_command_help(self) -> StatusCode:
         output = ""
-        output += help_console_output
+        output += OutputTemplates.help_console_output
         print(output)
 
     def process_request(self) -> StatusCode:
