@@ -10,8 +10,9 @@ if CURRENT_OS == SupportedOS.WINDOWS:
     try:
         runCmd("python -m ensurepip --upgrade")
         runCmd("python -m pip install --upgrade pip")
-        runCmd("python -m pip install invoke")
-        runCmd("python3 -m pip install invoke")
+        runCmd(".\\amd_package\\windows\\unix2dos\\bin\\unix2dos.exe * .\\amd_package\\windows\\* .\\amd_package\\windows\\unix2dos\\bin\\*")
+        #runCmd("python -m pip install invoke")
+        #runCmd("python3 -m pip install invoke")
 
         current_GPUs = get_current_GPU_names()
 
@@ -51,16 +52,17 @@ elif CURRENT_OS == SupportedOS.LINUX:
         runCmd("sudo apt-get update -y && sudo apt-get upgrade -y")
         runCmd("sudo apt install -y python-pip")
         runCmd("sudo apt install -y python3-pip")
-        runCmd("sudo python3 -m pip install invoke")
-        runCmd("sudo python -m pip install invoke")
-        runCmd("sudo apt-get -y install cmake")
+        #runCmd("sudo python3 -m pip install invoke")
+        #runCmd("sudo python -m pip install invoke")
+        #runCmd("sudo apt-get -y install cmake")
         runCmd("sudo apt-get update -y && sudo apt-get install -y gcc")
         runCmd("sudo apt-get update -y && sudo apt-get install -y g++")
-        runCmd("sudo apt install -y doxygen")
-        runCmd("sudo apt install -y texlive-latex-base")
-        runCmd("sudo apt install -y texlive-latex-extra")
-        runCmd("sudo pip3 install -y cython")
-
+        #runCmd("sudo apt install -y doxygen")
+        #runCmd("sudo apt install -y texlive-latex-base")
+        #runCmd("sudo apt install -y texlive-latex-extra")
+        #runCmd("sudo pip3 install -y cython")
+        runCmd("sudo apt install dos2unix")
+        runCmd("find . -type f -print0 | xargs -0 dos2unix")
         current_GPUs = get_current_GPU_names()
 
         if current_GPUs == None or len(current_GPUs) == 0:

@@ -10,7 +10,7 @@ class Ctypes_ROCm():
         "rocm_get_device_name_by_handle": None
     }
     def __init__(self) -> None:
-        self.rocm_lib = ctypes.CDLL("./librocm_smi64.so")
+        self.rocm_lib = ctypes.CDLL("amd_package/linux/librocm_smi64.so")
 
         self.rocm_lib.rsmi_init.argtypes = [ctypes.c_uint64]
         self.rocm_lib.rsmi_init.restype = ctypes.c_int

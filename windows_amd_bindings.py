@@ -10,7 +10,7 @@ class Ctypes_ADL():
         "adl_get_driver_version": None
     }
     def __init__(self) -> None:
-        self.adl_lib: ctypes.WinDLL = ctypes.windll.LoadLibrary("windows_package\\ADL_dll_create.dll")
+        self.adl_lib: ctypes.WinDLL = ctypes.windll.LoadLibrary("amd_package\\windows\\windows_adl.dll")
         self.adl_lib._func_restype_
         self.adl_lib.initialize.argtypes = []
         self.adl_lib.initialize.restype = ctypes.c_int
