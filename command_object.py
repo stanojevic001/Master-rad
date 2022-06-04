@@ -18,7 +18,10 @@ class CommandObject():
         self.calling_args = args
 
     def process_command_name(self) -> StatusCode:
-        self.called_command_name = self.calling_args[1]
+        if len(self.calling_args) > 1:
+            self.called_command_name = self.calling_args[1]
+        else:
+            self.called_command_name = "help"
     
     def prepare_command_object(self) -> StatusCode:
 

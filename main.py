@@ -10,16 +10,10 @@ from requests import Request
 if __name__ == '__main__':
     try:
         commandObj = CommandObject(sys.argv)
-        result = commandObj.prepare_command_object()
-
-        if result != StatusCode.SUCCESS:
-            print("Failed! User had too many failed input attempts!")
+        commandObj.prepare_command_object()
 
         request = Request(commandObj)
-        result = request.process_request()
-
-        if result != StatusCode.SUCCESS:
-            print("Failed! User had too many failed input attempts!")
+        request.process_request()
 
     except Exception as e:
-        raise(e)
+        print(e)

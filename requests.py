@@ -60,7 +60,12 @@ class Request():
             print(output)
 
     def process_command_power(self) -> StatusCode:
-        pass                
+        pass
+
+    def process_command_help(self) -> StatusCode:
+        output = ""
+        output += help_console_output
+        print(output)
 
     def process_request(self) -> StatusCode:
         try:
@@ -73,8 +78,10 @@ class Request():
                 self.process_command_temperature()
             elif self.commandObj.called_command_name == "power":
                 self.process_command_power()
+            elif self.commandObj.called_command_name == "help":
+                self.process_command_help()
             else:
-                print("Invalid command " % self.commandObj.called_command_name)
+                print("Invalid command {} invoked. Try command 'help' for futher information.".format(self.commandObj.called_command_name))
                 return StatusCode.INVALID_REQUEST
 
             return StatusCode.SUCCESS

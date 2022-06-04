@@ -35,3 +35,7 @@ temperature_console_thresholds_title = "\n\
 temperature_console_element = "\
       {name}: {value}\n\
 "
+
+help_console_output = "\n\
+Write here help manual!\n\
+"
