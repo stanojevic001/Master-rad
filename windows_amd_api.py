@@ -1,7 +1,8 @@
+import ctypes
 from typing import Any
 from common_api import CommonAPI, StatusCode
 from ctypes import *
-from windows_amd_bindings import Ctypes_ADL as cadl_win
+from windows_amd_bindings import Ctypes_ADL as cadl_win, C_ADLVersionsInfo
 
 class WindowsAMD_API(CommonAPI):
 
@@ -23,7 +24,9 @@ class WindowsAMD_API(CommonAPI):
         pass
 
     def get_driver_version(self) -> str:
-        pass
+        versionsInfo = C_ADLVersionsInfo()
+        self.adl_clib.functions["adl_get_driver_version"](ctypes.byref(versionsInfo))
+        return bytes(versionsInfo.strDriverVer).decode('ASCII')
 
     def get_library_version(self) -> str:
         pass

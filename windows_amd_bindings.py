@@ -1,5 +1,11 @@
 import ctypes
 
+class C_ADLVersionsInfo(ctypes.Structure):
+    _fields_ = [
+        ('strDriverVer', ctypes.c_char * 256),
+        ('strCatalystVersion', ctypes.c_char * 256),
+        ('strCatalystWebLink', ctypes.c_char * 256)
+    ]
 
 class Ctypes_ADL():
     adl_lib = None
@@ -9,6 +15,7 @@ class Ctypes_ADL():
         "adl_get_number_of_devices": None,
         "adl_get_driver_version": None
     }
+
     def __init__(self) -> None:
         self.adl_lib: ctypes.WinDLL = ctypes.windll.LoadLibrary("amd_package\\windows\\windows_adl.dll")
 
@@ -16,7 +23,7 @@ class Ctypes_ADL():
         self.adl_lib.initialize.restype = ctypes.c_int
         self.functions["adl_initialize"] = self.adl_lib.initialize
         
-        self.adl_lib.get_driver_version.argtypes = []
+        self.adl_lib.get_driver_version.argtypes = [ctypes.POINTER(C_ADLVersionsInfo)]
         self.adl_lib.get_driver_version.restype = ctypes.c_int
         self.functions["adl_get_driver_version"] = self.adl_lib.get_driver_version
 
