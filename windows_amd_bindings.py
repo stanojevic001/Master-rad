@@ -27,6 +27,10 @@ class Ctypes_ADL():
         self.adl_lib.get_driver_version.restype = ctypes.c_int
         self.functions["adl_get_driver_version"] = self.adl_lib.get_driver_version
 
+        self.adl_lib.get_number_of_devices.argtypes = [ctypes.POINTER(ctypes.c_int)]
+        self.adl_lib.get_number_of_devices.restype = ctypes.c_int
+        self.functions["adl_get_number_of_devices"] = self.adl_lib.get_number_of_devices
+
         self.adl_lib.finish.argtypes = []
         self.adl_lib.finish.restype = ctypes.c_int
         self.functions["adl_finish"] = self.adl_lib.finish

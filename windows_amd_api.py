@@ -18,7 +18,9 @@ class WindowsAMD_API(CommonAPI):
         self.adl_clib.functions["adl_finish"]()
 
     def get_number_of_devices(self) -> int:
-        return -1
+        numAdapters = ctypes.c_int()
+        self.adl_clib.functions["adl_get_number_of_devices"](ctypes.byref(numAdapters))
+        return numAdapters.value
 
     def initialize_with_flags(self, flags: Any) -> None:
         pass
