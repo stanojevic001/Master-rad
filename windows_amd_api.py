@@ -18,7 +18,7 @@ class WindowsAMD_API(CommonAPI):
         self.adl_clib.functions["adl_finish"]()
 
     def get_number_of_devices(self) -> int:
-        pass
+        return -1
 
     def initialize_with_flags(self, flags: Any) -> None:
         pass
@@ -29,22 +29,22 @@ class WindowsAMD_API(CommonAPI):
         return bytes(versionsInfo.strDriverVer).decode('ASCII')
 
     def get_library_version(self) -> str:
-        pass
+        return ""
 
     def get_device_handle_by_index(self, index) -> Any:
-        pass
+        return ""
     
     def get_device_serial_by_handle(self, handle) -> Any:
-        pass
+        return ""
 
     def get_device_uuid_by_handle(self, handle) -> Any:
-        pass
+        return ""
 
     def get_device_name_by_handle(self, handle) -> Any:
-        pass
+        return ""
 
     def get_device_temperature_info(self, handle) -> Any:
-        pass
+        return ""
 
     def get_device_power_info(self, handle) -> Any:
-        pass
+        return ""
