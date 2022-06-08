@@ -6,15 +6,18 @@ class Request():
     def __init__(self, command) -> None:
         self.commandObj = command
     
-    def process_command_driver(self) -> StatusCode:
+    def process_command_full(self) -> str:
+        output = ""
+
+    def process_command_driver(self) -> str:
         output = ""
         driver_version = self.commandObj.apiObject.get_driver_version()
         current_driver_model = "/"
         pending_driver_model = "/"
         output += OutputTemplates.driver_info_console.format(version=driver_version, current_model=current_driver_model, pending_model = pending_driver_model)
-        print(output)
+        return output
     
-    def process_command_catalog(self) -> StatusCode:
+    def process_command_catalog(self) -> str:
         output = ""
         device_count = self.commandObj.apiObject.get_number_of_devices()
         output += OutputTemplates.catalog_console_device_num.format(device_num=device_count)
@@ -32,9 +35,9 @@ class Request():
                 uuid = "Not supported"
             output += OutputTemplates.catalog_console_device.format(index=i, name=name, serial_num=serial_number, uuid=uuid)
             output += "\n"
-        print(output)
+        return output
     
-    def process_command_temperature(self) -> StatusCode:
+    def process_command_temperature(self) -> str:
         output = ""
         device_count = self.commandObj.apiObject.get_number_of_devices()
         i = 0
@@ -56,30 +59,32 @@ class Request():
                 name = temperature_info["temp_thresholds_types"][k]
                 value = temperature_info["temp_thresholds_values"][k]
                 output += OutputTemplates.temperature_console_element.format(name=name, value=value)
-            
-            print(output)
+        return output
 
-    def process_command_power(self) -> StatusCode:
+    def process_command_power(self) -> str:
         pass
 
-    def process_command_help(self) -> StatusCode:
+    def process_command_help(self) -> str:
         output = ""
         output += OutputTemplates.help_console_output
-        print(output)
+        return output
 
     def process_request(self) -> StatusCode:
         try:
+            #IDEJA: da moze vise stvari da se zajedno stampaju!!!
             self.commandObj.apiObject.initialize()
-            if self.commandObj.called_command_name == "driver":
-                self.process_command_driver()
+            if self.commandObj.called_command_name == "full":
+                print(self.process_command_full())
+            elif self.commandObj.called_command_name == "driver":
+                print(self.process_command_driver())
             elif self.commandObj.called_command_name == "catalog":
-                self.process_command_catalog()
+                print(self.process_command_catalog())
             elif self.commandObj.called_command_name == "temperature":
-                self.process_command_temperature()
+                print(self.process_command_temperature())
             elif self.commandObj.called_command_name == "power":
-                self.process_command_power()
+                print(self.process_command_power())
             elif self.commandObj.called_command_name == "help":
-                self.process_command_help()
+                print(self.process_command_help())
             else:
                 print("Invalid command {} invoked. Try command 'help' for futher information.".format(self.commandObj.called_command_name))
                 return StatusCode.INVALID_REQUEST
