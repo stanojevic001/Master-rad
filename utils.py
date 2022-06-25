@@ -21,4 +21,3 @@ def get_current_GPU_names():
 
     except Exception as e:
         raise(e)
-

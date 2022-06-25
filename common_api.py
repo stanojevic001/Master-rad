@@ -50,3 +50,27 @@ class CommonAPI():
     def get_device_power_info(self, handle) -> Any:
         ''' Get device power information '''
         pass
+
+    def get_device_board_id(self, handle) -> Any:
+        ''' Get device's board id '''
+        pass
+
+    def get_device_brand(self, handle) -> Any:
+        ''' Get device's brand name '''
+        pass
+    
+    def get_device_minor_number(self, handle) -> Any:
+        ''' Get device's minor number '''
+        pass
+
+    def get_device_num_of_gpu_cores(self, handle) -> Any:
+        ''' Get number of GPU cores for a given GPU device '''
+        pass
+
+    def get_device_attributes(self, handle) -> Any:
+        ''' Get device's attributes '''
+        pass
+
+    def get_device_architecture(self, handle) -> Any:
+        ''' Get device's architecture '''
+        pass

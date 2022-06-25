@@ -6,11 +6,10 @@ class OutputTemplates:
 
   catalog_console_device = "\n\
   Device {index}:\n\
-    Name: {name}\n\
-    Serial number: {serial_num}\n\
-    UUID: {uuid}\n\
-  "
-
+"
+  catalog_elem_output ="\
+    {name}: {value}\n"
+  
   driver_info_console = "\n\
   Driver info:\n\
     Version: {version}\n\

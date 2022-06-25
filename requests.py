@@ -24,16 +24,38 @@ class Request():
         i = 0
         for i in range(0, device_count):
             handle = self.commandObj.apiObject.get_device_handle_by_index(i)
+            output += OutputTemplates.catalog_console_device.format(index=i)
+
             name = self.commandObj.apiObject.get_device_name_by_handle(handle)
-            if name is None:
-                name = "Not supported"
+            if name is not None:
+                output += OutputTemplates.catalog_elem_output.format(name="Name", value=name)
+
             serial_number = self.commandObj.apiObject.get_device_serial_by_handle(handle)
-            if serial_number is None:
-                serial_number = "Not supported"
+            if serial_number is not None:
+                output += OutputTemplates.catalog_elem_output.format(name="Serial Number", value=serial_number)
+
             uuid = self.commandObj.apiObject.get_device_uuid_by_handle(handle)
-            if uuid is None:
-                uuid = "Not supported"
-            output += OutputTemplates.catalog_console_device.format(index=i, name=name, serial_num=serial_number, uuid=uuid)
+            if uuid is not None:
+                output += OutputTemplates.catalog_elem_output.format(name="Universally Unique Identifier(UUID)", value=uuid)
+
+            board_id = self.commandObj.apiObject.get_device_board_id(handle)
+            if board_id is not None:
+                output += OutputTemplates.catalog_elem_output.format(name="Board ID", value=board_id)
+
+            brand_name = self.commandObj.apiObject.get_device_brand(handle)
+            if brand_name is not None:
+                output += OutputTemplates.catalog_elem_output.format(name="Brand", value=brand_name)
+
+            minor_number = self.commandObj.apiObject.get_device_minor_number(handle)
+            if minor_number is not None:
+                output += OutputTemplates.catalog_elem_output.format(name="Minor number", value=str(minor_number))
+
+            num_gpu_cores = self.commandObj.apiObject.get_device_num_of_gpu_cores(handle)
+            if num_gpu_cores is not None:
+                output += OutputTemplates.catalog_elem_output.format(name="Shading units(GPU cores)", value=str(num_gpu_cores))        
+            
+            print(self.commandObj.apiObject.get_device_architecture(handle))
+            
             output += "\n"
         return output
     
@@ -61,7 +83,25 @@ class Request():
                 output += OutputTemplates.temperature_console_element.format(name=name, value=value)
         return output
 
-    def process_command_power(self) -> str:
+    def process_command_clocks(self) -> str:
+        pass
+    
+    def process_command_memory(self) -> str:
+        pass
+
+    def process_command_bus(self) -> str:
+        pass
+
+    def process_command_ecc(self) -> str:
+        pass
+
+    def process_command_performance(self) -> str:
+        pass
+
+    def process_command_modes(self) -> str:
+        pass
+    
+    def process_command_modes(self) -> str:
         pass
 
     def process_command_help(self) -> str:
@@ -75,16 +115,28 @@ class Request():
             self.commandObj.apiObject.initialize()
             if self.commandObj.called_command_name == "full":
                 print(self.process_command_full())
-            elif self.commandObj.called_command_name == "driver":
+            elif self.commandObj.called_command_name == "versions":
                 print(self.process_command_driver())
             elif self.commandObj.called_command_name == "catalog":
                 print(self.process_command_catalog())
             elif self.commandObj.called_command_name == "temperature":
                 print(self.process_command_temperature())
-            elif self.commandObj.called_command_name == "power":
-                print(self.process_command_power())
+            elif self.commandObj.called_command_name == "clocks":
+                print(self.process_command_clocks())
             elif self.commandObj.called_command_name == "help":
                 print(self.process_command_help())
+            elif self.commandObj.called_command_name == "memory":
+                print(self.process_command_memory())
+            elif self.commandObj.called_command_name == "bus":
+                print(self.process_command_bus())
+            elif self.commandObj.called_command_name == "ecc":
+                print(self.process_command_ecc())
+            elif self.commandObj.called_command_name == "performance":
+                print(self.process_command_performance())
+            elif self.commandObj.called_command_name == "modes":
+                print(self.process_command_modes())
+            elif self.commandObj.called_command_name == "processes":
+                print(self.process_command_processes())
             else:
                 print("Invalid command {} invoked. Try command 'help' for futher information.".format(self.commandObj.called_command_name))
                 return StatusCode.INVALID_REQUEST
