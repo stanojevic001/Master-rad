@@ -84,7 +84,21 @@ class Request():
         return output
 
     def process_command_clocks(self) -> str:
-        pass
+        output = ""
+        device_count = self.commandObj.apiObject.get_number_of_devices()
+        output += OutputTemplates.catalog_console_device_num.format(device_num=device_count)
+        i = 0
+        for i in range(0, device_count):
+            handle = self.commandObj.apiObject.get_device_handle_by_index(i)
+            output += OutputTemplates.catalog_console_device.format(index=i)
+
+            name = self.commandObj.apiObject.get_device_name_by_handle(handle)
+            if name is not None:
+                output += OutputTemplates.catalog_elem_output.format(name="Name", value=name)        
+            clocks_info = self.commandObj.apiObject.get_device_clocks_info()
+            print(clocks_info)
+            output += "\n"
+        return output
     
     def process_command_memory(self) -> str:
         pass

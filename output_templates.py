@@ -25,6 +25,12 @@ class OutputTemplates:
   Temperature info:\n\
   "
 
+  clocks_header = "\n\
+    Clocks info:\n"
+  
+  clocks_elem = "\
+      {name}: {value}\n"
+
   temperature_console_readings_title = "\n\
       Readings(in Celsius):\n\
   "

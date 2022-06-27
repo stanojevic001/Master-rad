@@ -74,3 +74,7 @@ class CommonAPI():
     def get_device_architecture(self, handle) -> Any:
         ''' Get device's architecture '''
         pass
+
+    def get_device_clocks_info(self, handle) -> Any:
+        ''' Get clock info for a given GPU device '''
+        pass

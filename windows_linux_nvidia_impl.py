@@ -2,7 +2,6 @@ import enum
 import importlib
 from typing import Any
 from common_api import CommonAPI, StatusCode
-
 # Library is called pynvml!
 class nvmlBrandType_t(enum.IntEnum):
     NVML_BRAND_UNKNOWN = 0
@@ -23,7 +22,21 @@ class nvmlBrandType_t(enum.IntEnum):
     NVML_BRAND_NVIDIA = 14
     NVML_BRAND_GEFORCE_RTX = 15
     NVML_BRAND_TITAN_RTX = 16
-    NVML_BRAND_COUNT = 17
+    NVML_BRAND_COUNT = enum.auto()
+
+class nvmlClockType_t(enum.IntEnum):
+    NVML_CLOCK_GRAPHICS = 0
+    NVML_CLOCK_SM = 1
+    NVML_CLOCK_MEM = 2
+    NVML_CLOCK_VIDEO = 3
+    NVML_CLOCK_COUNT = enum.auto()
+
+class nvmlClockId_t(enum.IntEnum):
+    NVML_CLOCK_ID_CURRENT = 0
+    NVML_CLOCK_ID_APP_CLOCK_TARGET = 1
+    NVML_CLOCK_ID_APP_CLOCK_DEFAULT = 2
+    NVML_CLOCK_ID_CUSTOMER_BOOST_MAX = 3
+    NVML_CLOCK_ID_COUNT = enum.auto()
 
 class WindowsLinux_NVIDIA_API(CommonAPI):
     error_dict = None
@@ -178,7 +191,6 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
     def get_device_attributes(self, handle) -> Any:
         try:
             device_attributes = self.pynvml_lib.nvmlDeviceGetAttributes_v2(handle)
-            print(device_attributes)
             return device_attributes
         except self.pynvml_lib.NVMLError as e:
             error_code = e.args[0]
@@ -190,8 +202,43 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
     def get_device_architecture(self, handle) -> Any:
         try:
             device_architecture = self.pynvml_lib.nvmlDeviceGetArchitecture(handle)
-            print(device_architecture)
             return device_architecture
+        except self.pynvml_lib.NVMLError as e:
+            error_code = e.args[0]
+            if error_code == self.pynvml_lib.NVML_ERROR_NOT_SUPPORTED:
+                return e
+            else:
+                raise self.pynvml_lib.NVMLError(e)
+    
+    def get_device_clocks_info(self, handle) -> Any:
+        try:
+            adaptive_clock_info_status = self.pynvml_lib.nvmlDeviceGetAdaptiveClockInfoStatus(handle)
+            application_clocks = list()
+            for clock_type in range(0, nvmlClockType_t.NVML_CLOCK_COUNT):
+                application_clock_mhz = self.pynvml_lib.nvmlDeviceGetApplicationsClock(handle, nvmlClockType_t(clock_type))
+                application_clocks.append(application_clock_mhz)
+            auto_boosted_clocks = {
+                "is_enabled": None,
+                "default_is_enabled": None
+            }
+            (isEnabled, defaultIsEnabled) = self.pynvml_lib.nvmlDeviceGetAutoBoostedClocksEnabled(handle)
+            auto_boosted_clocks["is_enabled"] = "enabled" if isEnabled == 1 else "disabled"
+            auto_boosted_clocks["default_is_enabled"] = "enabled" if defaultIsEnabled == 1 else "disabled"
+            #nvmlDeviceGetClock()
+            #nvmlDeviceGetClockInfo()
+            #nvmlDeviceGetCurrentClocksThrottleReasons()
+            #nvmlDeviceGetDefaultApplicationsClock()
+            #nvmlDeviceGetMaxClockInfo()
+            #nvmlDeviceGetMaxCustomerBoostClock()
+            #nvmlDeviceGetSupportedClocksThrottleReasons()
+            #nvmlDeviceGetSupportedGraphicsClocks()
+            #nvmlDeviceGetSupportedMemoryClocks()
+            #nvmlDeviceGetViolationStatus
+            return {
+                "adaptive_clock_status": adaptive_clock_info_status,
+                "application_clocks_mhz": application_clocks,
+                "auto_boost_clocks_enabled_info": auto_boosted_clocks
+            }
         except self.pynvml_lib.NVMLError as e:
             error_code = e.args[0]
             if error_code == self.pynvml_lib.NVML_ERROR_NOT_SUPPORTED:
