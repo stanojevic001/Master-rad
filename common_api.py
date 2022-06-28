@@ -78,3 +78,11 @@ class CommonAPI():
     def get_device_clocks_info(self, handle) -> Any:
         ''' Get clock info for a given GPU device '''
         pass
+
+    def get_device_memory_info(self, handle) -> Any:
+        ''' Get memory info for a given GPU device '''
+        pass
+
+    def get_device_bus_info(self, handle) -> Any:
+        ''' Get bus info for a given GPU device '''
+        pass
