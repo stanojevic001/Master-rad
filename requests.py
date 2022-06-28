@@ -95,7 +95,10 @@ class Request():
             name = self.commandObj.apiObject.get_device_name_by_handle(handle)
             if name is not None:
                 output += OutputTemplates.catalog_elem_output.format(name="Name", value=name)        
-            clocks_info = self.commandObj.apiObject.get_device_clocks_info(handle)
+            
+            clocks_info: dict = self.commandObj.apiObject.get_device_clocks_info(handle)
+            for key in clocks_info.keys():
+                output += OutputTemplates.catalog_elem_output.format(name=str(key), value=clocks_info[key])
             output += "\n"
         return output
     
@@ -111,7 +114,9 @@ class Request():
             name = self.commandObj.apiObject.get_device_name_by_handle(handle)
             if name is not None:
                 output += OutputTemplates.catalog_elem_output.format(name="Name", value=name)        
-            memory_info = self.commandObj.apiObject.get_device_memory_info(handle)
+            memory_info: dict = self.commandObj.apiObject.get_device_memory_info(handle)
+            for key in memory_info.keys():
+                output += OutputTemplates.catalog_elem_output.format(name=str(key), value=memory_info[key])
             output += "\n"
         return output
 
@@ -126,8 +131,11 @@ class Request():
 
             name = self.commandObj.apiObject.get_device_name_by_handle(handle)
             if name is not None:
-                output += OutputTemplates.catalog_elem_output.format(name="Name", value=name)        
-            bus_info = self.commandObj.apiObject.get_device_bus_info(handle)
+                output += OutputTemplates.catalog_elem_output.format(name="Name", value=name) 
+   
+            bus_info: dict = self.commandObj.apiObject.get_device_bus_info(handle)
+            for key in bus_info.keys():
+                output += OutputTemplates.catalog_elem_output.format(name=str(key), value=bus_info[key])
             output += "\n"
         return output
 
