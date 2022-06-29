@@ -9,12 +9,23 @@ class Request():
     def process_command_full(self) -> str:
         output = ""
 
-    def process_command_driver(self) -> str:
+    def process_command_versions(self) -> str:
         output = ""
-        driver_version = self.commandObj.apiObject.get_driver_version()
-        current_driver_model = "/"
-        pending_driver_model = "/"
-        output += OutputTemplates.driver_info_console.format(version=driver_version, current_model=current_driver_model, pending_model = pending_driver_model)
+        device_count = self.commandObj.apiObject.get_number_of_devices()
+        output += OutputTemplates.catalog_console_device_num.format(device_num=device_count)
+        i = 0
+        for i in range(0, device_count):
+            handle = self.commandObj.apiObject.get_device_handle_by_index(i)
+            output += OutputTemplates.catalog_console_device.format(index=i)
+
+            name = self.commandObj.apiObject.get_device_name_by_handle(handle)
+            if name is not None:
+                output += OutputTemplates.catalog_elem_output.format(name="Name", value=name)        
+            
+            versions_info: dict = self.commandObj.apiObject.get_device_versions_info(handle)
+            for key in versions_info.keys():
+                output += OutputTemplates.catalog_elem_output.format(name=str(key), value=versions_info[key])
+            output += "\n"
         return output
     
     def process_command_catalog(self) -> str:
@@ -163,7 +174,7 @@ class Request():
             if self.commandObj.called_command_name == "full":
                 print(self.process_command_full())
             elif self.commandObj.called_command_name == "versions":
-                print(self.process_command_driver())
+                print(self.process_command_versions())
             elif self.commandObj.called_command_name == "catalog":
                 print(self.process_command_catalog())
             elif self.commandObj.called_command_name == "temperature":

@@ -1,5 +1,6 @@
 import enum
 import importlib
+from lib2to3.pgen2 import driver
 from typing import Any
 from common_api import CommonAPI, StatusCode
 # Library is called pynvml!
@@ -37,6 +38,12 @@ class nvmlClockId_t(enum.IntEnum):
     NVML_CLOCK_ID_APP_CLOCK_DEFAULT = 2
     NVML_CLOCK_ID_CUSTOMER_BOOST_MAX = 3
     NVML_CLOCK_ID_COUNT = enum.auto()
+
+class nvmlInforomObject_t(enum.IntEnum):
+    NVML_INFOROM_OEM = 0
+    NVML_INFOROM_ECC = 1
+    NVML_INFOROM_POWER = 2
+    NVML_INFOROM_COUNT = enum.auto()
 
 class WindowsLinux_NVIDIA_API(CommonAPI):
     error_dict = None
@@ -414,3 +421,65 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
                 return e
             else:
                 raise self.pynvml_lib.NVMLError(e)
+    
+
+    def get_device_versions_info(self, handle) -> Any:
+        try:
+            cuda_driver_version = self.pynvml_lib.nvmlSystemGetCudaDriverVersion()
+        except Exception as e:
+            cuda_driver_version = "Not supported"
+
+        try:
+            cuda_driver_version_v2 = self.pynvml_lib.nvmlSystemGetCudaDriverVersion_v2()
+        except Exception as e:
+            cuda_driver_version_v2 = "Not supported"
+
+        try:
+            driver_version = self.pynvml_lib.nvmlSystemGetDriverVersion().decode('ASCII')
+        except Exception as e:
+            driver_version = "Not supported"
+
+        try:
+            nvml_version = self.pynvml_lib.nvmlSystemGetNVMLVersion().decode('ASCII')
+        except Exception as e:
+            nvml_version = "Not supported"
+
+        try:
+            driver_model = self.pynvml_lib.nvmlDeviceGetDriverModel(handle)
+        except Exception as e:
+            driver_model = "Not supported"
+        
+        try:
+            inforom_checksum = self.pynvml_lib.nvmlDeviceGetInforomConfigurationChecksum(handle) 
+        except Exception as e:
+            inforom_checksum = "Not supported"
+
+        try:
+            inforom_image_version = self.pynvml_lib.nvmlDeviceGetInforomImageVersion(handle).decode('ASCII')
+        except Exception as e:
+            inforom_image_version = "Not supported"
+
+        inforom_versions = list()   
+        for inforom_obj_type in range(0, nvmlInforomObject_t.NVML_INFOROM_COUNT.value):
+            try:
+                inforom_version = self.pynvml_lib.nvmlDeviceGetInforomVersion(handle, inforom_obj_type).decode('ASCII')
+                inforom_versions.append(inforom_version)
+            except Exception as e:
+                inforom_version = "Not supported"
+                inforom_versions.append(inforom_version)
+
+        try:
+            vbios_version = self.pynvml_lib.nvmlDeviceGetVbiosVersion(handle).decode('ASCII')
+        except Exception as e:
+            vbios_version = "Not supported"
+
+        return {
+            "CUDA Driver Version": cuda_driver_version_v2,
+            "Driver Version": driver_version,
+            "NVML Version": nvml_version,
+            "Driver Model": driver_model,
+            "InfoROM Checksum": inforom_checksum,
+            "InfoROM Image Version": inforom_image_version,
+            "InfoROM Version": inforom_version,
+            "VBIOS Version": vbios_version
+        }

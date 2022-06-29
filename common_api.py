@@ -86,3 +86,7 @@ class CommonAPI():
     def get_device_bus_info(self, handle) -> Any:
         ''' Get bus info for a given GPU device '''
         pass
+    
+    def get_device_versions_info(self, handle) -> Any:
+        ''' Get info about versions related to a given GPU device '''
+        pass
