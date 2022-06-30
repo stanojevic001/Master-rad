@@ -159,8 +159,6 @@ class Request():
     def process_command_modes(self) -> str:
         pass
     
-    def process_command_modes(self) -> str:
-        pass
 
     def process_command_help(self) -> str:
         output = ""
@@ -199,7 +197,7 @@ class Request():
             elif self.commandObj.called_command_name == "processes":
                 print(self.process_command_processes())
             else:
-                print("Invalid command {} invoked. Try command 'help' for futher information.".format(self.commandObj.called_command_name))
+                print("Invalid command '{}' invoked. Try command 'help' for futher information.".format(self.commandObj.called_command_name))
                 return StatusCode.INVALID_REQUEST
 
             return StatusCode.SUCCESS

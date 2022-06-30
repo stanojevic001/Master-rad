@@ -235,10 +235,14 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
             for clock_type in range(0, nvmlClockType_t.NVML_CLOCK_COUNT.value):
                 try:
                     application_clock_mhz = self.pynvml_lib.nvmlDeviceGetApplicationsClock(handle, clock_type)
-                    application_clocks.append(application_clock_mhz)
+                    application_clocks.append({
+                        nvmlClockType_t(clock_type).name.replace("NVML_CLOCK_", ""): application_clock_mhz
+                        })
                 except Exception as e:
                     application_clock_mhz = "Not supported"
-                    application_clocks.append(application_clock_mhz)
+                    application_clocks.append({
+                        nvmlClockType_t(clock_type).name.replace("NVML_CLOCK_", ""): application_clock_mhz
+                        })
 
             auto_boosted_clocks = {
                 "is_enabled": None,
@@ -248,27 +252,41 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
                 (isEnabled, defaultIsEnabled) = self.pynvml_lib.nvmlDeviceGetAutoBoostedClocksEnabled(handle)
             except Exception as e:
                 (isEnabled, defaultIsEnabled) = ("Not supported", "Not supported")
-            auto_boosted_clocks["is_enabled"] = "enabled" if isEnabled == 1 else "disabled"
-            auto_boosted_clocks["default_is_enabled"] = "enabled" if defaultIsEnabled == 1 else "disabled"
+            auto_boosted_clocks["is_enabled"] = "ENABLED" if isEnabled == 1 else "DISABLED"
+            auto_boosted_clocks["default_is_enabled"] = "ENABLED" if defaultIsEnabled == 1 else "DISABLED"
             
             clocks_mhz = list()
             for clock_type in range(0, nvmlClockType_t.NVML_CLOCK_COUNT.value):
                 for clock_id in range(0, nvmlClockId_t.NVML_CLOCK_ID_COUNT.value):
                     try:
                         clock_mhz = self.pynvml_lib.nvmlDeviceGetClock(handle, clock_type, clock_id)
-                        clocks_mhz.append(clock_mhz)
+                        clocks_mhz.append({
+                            nvmlClockType_t(clock_type).name.replace("NVML_CLOCK_", ""):
+                            {
+                                nvmlClockId_t(clock_id).name.replace("NVML_CLOCK_ID_", ""): clock_mhz
+                            }
+                        })
                     except Exception as e:
                         clock_mhz = "Not supported"
-                        clocks_mhz.append(clock_mhz)
+                        clocks_mhz.append({
+                            nvmlClockType_t(clock_type).name.replace("NVML_CLOCK_", ""):
+                            {
+                                nvmlClockId_t(clock_id).name.replace("NVML_CLOCK_ID_", ""): clock_mhz
+                            }
+                        })
 
             clocks_info = list()
             for clock_type in range(0, nvmlClockType_t.NVML_CLOCK_COUNT.value):
                 try:
                     clock_info = self.pynvml_lib.nvmlDeviceGetClockInfo(handle, clock_type)
-                    clocks_info.append(clock_info)
+                    clocks_info.append({
+                        nvmlClockType_t(clock_type).name.replace("NVML_CLOCK_", ""): clock_info
+                    })
                 except Exception as e:
                     clock_info = "Not supported"
-                    clocks_info.append(clock_info)
+                    clocks_info.append({
+                        nvmlClockType_t(clock_type).name.replace("NVML_CLOCK_", ""): clock_info
+                    })
 
             try:
                 current_clocks_throttle_reasons = self.pynvml_lib.nvmlDeviceGetCurrentClocksThrottleReasons(handle)
@@ -316,19 +334,27 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
             for clock_type in range(0, nvmlClockType_t.NVML_CLOCK_COUNT.value):
                 try:
                     max_clock_info = self.pynvml_lib.nvmlDeviceGetMaxClockInfo(handle, clock_type)
-                    max_clocks_info.append(max_clock_info)
+                    max_clocks_info.append({
+                        nvmlClockType_t(clock_type).name.replace("NVML_CLOCK_", ""): max_clock_info
+                    })
                 except Exception as e:
                     max_clock_info = "Not supported"
-                    max_clocks_info.append(max_clock_info)
+                    max_clocks_info.append({
+                        nvmlClockType_t(clock_type).name.replace("NVML_CLOCK_", ""): max_clock_info
+                    })
             
             max_customer_boost_clocks = list()
             for clock_type in range(0, nvmlClockType_t.NVML_CLOCK_COUNT.value):
                 try:
                     max_customer_boost_clock = self.pynvml_lib.nvmlDeviceGetMaxCustomerBoostClock(handle, clock_type)
-                    max_customer_boost_clocks.append(max_customer_boost_clock)
+                    max_customer_boost_clocks.append({
+                        nvmlClockType_t(clock_type).name.replace("NVML_CLOCK_", ""): max_customer_boost_clock
+                    })
                 except Exception as e:
                     max_customer_boost_clock = "Not supported"
-                    max_customer_boost_clocks.append(max_customer_boost_clock)
+                    max_customer_boost_clocks.append({
+                        nvmlClockType_t(clock_type).name.replace("NVML_CLOCK_", ""): max_customer_boost_clock
+                    })
 
             try:
                 supported_clocks_throttle_reasons = self.pynvml_lib.nvmlDeviceGetSupportedClocksThrottleReasons(handle)
@@ -373,10 +399,11 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
                 if (supported_memory_clocks is None) or (supported_memory_clocks == "Not supported"):
                     supported_graphics_clocks = "Not supported"
                 else:
-                    supported_graphics_clocks = list()
+                    supported_graphics_clocks = dict()
                     for supported_memory_clock in supported_memory_clocks:
+                        supported_graphics_clocks[str(supported_memory_clock)] = list()
                         supported_graphics_clocks_for_mem_clk = self.pynvml_lib.nvmlDeviceGetSupportedGraphicsClocks(handle, supported_memory_clock)
-                        supported_graphics_clocks.append(supported_graphics_clocks_for_mem_clk)
+                        supported_graphics_clocks[str(supported_memory_clock)].append(supported_graphics_clocks_for_mem_clk)
             except Exception as e:
                 supported_graphics_clocks = "Not supported"
 
@@ -400,18 +427,19 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
 
             return {
                 "Adaptive clocking status": adaptive_clock_info_status,
-                "application_clocks_mhz": application_clocks,
-                "auto_boost_clocks_enabled_info": auto_boosted_clocks,
-                "clocks_mhz": clocks_mhz,
-                "clock_info": clocks_info,
+                "Application clocks (MHz)": application_clocks,
+                "Current auto boost clocks status": auto_boosted_clocks["is_enabled"],
+                "Default auto boost clocks status": auto_boosted_clocks["default_is_enabled"],
+                "Clocks by type and id (MHz)": clocks_mhz,
+                "Clocks by type (MHz)": clocks_info,
                 "Current clocks throttle reasons": result_throttle_reasons,
-                "default_application_clock": default_application_clock,
-                "max_clock_info": max_clocks_info,
-                "max_customer_boost_clock": max_customer_boost_clocks,
-                "supported_clocks_throttle_reasons": result_supported_throttle_reasons,
-                "supported_graphics_clocks": supported_graphics_clocks,
-                "supported_memory_clocks": supported_memory_clocks,
-                "violation_status": violation_statuses
+                "Default application clocks": default_application_clock,
+                "Max clock info (MHz)": max_clocks_info,
+                "Max customer boost clock (MHz)": max_customer_boost_clocks,
+                "Supported clocks throttle reasons": result_supported_throttle_reasons,
+                "Supported memory clocks (Mhz)": supported_memory_clocks,
+                "Supported pairs of memory and graphics clocks (Mem: Graphics) (MHz)": supported_graphics_clocks,
+                "Violation status": violation_statuses
             }
         except self.pynvml_lib.NVMLError as e:
             error_code = e.args[0]
@@ -433,8 +461,12 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
                 memory_info = "Not supported"
             
             return {
-                "BAR1 Memory": bar1_memory_info,
-                "Memory": memory_info
+                "BAR1 Total Memory (Bytes)": bar1_memory_info.bar1Total,
+                "BAR1 Used Memory (Bytes)": bar1_memory_info.bar1Used,
+                "BAR1 Free Memory (Bytes)": bar1_memory_info.bar1Free,
+                "Total Memory (Bytes)": memory_info.total,
+                "Used Memory (Bytes)": memory_info.used,
+                "Free memory (Bytes)": memory_info.free
             }
         except self.pynvml_lib.NVMLError as e:
             error_code = e.args[0]
@@ -488,14 +520,20 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
                 curr_pcie_link_width = "Not supported"
 
             result = {
-                "curr_pcie_link_gen": curr_pcie_link_gen,
-                "curr_pcie_link_width": curr_pcie_link_width,
-                "max_pcie_link_gen": max_pcie_link_gen,
-                "max_pcie_link_width": max_pcie_link_width,
-                "memory_bus_width": memory_bus_width,
-                "pci_info": pci_info,
-                "pcie_link_max_speed": pcie_link_max_speed,
-                "pcie_replay_counter": pcie_replay_counter,
+                "Current PCIe Link Generation": curr_pcie_link_gen,
+                "Current PCIe Link Width (Bytes)": curr_pcie_link_width,
+                "Maximum PCIe Link Generation": max_pcie_link_gen,
+                "Maximum PCIe Link Width (Bytes)": max_pcie_link_width,
+                "Memory Bus Width (Bytes)": memory_bus_width,
+                "PCI Bus Id Legacy": pci_info.busIdLegacy.decode('ASCII'),
+                "PCI Domain Number": pci_info.domain,
+                "PCI Bus Number": pci_info.bus,
+                "PCI Device Number": pci_info.device,
+                "PCI Device Id": pci_info.pciDeviceId,
+                "PCI Subsystem Id": pci_info.pciSubSystemId,
+                "PCI Bus Id": pci_info.busId.decode('ASCII'),
+                "Maximum PCIe Link Speed": pcie_link_max_speed,
+                "PCIe Replay Counter": pcie_replay_counter,
             }
             return result
         except self.pynvml_lib.NVMLError as e:
@@ -529,8 +567,13 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
 
         try:
             driver_model = self.pynvml_lib.nvmlDeviceGetDriverModel(handle)
+            if len(driver_model) > 0:
+                current_driver_model = "WDDM" if driver_model[0] == 0 else "WDM"
+            if len(driver_model) > 1:
+                pending_driver_model = "WDDM" if driver_model[1] == 0 else "WDM"
         except Exception as e:
             driver_model = "Not supported"
+            current_driver_model = pending_driver_model = driver_model
         
         try:
             inforom_checksum = self.pynvml_lib.nvmlDeviceGetInforomConfigurationChecksum(handle) 
@@ -560,7 +603,8 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
             "CUDA Driver Version": cuda_driver_version_v2,
             "Driver Version": driver_version,
             "NVML Version": nvml_version,
-            "Driver Model": driver_model,
+            "Current Driver Model": current_driver_model,
+            "Pending Driver Model": pending_driver_model,
             "InfoROM Checksum": inforom_checksum,
             "InfoROM Image Version": inforom_image_version,
             "InfoROM Version": inforom_version,
