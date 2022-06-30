@@ -21,3 +21,6 @@ def get_current_GPU_names():
 
     except Exception as e:
         raise(e)
+
+def bytes_to_megabytes(bytes):
+    return int(int(bytes) * 0.00000095367432)

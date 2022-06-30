@@ -3,6 +3,7 @@ import importlib
 from lib2to3.pgen2 import driver
 from typing import Any
 from common_api import CommonAPI, StatusCode
+from utils import bytes_to_megabytes
 # Library is called pynvml!
 class nvmlBrandType_t(enum.IntEnum):
     NVML_BRAND_UNKNOWN = 0
@@ -53,6 +54,14 @@ class nvmlDeviceArchitecture_t(enum.IntEnum):
     NVML_DEVICE_ARCH_TURING   = 6
     NVML_DEVICE_ARCH_AMPERE   = 7
     NVML_DEVICE_ARCH_UNKNOWN  = 0xffffffff
+
+class nvmlPcieLinkMaxSpeed_t(enum.IntEnum):
+    NVML_PCIE_LINK_MAX_SPEED_INVALID   = 0x00000000
+    NVML_PCIE_LINK_MAX_SPEED_2500MBPS  = 0x00000001
+    NVML_PCIE_LINK_MAX_SPEED_5000MBPS  = 0x00000002
+    NVML_PCIE_LINK_MAX_SPEED_8000MBPS  = 0x00000003
+    NVML_PCIE_LINK_MAX_SPEED_16000MBPS = 0x00000004
+    NVML_PCIE_LINK_MAX_SPEED_32000MBPS = 0x00000005
 
 class WindowsLinux_NVIDIA_API(CommonAPI):
     error_dict = None
@@ -470,13 +479,19 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
             except Exception as e:
                 memory_info = "Not supported"
             
+            try:
+                inforom_checksum = self.pynvml_lib.nvmlDeviceGetInforomConfigurationChecksum(handle) 
+            except Exception as e:
+                inforom_checksum = "Not supported"
+            
             return {
-                "BAR1 Total Memory (Bytes)": bar1_memory_info.bar1Total,
-                "BAR1 Used Memory (Bytes)": bar1_memory_info.bar1Used,
-                "BAR1 Free Memory (Bytes)": bar1_memory_info.bar1Free,
-                "Total Memory (Bytes)": memory_info.total,
-                "Used Memory (Bytes)": memory_info.used,
-                "Free memory (Bytes)": memory_info.free
+                "BAR1 Total Memory (MB)": bytes_to_megabytes(bar1_memory_info.bar1Total),
+                "BAR1 Used Memory (MB)": bytes_to_megabytes(bar1_memory_info.bar1Used),
+                "BAR1 Free Memory (MB)": bytes_to_megabytes(bar1_memory_info.bar1Free),
+                "GPU Total Memory (MB)": bytes_to_megabytes(memory_info.total),
+                "GPU Used Memory (MB)": bytes_to_megabytes(memory_info.used),
+                "GPU Free Memory (MB)": bytes_to_megabytes(memory_info.free),
+                "InfoROM Checksum": inforom_checksum,
             }
         except self.pynvml_lib.NVMLError as e:
             error_code = e.args[0]
@@ -502,47 +517,50 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
             try:
                 max_pcie_link_gen = self.pynvml_lib.nvmlDeviceGetMaxPcieLinkGeneration(handle)
             except Exception as e:
-                curr_pcie_link_width = "Not supported"
+                max_pcie_link_gen = "Not supported"
 
             try:
                 max_pcie_link_width = self.pynvml_lib.nvmlDeviceGetMaxPcieLinkWidth(handle)
             except Exception as e:
-                curr_pcie_link_width = "Not supported"
+                max_pcie_link_width = "Not supported"
                
             try:
                 memory_bus_width = self.pynvml_lib.nvmlDeviceGetMemoryBusWidth(handle)
             except Exception as e:
-                curr_pcie_link_width = "Not supported"
+                memory_bus_width = "Not supported"
               
             try:
                 pci_info = self.pynvml_lib.nvmlDeviceGetPciInfo_v3(handle)
             except Exception as e:
-                curr_pcie_link_width = "Not supported"
+                pci_info = "Not supported"
 
             try:
                 pcie_link_max_speed = self.pynvml_lib.nvmlDeviceGetPcieLinkMaxSpeed(handle)
+                pcie_link_max_speed = nvmlPcieLinkMaxSpeed_t(pcie_link_max_speed).name.replace("NVML_PCIE_LINK_MAX_SPEED_", "").replace("MBPS","")
             except Exception as e:
-                curr_pcie_link_width = "Not supported"
+                pcie_link_max_speed = "Not supported"
                 
             try:
                 pcie_replay_counter = self.pynvml_lib.nvmlDeviceGetPcieReplayCounter(handle)
             except Exception as e:
                 curr_pcie_link_width = "Not supported"
+            
+            print(pci_info)
 
             result = {
                 "Current PCIe Link Generation": curr_pcie_link_gen,
-                "Current PCIe Link Width (Bytes)": curr_pcie_link_width,
+                "Current PCIe Link Width (Lanes)": curr_pcie_link_width,
                 "Maximum PCIe Link Generation": max_pcie_link_gen,
-                "Maximum PCIe Link Width (Bytes)": max_pcie_link_width,
-                "Memory Bus Width (Bytes)": memory_bus_width,
+                "Maximum PCIe Link Width (Lanes)": max_pcie_link_width,
+                "Memory Bus Width (Bits)": memory_bus_width,
                 "PCI Bus Id Legacy": pci_info.busIdLegacy.decode('ASCII'),
-                "PCI Domain Number": pci_info.domain,
-                "PCI Bus Number": pci_info.bus,
-                "PCI Device Number": pci_info.device,
-                "PCI Device Id": pci_info.pciDeviceId,
-                "PCI Subsystem Id": pci_info.pciSubSystemId,
+                "PCI Domain Number": "{0:#0{1}x}".format(pci_info.domain, 10),
+                "PCI Bus Number": "{0:#0{1}x}".format(pci_info.bus, 4),
+                "PCI Device Number": "{0:#0{1}x}".format(pci_info.device, 4),
+                "PCI Device Id": "{0:#0{1}x}".format(pci_info.pciDeviceId, 10),
+                "PCI Subsystem Id": "{0:#0{1}x}".format(pci_info.pciSubSystemId, 10),
                 "PCI Bus Id": pci_info.busId.decode('ASCII'),
-                "Maximum PCIe Link Speed": pcie_link_max_speed,
+                "Maximum PCIe Link Speed (MB per second)": pcie_link_max_speed,
                 "PCIe Replay Counter": pcie_replay_counter,
             }
             return result
@@ -584,11 +602,6 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
         except Exception as e:
             driver_model = "Not supported"
             current_driver_model = pending_driver_model = driver_model
-        
-        try:
-            inforom_checksum = self.pynvml_lib.nvmlDeviceGetInforomConfigurationChecksum(handle) 
-        except Exception as e:
-            inforom_checksum = "Not supported"
 
         try:
             inforom_image_version = self.pynvml_lib.nvmlDeviceGetInforomImageVersion(handle).decode('ASCII')
@@ -599,10 +612,14 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
         for inforom_obj_type in range(0, nvmlInforomObject_t.NVML_INFOROM_COUNT.value):
             try:
                 inforom_version = self.pynvml_lib.nvmlDeviceGetInforomVersion(handle, inforom_obj_type).decode('ASCII')
-                inforom_versions.append(inforom_version)
+                inforom_versions.append({
+                    nvmlInforomObject_t(inforom_obj_type).name.replace("NVML_INFOROM_", ""): inforom_version
+                })
             except Exception as e:
                 inforom_version = "Not supported"
-                inforom_versions.append(inforom_version)
+                inforom_versions.append({
+                    nvmlInforomObject_t(inforom_obj_type).name.replace("NVML_INFOROM_", ""): inforom_version
+                })
 
         try:
             vbios_version = self.pynvml_lib.nvmlDeviceGetVbiosVersion(handle).decode('ASCII')
@@ -615,8 +632,7 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
             "NVML Version": nvml_version,
             "Current Driver Model": current_driver_model,
             "Pending Driver Model": pending_driver_model,
-            "InfoROM Checksum": inforom_checksum,
             "InfoROM Image Version": inforom_image_version,
-            "InfoROM Version": inforom_version,
+            "InfoROM Version": inforom_versions,
             "VBIOS Version": vbios_version
         }
