@@ -65,7 +65,11 @@ class Request():
             if num_gpu_cores is not None:
                 output += OutputTemplates.catalog_elem_output.format(name="Shading units(GPU cores)", value=str(num_gpu_cores))        
             
-            print(self.commandObj.apiObject.get_device_architecture(handle))
+            deviceArchitecture = self.commandObj.apiObject.get_device_architecture(handle)
+            if deviceArchitecture is not None:
+                output += OutputTemplates.catalog_elem_output.format(name="Architecture", value=str(deviceArchitecture))
+
+            #print(self.commandObj.apiObject.get_device_attributes(handle))
             
             output += "\n"
         return output

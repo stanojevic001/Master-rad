@@ -45,6 +45,15 @@ class nvmlInforomObject_t(enum.IntEnum):
     NVML_INFOROM_POWER = 2
     NVML_INFOROM_COUNT = enum.auto()
 
+class nvmlDeviceArchitecture_t(enum.IntEnum):
+    NVML_DEVICE_ARCH_KEPLER   = 2
+    NVML_DEVICE_ARCH_MAXWELL  = 3
+    NVML_DEVICE_ARCH_PASCAL   = 4
+    NVML_DEVICE_ARCH_VOLTA    = 5
+    NVML_DEVICE_ARCH_TURING   = 6
+    NVML_DEVICE_ARCH_AMPERE   = 7
+    NVML_DEVICE_ARCH_UNKNOWN  = 0xffffffff
+
 class WindowsLinux_NVIDIA_API(CommonAPI):
     error_dict = None
     pynvml_lib = None
@@ -209,7 +218,8 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
     def get_device_architecture(self, handle) -> Any:
         try:
             device_architecture = self.pynvml_lib.nvmlDeviceGetArchitecture(handle)
-            return device_architecture
+            device_architecture = nvmlDeviceArchitecture_t(device_architecture)
+            return device_architecture.name.replace("NVML_DEVICE_ARCH_", "")
         except self.pynvml_lib.NVMLError as e:
             error_code = e.args[0]
             if error_code == self.pynvml_lib.NVML_ERROR_NOT_SUPPORTED:
