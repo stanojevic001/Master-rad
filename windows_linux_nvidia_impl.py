@@ -222,6 +222,12 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
             #Unsupported functions throw NOT SUPPORTED exception, they don't return error code!
             try:
                 adaptive_clock_info_status = self.pynvml_lib.nvmlDeviceGetAdaptiveClockInfoStatus(handle)
+                if adaptive_clock_info_status == 0:
+                    adaptive_clock_info_status = "DISABLED"
+                elif adaptive_clock_info_status == 1:
+                    adaptive_clock_info_status = "ENABLED"
+                else:
+                    adaptive_clock_info_status = "UNKNOWN"
             except Exception as e:
                 adaptive_clock_info_status = "Not supported"
 
@@ -233,6 +239,7 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
                 except Exception as e:
                     application_clock_mhz = "Not supported"
                     application_clocks.append(application_clock_mhz)
+
             auto_boosted_clocks = {
                 "is_enabled": None,
                 "default_is_enabled": None
@@ -258,15 +265,43 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
             for clock_type in range(0, nvmlClockType_t.NVML_CLOCK_COUNT.value):
                 try:
                     clock_info = self.pynvml_lib.nvmlDeviceGetClockInfo(handle, clock_type)
-                    clocks_info.append(clocks_info)
+                    clocks_info.append(clock_info)
                 except Exception as e:
                     clock_info = "Not supported"
-                    clocks_info.append(clocks_info)
+                    clocks_info.append(clock_info)
 
             try:
                 current_clocks_throttle_reasons = self.pynvml_lib.nvmlDeviceGetCurrentClocksThrottleReasons(handle)
+                throttle_reasons_bitmasks = {
+                    "GPU Idle": self.pynvml_lib.nvmlClocksThrottleReasonGpuIdle,
+                    "Applications Clocks Setting": self.pynvml_lib.nvmlClocksThrottleReasonApplicationsClocksSetting, 
+                    "Sw Power Cap": self.pynvml_lib.nvmlClocksThrottleReasonSwPowerCap,
+                    "Hw Slowdown": self.pynvml_lib.nvmlClocksThrottleReasonHwSlowdown,
+                    "Sync Boost": self.pynvml_lib.nvmlClocksThrottleReasonSyncBoost,
+                    "Sw Thermal Slowdown": self.pynvml_lib.nvmlClocksThrottleReasonSwThermalSlowdown,
+                    "Hw Thermal Slowdown": self.pynvml_lib.nvmlClocksThrottleReasonHwThermalSlowdown,
+                    "Hw Power Brake Slowdown": self.pynvml_lib.nvmlClocksThrottleReasonHwPowerBrakeSlowdown,
+                    "Display Clock Setting": self.pynvml_lib.nvmlClocksThrottleReasonDisplayClockSetting,
+                    "No throttling": self.pynvml_lib.nvmlClocksThrottleReasonNone,
+                    "All throttling reasons": self.pynvml_lib.nvmlClocksThrottleReasonAll 
+                }
+                result_throttle_reasons = list()
+                if (current_clocks_throttle_reasons & throttle_reasons_bitmasks["All throttling reasons"]) > 0:
+                    found_throttle_reason = False
+                    
+                    for key in throttle_reasons_bitmasks.keys():
+                        if key == "All throttling reasons":
+                            continue
+                        if (current_clocks_throttle_reasons & throttle_reasons_bitmasks[key]) > 0:
+                            found_throttle_reason = True
+                            result_throttle_reasons.append(str(key))
+                    if not found_throttle_reason:
+                        result_throttle_reasons.append("Unknown")
+                else:
+                    result_throttle_reasons.append("No throttling")
+
             except Exception as e:
-                current_clocks_throttle_reasons = "Not supported"
+                result_throttle_reasons.append("Not supported")
 
             default_application_clocks = list()
             for clock_type in range(0, nvmlClockType_t.NVML_CLOCK_COUNT.value):
@@ -297,38 +332,86 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
 
             try:
                 supported_clocks_throttle_reasons = self.pynvml_lib.nvmlDeviceGetSupportedClocksThrottleReasons(handle)
+                throttle_reasons_bitmasks = {
+                    "GPU Idle": self.pynvml_lib.nvmlClocksThrottleReasonGpuIdle,
+                    "Applications Clocks Setting": self.pynvml_lib.nvmlClocksThrottleReasonApplicationsClocksSetting, 
+                    "Sw Power Cap": self.pynvml_lib.nvmlClocksThrottleReasonSwPowerCap,
+                    "Hw Slowdown": self.pynvml_lib.nvmlClocksThrottleReasonHwSlowdown,
+                    "Sync Boost": self.pynvml_lib.nvmlClocksThrottleReasonSyncBoost,
+                    "Sw Thermal Slowdown": self.pynvml_lib.nvmlClocksThrottleReasonSwThermalSlowdown,
+                    "Hw Thermal Slowdown": self.pynvml_lib.nvmlClocksThrottleReasonHwThermalSlowdown,
+                    "Hw Power Brake Slowdown": self.pynvml_lib.nvmlClocksThrottleReasonHwPowerBrakeSlowdown,
+                    "Display Clock Setting": self.pynvml_lib.nvmlClocksThrottleReasonDisplayClockSetting,
+                    "No throttling": self.pynvml_lib.nvmlClocksThrottleReasonNone,
+                    "All throttling reasons": self.pynvml_lib.nvmlClocksThrottleReasonAll 
+                }
+                result_supported_throttle_reasons = list()
+                if (supported_clocks_throttle_reasons & throttle_reasons_bitmasks["All throttling reasons"]) > 0:
+                    found_throttle_reason = False
+                    
+                    for key in throttle_reasons_bitmasks.keys():
+                        if key == "All throttling reasons":
+                            continue
+                        if (supported_clocks_throttle_reasons & throttle_reasons_bitmasks[key]) > 0:
+                            found_throttle_reason = True
+                            result_supported_throttle_reasons.append(str(key))
+                    if not found_throttle_reason:
+                        result_supported_throttle_reasons.append("Unknown")
+                else:
+                    result_supported_throttle_reasons.append("No throttling")
             except Exception as e:
                 supported_clocks_throttle_reasons = "Not supported"
-
-            try:
-                supported_graphics_clocks = self.pynvml_lib.nvmlDeviceGetSupportedGraphicsClocks(handle, 1)
-            except Exception as e:
-                supported_graphics_clocks = "Not supported"
-
+            
+            supported_memory_clocks = None
             try:
                 supported_memory_clocks = self.pynvml_lib.nvmlDeviceGetSupportedMemoryClocks(handle)
             except Exception as e:
                 supported_memory_clocks = "Not supported"
 
+            supported_graphics_clocks = None
             try:
-                violation_status = self.pynvml_lib.nvmlDeviceGetViolationStatus(handle, 1)
+                if (supported_memory_clocks is None) or (supported_memory_clocks == "Not supported"):
+                    supported_graphics_clocks = "Not supported"
+                else:
+                    supported_graphics_clocks = list()
+                    for supported_memory_clock in supported_memory_clocks:
+                        supported_graphics_clocks_for_mem_clk = self.pynvml_lib.nvmlDeviceGetSupportedGraphicsClocks(handle, supported_memory_clock)
+                        supported_graphics_clocks.append(supported_graphics_clocks_for_mem_clk)
             except Exception as e:
-                violation_status = "Not supported"
+                supported_graphics_clocks = "Not supported"
+
+            violation_statuses = dict()
+            possible_violation_statuses = {
+                "Power": self.pynvml_lib.NVML_PERF_POLICY_POWER,
+                "Thermal": self.pynvml_lib.NVML_PERF_POLICY_THERMAL,
+                "Sync boost": self.pynvml_lib.NVML_PERF_POLICY_SYNC_BOOST,
+                "Board limit": self.pynvml_lib.NVML_PERF_POLICY_BOARD_LIMIT,
+                "Low utilization": self.pynvml_lib.NVML_PERF_POLICY_LOW_UTILIZATION,
+                "Reliability": self.pynvml_lib.NVML_PERF_POLICY_RELIABILITY,
+                "App clocks": self.pynvml_lib.NVML_PERF_POLICY_TOTAL_APP_CLOCKS,
+                "Base clocks": self.pynvml_lib.NVML_PERF_POLICY_TOTAL_BASE_CLOCKS
+            }
+            for policyType in possible_violation_statuses.keys():
+                try:
+                    violation_status = self.pynvml_lib.nvmlDeviceGetViolationStatus(handle, possible_violation_statuses[policyType])
+                    violation_statuses[policyType] = {"Reference time": violation_status.referenceTime, "Violation time": violation_status.violationTime}
+                except Exception as e:
+                    violation_statuses[policyType] = "Not supported" 
 
             return {
-                "adaptive_clock_status": adaptive_clock_info_status,
+                "Adaptive clocking status": adaptive_clock_info_status,
                 "application_clocks_mhz": application_clocks,
                 "auto_boost_clocks_enabled_info": auto_boosted_clocks,
                 "clocks_mhz": clocks_mhz,
                 "clock_info": clocks_info,
-                "current_clocks_throttle_reasons": current_clocks_throttle_reasons,
+                "Current clocks throttle reasons": result_throttle_reasons,
                 "default_application_clock": default_application_clock,
-                "max_clock_info": max_clock_info,
-                "max_customer_boost_clock": max_customer_boost_clock,
-                "supported_clocks_throttle_reasons": supported_clocks_throttle_reasons,
+                "max_clock_info": max_clocks_info,
+                "max_customer_boost_clock": max_customer_boost_clocks,
+                "supported_clocks_throttle_reasons": result_supported_throttle_reasons,
                 "supported_graphics_clocks": supported_graphics_clocks,
                 "supported_memory_clocks": supported_memory_clocks,
-                "violation_status": violation_status
+                "violation_status": violation_statuses
             }
         except self.pynvml_lib.NVMLError as e:
             error_code = e.args[0]

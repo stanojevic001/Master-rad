@@ -10,6 +10,9 @@ class OutputTemplates:
   catalog_elem_output ="\
     {name}: {value}\n"
   
+  catalog_elem_level_one_nesting = "\
+      {name}: {value}\n"
+  
   driver_info_console = "\n\
   Driver info:\n\
     Version: {version}\n\

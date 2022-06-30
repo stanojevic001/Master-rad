@@ -166,6 +166,9 @@ class Request():
         output = ""
         output += OutputTemplates.help_console_output
         return output
+    
+    def process_command_processes(self) -> str:
+        pass
 
     def process_request(self) -> StatusCode:
         try:
