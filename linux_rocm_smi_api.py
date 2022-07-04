@@ -65,3 +65,6 @@ class Linux_ROCm_SMI_Wrapper(CommonAPI):
 
         self.rocm_clib.functions["rocm_get_device_name_by_handle"](index, name, len)
         return bytes(name.value).decode('ASCII')
+    
+    def get_device_memory_info(self, handle) -> Any:
+        return super().get_device_memory_info(handle)
