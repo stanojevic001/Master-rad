@@ -22,24 +22,7 @@ class WindowsAMD_API(CommonAPI):
         self.adl_clib.functions["adl_get_number_of_devices"](ctypes.byref(numAdapters))
         return numAdapters.value
 
-    def initialize_with_flags(self, flags: Any) -> None:
-        pass
-
-    def get_driver_version(self) -> str:
-        versionsInfo = C_ADLVersionsInfo()
-        self.adl_clib.functions["adl_get_driver_version"](ctypes.byref(versionsInfo))
-        return bytes(versionsInfo.strDriverVer).decode('ASCII')
-
-    def get_library_version(self) -> str:
-        return ""
-
     def get_device_handle_by_index(self, index) -> Any:
-        return ""
-    
-    def get_device_serial_by_handle(self, handle) -> Any:
-        return ""
-
-    def get_device_uuid_by_handle(self, handle) -> Any:
         return ""
 
     def get_device_name_by_handle(self, handle) -> Any:
@@ -47,6 +30,24 @@ class WindowsAMD_API(CommonAPI):
 
     def get_device_temperature_info(self, handle) -> Any:
         return ""
+    
+    def get_device_catalog_info(self, handle) -> Any:
+        return super().get_device_catalog_info(handle)
+    
+    def get_device_memory_info(self, handle) -> Any:
+        return super().get_device_memory_info(handle)
+    
+    def get_device_clocks_info(self, handle) -> Any:
+        return super().get_device_clocks_info(handle)
+    
+    def get_device_bus_info(self, handle) -> Any:
+        return super().get_device_bus_info(handle)
+    
+    def get_device_versions_info(self, handle) -> Any:
+        versionsInfo = C_ADLVersionsInfo()
+        self.adl_clib.functions["adl_get_driver_version"](ctypes.byref(versionsInfo))
+        driver_version =  bytes(versionsInfo.strDriverVer).decode('ASCII')
 
-    def get_device_power_info(self, handle) -> Any:
-        return ""
+        return {
+            "Driver version": driver_version
+        }

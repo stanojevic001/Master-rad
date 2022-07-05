@@ -39,38 +39,11 @@ class Request():
 
             name = self.commandObj.apiObject.get_device_name_by_handle(handle)
             if name is not None:
-                output += OutputTemplates.catalog_elem_output.format(name="Name", value=name)
-
-            serial_number = self.commandObj.apiObject.get_device_serial_by_handle(handle)
-            if serial_number is not None:
-                output += OutputTemplates.catalog_elem_output.format(name="Serial Number", value=serial_number)
-
-            uuid = self.commandObj.apiObject.get_device_uuid_by_handle(handle)
-            if uuid is not None:
-                output += OutputTemplates.catalog_elem_output.format(name="Universally Unique Identifier(UUID)", value=uuid)
-
-            board_id = self.commandObj.apiObject.get_device_board_id(handle)
-            if board_id is not None:
-                output += OutputTemplates.catalog_elem_output.format(name="Board ID", value=board_id)
-
-            brand_name = self.commandObj.apiObject.get_device_brand(handle)
-            if brand_name is not None:
-                output += OutputTemplates.catalog_elem_output.format(name="Brand", value=brand_name)
-
-            minor_number = self.commandObj.apiObject.get_device_minor_number(handle)
-            if minor_number is not None:
-                output += OutputTemplates.catalog_elem_output.format(name="Minor number", value=str(minor_number))
-
-            num_gpu_cores = self.commandObj.apiObject.get_device_num_of_gpu_cores(handle)
-            if num_gpu_cores is not None:
-                output += OutputTemplates.catalog_elem_output.format(name="Shading units(GPU cores)", value=str(num_gpu_cores))        
+                output += OutputTemplates.catalog_elem_output.format(name="Name", value=name)        
             
-            deviceArchitecture = self.commandObj.apiObject.get_device_architecture(handle)
-            if deviceArchitecture is not None:
-                output += OutputTemplates.catalog_elem_output.format(name="Architecture", value=str(deviceArchitecture))
-
-            #print(self.commandObj.apiObject.get_device_attributes(handle))
-            
+            catalog_info: dict = self.commandObj.apiObject.get_device_catalog_info(handle)
+            for key in catalog_info.keys():
+                output += OutputTemplates.catalog_elem_output.format(name=str(key), value=catalog_info[key])
             output += "\n"
         return output
     

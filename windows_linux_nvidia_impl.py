@@ -72,45 +72,17 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
     def initialize(self) -> None:
         self.pynvml_lib.nvmlInit()
 
-    def initialize_with_flags(self, flags: Any) -> None:
-        # maybe process flags in some way
-        flags_send = flags
-        self.pynvml_lib.nvmlInitWithFlags(flags_send)
-
     def finish(self) -> None:
         self.pynvml_lib.nvmlShutdown()
 
     def get_number_of_devices(self) -> int:
         num_devices = self.pynvml_lib.nvmlDeviceGetCount()
         return num_devices
-
-    def get_driver_version(self) -> str:
-        driver_version = self.pynvml_lib.nvmlSystemGetDriverVersion()
-        return driver_version.decode('ASCII')
-
-    def get_library_version(self) -> str:
-        lib_version = self.pynvml_lib.nvmlSystemGetNVMLVersion()
-        return lib_version
     
     def get_device_handle_by_index(self, index) -> Any:
         handle = self.pynvml_lib.nvmlDeviceGetHandleByIndex(index)
         return handle
-
-    def get_device_serial_by_handle(self, handle) -> Any:
-        try:
-            serial_number = self.pynvml_lib.nvmlDeviceGetSerial(handle)
-            return serial_number
-        except self.pynvml_lib.NVMLError as e:
-            error_code = e.args[0]
-            if error_code == self.pynvml_lib.NVML_ERROR_NOT_SUPPORTED:
-                return e
-            else:
-                raise self.pynvml_lib.NVMLError(e)
-    
-    def get_device_uuid_by_handle(self, handle) -> Any:
-        uuid = self.pynvml_lib.nvmlDeviceGetUUID(handle)
-        return uuid.decode('ASCII')
-    
+   
     def get_device_name_by_handle(self, handle) -> Any:
         try:
             result = self.pynvml_lib.nvmlDeviceGetName(handle)
@@ -162,80 +134,6 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
             else:
                 raise self.pynvml_lib.NVMLError(e)
         
-    def get_device_power_info(self, handle) -> Any:
-        return None
-    
-    def get_device_board_id(self, handle) -> Any:
-        try:
-            board_id = self.pynvml_lib.nvmlDeviceGetBoardId(handle)
-            return board_id
-        except self.pynvml_lib.NVMLError as e:
-            error_code = e.args[0]
-            if error_code == self.pynvml_lib.NVML_ERROR_NOT_SUPPORTED:
-                return e
-            else:
-                raise self.pynvml_lib.NVMLError(e)
-
-    def get_device_brand(self, handle) -> Any:
-        try:
-            brand_name = nvmlBrandType_t(self.pynvml_lib.nvmlDeviceGetBrand(handle))
-            if brand_name.value in (nvmlBrandType_t.NVML_BRAND_COUNT, nvmlBrandType_t.NVML_BRAND_UNKNOWN):
-                brand_name = "Unknown"
-            else:
-                brand_name = str(brand_name.name).replace("NVML_BRAND_","").replace("_"," ")
-            return brand_name
-        except self.pynvml_lib.NVMLError as e:
-            error_code = e.args[0]
-            if error_code == self.pynvml_lib.NVML_ERROR_NOT_SUPPORTED:
-                return e
-            else:
-                raise self.pynvml_lib.NVMLError(e)
-
-    def get_device_minor_number(self, handle) -> Any:
-        try:
-            minor_number = self.pynvml_lib.nvmlDeviceGetMinorNumber(handle)
-            return minor_number
-        except self.pynvml_lib.NVMLError as e:
-            error_code = e.args[0]
-            if error_code == self.pynvml_lib.NVML_ERROR_NOT_SUPPORTED:
-                return e
-            else:
-                raise self.pynvml_lib.NVMLError(e)
-
-    def get_device_num_of_gpu_cores(self, handle) -> Any:
-        try:
-            num_of_gpu_cores = self.pynvml_lib.nvmlDeviceGetNumGpuCores(handle)
-            return num_of_gpu_cores
-        except self.pynvml_lib.NVMLError as e:
-            error_code = e.args[0]
-            if error_code == self.pynvml_lib.NVML_ERROR_NOT_SUPPORTED:
-                return e
-            else:
-                raise self.pynvml_lib.NVMLError(e)
-
-    def get_device_attributes(self, handle) -> Any:
-        try:
-            device_attributes = self.pynvml_lib.nvmlDeviceGetAttributes_v2(handle)
-            return device_attributes
-        except self.pynvml_lib.NVMLError as e:
-            error_code = e.args[0]
-            if error_code == self.pynvml_lib.NVML_ERROR_NOT_SUPPORTED:
-                return e
-            else:
-                raise self.pynvml_lib.NVMLError(e)
-
-    def get_device_architecture(self, handle) -> Any:
-        try:
-            device_architecture = self.pynvml_lib.nvmlDeviceGetArchitecture(handle)
-            device_architecture = nvmlDeviceArchitecture_t(device_architecture)
-            return device_architecture.name.replace("NVML_DEVICE_ARCH_", "")
-        except self.pynvml_lib.NVMLError as e:
-            error_code = e.args[0]
-            if error_code == self.pynvml_lib.NVML_ERROR_NOT_SUPPORTED:
-                return e
-            else:
-                raise self.pynvml_lib.NVMLError(e)
-    
     def get_device_clocks_info(self, handle) -> Any:
         try:
             #Unsupported functions throw NOT SUPPORTED exception, they don't return error code!
@@ -570,7 +468,6 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
                 return e
             else:
                 raise self.pynvml_lib.NVMLError(e)
-    
 
     def get_device_versions_info(self, handle) -> Any:
         try:
@@ -635,4 +532,59 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
             "InfoROM Image Version": inforom_image_version,
             "InfoROM Version": inforom_versions,
             "VBIOS Version": vbios_version
+        }
+    
+    def get_device_catalog_info(self, handle) -> Any:
+        try:
+            serial_number = self.pynvml_lib.nvmlDeviceGetSerial(handle)
+        except self.pynvml_lib.NVMLError as e:
+            serial_number = "Not supported"
+
+        try:
+            uuid = self.pynvml_lib.nvmlDeviceGetUUID(handle).decode('ASCII')
+        except:
+            uuid = "Not supported"
+
+        try:
+            board_id = self.pynvml_lib.nvmlDeviceGetBoardId(handle)
+        except self.pynvml_lib.NVMLError as e:
+            board_id = "Not supported"
+
+        try:
+            brand_name = nvmlBrandType_t(self.pynvml_lib.nvmlDeviceGetBrand(handle))
+            if brand_name.value in (nvmlBrandType_t.NVML_BRAND_COUNT, nvmlBrandType_t.NVML_BRAND_UNKNOWN):
+                brand_name = "Unknown"
+            else:
+                brand_name = str(brand_name.name).replace("NVML_BRAND_","").replace("_"," ")
+        except self.pynvml_lib.NVMLError as e:
+            brand_name = "Not supported"
+
+        try:
+            minor_number = self.pynvml_lib.nvmlDeviceGetMinorNumber(handle)
+        except self.pynvml_lib.NVMLError as e:
+            minor_number = "Not supported"
+        try:
+            num_of_gpu_cores = self.pynvml_lib.nvmlDeviceGetNumGpuCores(handle)
+        except self.pynvml_lib.NVMLError as e:
+            num_of_gpu_cores = "Not supported"  
+        
+        try:
+            device_architecture = self.pynvml_lib.nvmlDeviceGetArchitecture(handle)
+            device_architecture = nvmlDeviceArchitecture_t(device_architecture).name.replace("NVML_DEVICE_ARCH_", "")
+        except self.pynvml_lib.NVMLError as e:
+            device_architecture = "Not supported"
+        
+        try:
+            device_attributes = self.pynvml_lib.nvmlDeviceGetAttributes_v2(handle)
+        except self.pynvml_lib.NVMLError as e:
+            device_attributes = "Not supported"
+        
+        return {
+            "Serial Number": serial_number,
+            "Universally Unique Identifier(UUID)": uuid,
+            "Board ID": board_id,
+            "Brand": brand_name,
+            "Minor number": str(minor_number),
+            "Shading units(GPU cores)": str(num_of_gpu_cores),
+            "Architecture": str(device_architecture)
         }
