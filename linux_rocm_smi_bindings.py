@@ -60,7 +60,10 @@ class Ctypes_ROCm():
         "rocm_get_device_memory_total": None,
         "rocm_get_device_memory_usage": None,
         "rocm_get_device_memory_busy_percent": None,
-        "rocm_get_device_memory_reserved_pages": None
+        "rocm_get_device_memory_reserved_pages": None,
+        "rocm_get_rsmi_version": None,
+        "rocm_get_device_vbios_version": None,
+        "rocm_get_device_firmware_version": None
     }
     def __init__(self) -> None:
         self.rocm_lib = ctypes.CDLL("amd_package/linux/librocm_smi64.so")
@@ -76,10 +79,6 @@ class Ctypes_ROCm():
         self.rocm_lib.rsmi_num_monitor_devices.argtypes = [ctypes.POINTER(ctypes.c_uint32)]
         self.rocm_lib.rsmi_num_monitor_devices.restype = ctypes.c_int
         self.functions["rocm_get_number_of_devices"] = self.rocm_lib.rsmi_num_monitor_devices
-
-        self.rocm_lib.rsmi_version_str_get.argtypes = [ctypes.c_int, ctypes.POINTER(ctypes.c_char), ctypes.c_uint32]
-        self.rocm_lib.rsmi_version_str_get.restype = ctypes.c_int
-        self.functions["rocm_get_driver_version"] = self.rocm_lib.rsmi_version_str_get
 
         self.rocm_lib.rsmi_dev_name_get.argtypes = [ctypes.c_uint32, ctypes.POINTER(ctypes.c_char), ctypes.c_size_t]
         self.rocm_lib.rsmi_dev_name_get.restype = ctypes.c_int
@@ -164,3 +163,24 @@ class Ctypes_ROCm():
         self.rocm_lib.rsmi_dev_memory_reserved_pages_get.argtypes = [ctypes.c_uint32, ctypes.POINTER(ctypes.c_uint32), ctypes.POINTER(rsmi_retired_page_record_t)]
         self.rocm_lib.rsmi_dev_memory_reserved_pages_get.restype = ctypes.c_int
         self.functions["rocm_get_device_memory_reserved_pages"] =self.rocm_lib.rsmi_dev_memory_reserved_pages_get
+
+        #Version queries
+        self.rocm_lib.rsmi_version_get.argtypes = []
+        self.rocm_lib.rsmi_version_get.restype = ctypes.c_int
+        self.functions["rocm_get_rsmi_version"] =self.rocm_lib.rsmi_version_get
+        rsmi_version_get(rsmi_version_t *version)
+
+        self.rocm_lib.rsmi_version_str_get.argtypes = [ctypes.c_int, ctypes.POINTER(ctypes.c_char), ctypes.c_uint32]
+        self.rocm_lib.rsmi_version_str_get.restype = ctypes.c_int
+        self.functions["rocm_get_driver_version"] = self.rocm_lib.rsmi_version_str_get
+
+        self.rocm_lib.rsmi_dev_vbios_version_get.argtypes = []
+        self.rocm_lib.rsmi_dev_vbios_version_get.restype = ctypes.c_int
+        self.functions["rocm_get_device_vbios_version"] =self.rocm_lib.rsmi_dev_vbios_version_get
+        rsmi_dev_vbios_version_get(uint32_t dv_ind, char *vbios, uint32_t len)
+
+        self.rocm_lib.rsmi_dev_firmware_version_get.argtypes = []
+        self.rocm_lib.rsmi_dev_firmware_version_get.restype = ctypes.c_int
+        self.functions["rocm_get_device_firmware_version"] =self.rocm_lib.rsmi_dev_firmware_version_get
+        rsmi_dev_firmware_version_get(uint32_t dv_ind, rsmi_fw_block_t block,
+                                                       uint64_t *fw_version)
