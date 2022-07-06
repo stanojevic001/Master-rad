@@ -36,7 +36,7 @@ class Linux_ROCm_SMI_Wrapper(CommonAPI):
         status = self.rocm_clib.rsmi_status
 
         clocks_info = {}
-        for clock_type in range(rsmi_clk_type_t.RSMI_CLK_TYPE_FIRST, rsmi_clk_type_t.RSMI_CLK_TYPE_LAST+1)
+        for clock_type in range(rsmi_clk_type_t.RSMI_CLK_TYPE_FIRST.value, rsmi_clk_type_t.RSMI_CLK_TYPE_LAST.value+1):
             frequencies = rsmi_frequencies_t()
             status = self.rocm_clib.functions["rocm_get_clock_frequencies_info"](device_index, rsmi_clk_type_t(clock_type), ctypes.byref(frequencies))
             num_supported_freq =  None
@@ -166,12 +166,12 @@ class Linux_ROCm_SMI_Wrapper(CommonAPI):
         else:
             device_id = device_id.value
 
-        device_sku = ctypes.c_uint16()
-        status = self.rocm_clib.functions["rocm_get_device_sku"](device_index, ctypes.byref(device_sku))
-        if status != 0:
-            device_sku = "Not supported"
-        else:
-            device_sku = device_sku.value
+        #device_sku = ctypes.c_uint16()
+        #status = self.rocm_clib.functions["rocm_get_device_sku"](device_index, ctypes.byref(device_sku))
+        #if status != 0:
+        #    device_sku = "Not supported"
+        #else:
+        #    device_sku = bytes(device_sku.value).decode('ASCII')
 
         vendor_id = ctypes.c_uint16()
         status = self.rocm_clib.functions["rocm_get_device_vendor_id"](device_index, ctypes.byref(vendor_id))
@@ -252,7 +252,6 @@ class Linux_ROCm_SMI_Wrapper(CommonAPI):
 
         return {
             "Device ID": device_id,
-            "Device SKU (Stock Keeping Unit)": device_sku,
             "Vendor ID": vendor_id,
             "Brand name": brand_name,
             "Vendor name": vendor_name,

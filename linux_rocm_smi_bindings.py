@@ -8,6 +8,7 @@ class rsmi_frequencies_t(ctypes.Structure):
         ('current', ctypes.c_uint32),
         ('frequency', ctypes.c_uint64 * RSMI_MAX_NUM_FREQUENCIES)
     ]
+
 class rsmi_pcie_bandwidth_t(ctypes.Structure):
     __fields__ = [
         ('transfer_rate', rsmi_frequencies_t),
@@ -15,16 +16,16 @@ class rsmi_pcie_bandwidth_t(ctypes.Structure):
     ]
 
 class rsmi_memory_type_t(enum.IntEnum):
-  RSMI_MEM_TYPE_FIRST = 0,
-  RSMI_MEM_TYPE_VRAM = RSMI_MEM_TYPE_FIRST
-  RSMI_MEM_TYPE_VIS_VRAM = 1
-  RSMI_MEM_TYPE_GTT = 2
-  RSMI_MEM_TYPE_LAST = RSMI_MEM_TYPE_GTT
+    RSMI_MEM_TYPE_FIRST = 0
+    RSMI_MEM_TYPE_VRAM = RSMI_MEM_TYPE_FIRST
+    RSMI_MEM_TYPE_VIS_VRAM = 1
+    RSMI_MEM_TYPE_GTT = 2
+    RSMI_MEM_TYPE_LAST = RSMI_MEM_TYPE_GTT
 
 class  rsmi_memory_page_status_t(enum.IntEnum):
-  RSMI_MEM_PAGE_STATUS_RESERVED = 0
-  RSMI_MEM_PAGE_STATUS_PENDING = 1
-  RSMI_MEM_PAGE_STATUS_UNRESERVABLE = enum.auto()
+    RSMI_MEM_PAGE_STATUS_RESERVED = 0
+    RSMI_MEM_PAGE_STATUS_PENDING = 1
+    RSMI_MEM_PAGE_STATUS_UNRESERVABLE = enum.auto()
 
 class rsmi_retired_page_record_t(ctypes.Structure):
     __fields__ = [
@@ -34,29 +35,29 @@ class rsmi_retired_page_record_t(ctypes.Structure):
     ]
 
 class rsmi_fw_block_t(enum.IntEnum):
-  RSMI_FW_BLOCK_FIRST = 0,
-  RSMI_FW_BLOCK_ASD = RSMI_FW_BLOCK_FIRST
-  RSMI_FW_BLOCK_CE = 1
-  RSMI_FW_BLOCK_DMCU = 2
-  RSMI_FW_BLOCK_MC = 3
-  RSMI_FW_BLOCK_ME = 4
-  RSMI_FW_BLOCK_MEC = 5
-  RSMI_FW_BLOCK_MEC2 = 6
-  RSMI_FW_BLOCK_PFP = 7
-  RSMI_FW_BLOCK_RLC = 8
-  RSMI_FW_BLOCK_RLC_SRLC = 9
-  RSMI_FW_BLOCK_RLC_SRLG = 10
-  RSMI_FW_BLOCK_RLC_SRLS = 11
-  RSMI_FW_BLOCK_SDMA = 12
-  RSMI_FW_BLOCK_SDMA2 = 13
-  RSMI_FW_BLOCK_SMC = 14
-  RSMI_FW_BLOCK_SOS = 15
-  RSMI_FW_BLOCK_TA_RAS = 16
-  RSMI_FW_BLOCK_TA_XGMI = 17
-  RSMI_FW_BLOCK_UVD = 18
-  RSMI_FW_BLOCK_VCE = 19
-  RSMI_FW_BLOCK_VCN = 20
-  RSMI_FW_BLOCK_LAST = RSMI_FW_BLOCK_VCN
+    RSMI_FW_BLOCK_FIRST = 0,
+    RSMI_FW_BLOCK_ASD = RSMI_FW_BLOCK_FIRST
+    RSMI_FW_BLOCK_CE = 1
+    RSMI_FW_BLOCK_DMCU = 2
+    RSMI_FW_BLOCK_MC = 3
+    RSMI_FW_BLOCK_ME = 4
+    RSMI_FW_BLOCK_MEC = 5
+    RSMI_FW_BLOCK_MEC2 = 6
+    RSMI_FW_BLOCK_PFP = 7
+    RSMI_FW_BLOCK_RLC = 8
+    RSMI_FW_BLOCK_RLC_SRLC = 9
+    RSMI_FW_BLOCK_RLC_SRLG = 10
+    RSMI_FW_BLOCK_RLC_SRLS = 11
+    RSMI_FW_BLOCK_SDMA = 12
+    RSMI_FW_BLOCK_SDMA2 = 13
+    RSMI_FW_BLOCK_SMC = 14
+    RSMI_FW_BLOCK_SOS = 15
+    RSMI_FW_BLOCK_TA_RAS = 16
+    RSMI_FW_BLOCK_TA_XGMI = 17
+    RSMI_FW_BLOCK_UVD = 18
+    RSMI_FW_BLOCK_VCE = 19
+    RSMI_FW_BLOCK_VCN = 20
+    RSMI_FW_BLOCK_LAST = RSMI_FW_BLOCK_VCN
 
 class rsmi_version_t(ctypes.Structure):
     __fields__ = [
@@ -67,13 +68,13 @@ class rsmi_version_t(ctypes.Structure):
     ]
 
 class rsmi_clk_type_t(enum.IntEnum):
-    RSMI_CLK_TYPE_SYS = 0,            
-    RSMI_CLK_TYPE_FIRST = RSMI_CLK_TYPE_SYS,
-    RSMI_CLK_TYPE_DF = 1,                                               
-    RSMI_CLK_TYPE_DCEF = 2,                
-    RSMI_CLK_TYPE_SOC = 3,                 
-    RSMI_CLK_TYPE_MEM = 4,                  
-    RSMI_CLK_TYPE_LAST = RSMI_CLK_TYPE_MEM,
+    RSMI_CLK_TYPE_SYS = 0
+    RSMI_CLK_TYPE_FIRST = RSMI_CLK_TYPE_SYS
+    RSMI_CLK_TYPE_DF = 1                                               
+    RSMI_CLK_TYPE_DCEF = 2                
+    RSMI_CLK_TYPE_SOC = 3                 
+    RSMI_CLK_TYPE_MEM = 4                  
+    RSMI_CLK_TYPE_LAST = RSMI_CLK_TYPE_MEM
     RSMI_CLK_INVALID = 0xFFFFFFFF
 
 class rsmi_range_t(ctypes.Structure):
@@ -163,9 +164,9 @@ class Ctypes_ROCm():
         self.rocm_lib.rsmi_dev_id_get.restype = ctypes.c_int
         self.functions["rocm_get_device_id"] =self.rocm_lib.rsmi_dev_id_get
 
-        self.rocm_lib.rsmi_dev_sku_get.argtypes = [ctypes.c_uint32, ctypes.POINTER(ctypes.c_uint16)]
-        self.rocm_lib.rsmi_dev_sku_get.restype = ctypes.c_int
-        self.functions["rocm_get_device_sku"] =self.rocm_lib.rsmi_dev_sku_get
+        #self.rocm_lib.rsmi_dev_sku_get.argtypes = [ctypes.c_uint32, ctypes.POINTER(ctypes.c_uint16)]
+        #self.rocm_lib.rsmi_dev_sku_get.restype = ctypes.c_int
+        #self.functions["rocm_get_device_sku"] =self.rocm_lib.rsmi_dev_sku_get
 
         self.rocm_lib.rsmi_dev_vendor_id_get.argtypes = [ctypes.c_uint32, ctypes.POINTER(ctypes.c_uint16)]
         self.rocm_lib.rsmi_dev_vendor_id_get.restype = ctypes.c_int
@@ -186,7 +187,7 @@ class Ctypes_ROCm():
         self.rocm_lib.rsmi_dev_serial_number_get.argtypes = [ctypes.c_uint32, ctypes.POINTER(ctypes.c_char), ctypes.c_uint32]
         self.rocm_lib.rsmi_dev_serial_number_get.restype = ctypes.c_int
         self.functions["rocm_get_device_serial_number"] =self.rocm_lib.rsmi_dev_serial_number_get
-        
+
         self.rocm_lib.rsmi_dev_subsystem_id_get.argtypes = [ctypes.c_uint32, ctypes.POINTER(ctypes.c_uint16)]
         self.rocm_lib.rsmi_dev_subsystem_id_get.restype = ctypes.c_int
         self.functions["rocm_get_device_subsystem_id"] =self.rocm_lib.rsmi_dev_subsystem_id_get
@@ -198,11 +199,11 @@ class Ctypes_ROCm():
         self.rocm_lib.rsmi_dev_drm_render_minor_get.argtypes = [ctypes.c_uint32, ctypes.POINTER(ctypes.c_uint32)]
         self.rocm_lib.rsmi_dev_drm_render_minor_get.restype = ctypes.c_int
         self.functions["rocm_get_device_drm_render_minor"] =self.rocm_lib.rsmi_dev_drm_render_minor_get
-        
+
         self.rocm_lib.rsmi_dev_subsystem_vendor_id_get.argtypes = [ctypes.c_uint32, ctypes.POINTER(ctypes.c_uint16)]
         self.rocm_lib.rsmi_dev_subsystem_vendor_id_get.restype = ctypes.c_int
         self.functions["rocm_get_device_subsystem_vendor_id"] =self.rocm_lib.rsmi_dev_subsystem_vendor_id_get
-        
+
         self.rocm_lib.rsmi_dev_unique_id_get.argtypes = [ctypes.c_uint32, ctypes.POINTER(ctypes.c_uint64)]
         self.rocm_lib.rsmi_dev_unique_id_get.restype = ctypes.c_int
         self.functions["rocm_get_device_unique_id"] =self.rocm_lib.rsmi_dev_unique_id_get
@@ -211,28 +212,28 @@ class Ctypes_ROCm():
         self.rocm_lib.rsmi_dev_pci_bandwidth_get.argtypes = [ctypes.c_uint32, ctypes.POINTER(rsmi_pcie_bandwidth_t)]
         self.rocm_lib.rsmi_dev_pci_bandwidth_get.restype = ctypes.c_int
         self.functions["rocm_get_device_pci_bandwidth"] =self.rocm_lib.rsmi_dev_pci_bandwidth_get
-        
+
         self.rocm_lib.rsmi_dev_pci_id_get.argtypes = [ctypes.c_uint32, ctypes.POINTER(ctypes.c_uint64)]
         self.rocm_lib.rsmi_dev_pci_id_get.restype = ctypes.c_int
         self.functions["rocm_get_device_pci_id"] =self.rocm_lib.rsmi_dev_pci_id_get
-        
+
         self.rocm_lib.rsmi_dev_pci_throughput_get.argtypes = [ctypes.c_uint32, ctypes.POINTER(ctypes.c_uint64), ctypes.POINTER(ctypes.c_uint64), ctypes.POINTER(ctypes.c_uint64)]
         self.rocm_lib.rsmi_dev_pci_throughput_get.restype = ctypes.c_int
         self.functions["rocm_get_device_pci_throughput"] =self.rocm_lib.rsmi_dev_pci_throughput_get
-        
+
         self.rocm_lib.rsmi_dev_pci_replay_counter_get.argtypes = [ctypes.c_uint32, ctypes.POINTER(ctypes.c_uint64)]
         self.rocm_lib.rsmi_dev_pci_replay_counter_get.restype = ctypes.c_int
         self.functions["rocm_get_device_pci_replay_counter"] =self.rocm_lib.rsmi_dev_pci_replay_counter_get
 
         #Memory queries
-        self.rocm_lib.rsmi_dev_memory_total_get.argtypes = [ctypes.c_uint32, rsmi_memory_type_t, ctypes.POINTER(ctypes.c_uint64)]
+        self.rocm_lib.rsmi_dev_memory_total_get.argtypes = [ctypes.c_uint32, ctypes.c_uint, ctypes.POINTER(ctypes.c_uint64)]
         self.rocm_lib.rsmi_dev_memory_total_get.restype = ctypes.c_int
         self.functions["rocm_get_device_memory_total"] =self.rocm_lib.rsmi_dev_memory_total_get
 
-        self.rocm_lib.rsmi_dev_memory_usage_get.argtypes = [ctypes.c_uint32, rsmi_memory_type_t, ctypes.POINTER(ctypes.c_uint64)]
+        self.rocm_lib.rsmi_dev_memory_usage_get.argtypes = [ctypes.c_uint32, ctypes.c_uint, ctypes.POINTER(ctypes.c_uint64)]
         self.rocm_lib.rsmi_dev_memory_usage_get.restype = ctypes.c_int
         self.functions["rocm_get_device_memory_usage"] =self.rocm_lib.rsmi_dev_memory_usage_get
-        
+
         self.rocm_lib.rsmi_dev_memory_busy_percent_get.argtypes = [ctypes.c_uint32, ctypes.POINTER(ctypes.c_uint32)]
         self.rocm_lib.rsmi_dev_memory_busy_percent_get.restype = ctypes.c_int
         self.functions["rocm_get_device_memory_busy_percent"] =self.rocm_lib.rsmi_dev_memory_busy_percent_get
@@ -254,16 +255,15 @@ class Ctypes_ROCm():
         self.rocm_lib.rsmi_dev_vbios_version_get.restype = ctypes.c_int
         self.functions["rocm_get_device_vbios_version"] =self.rocm_lib.rsmi_dev_vbios_version_get
 
-        self.rocm_lib.rsmi_dev_firmware_version_get.argtypes = [ctypes.c_uint32, rsmi_fw_block_t, ctypes.POINTER(ctypes.c_uint64)]
+        self.rocm_lib.rsmi_dev_firmware_version_get.argtypes = [ctypes.c_uint32, ctypes.c_uint, ctypes.POINTER(ctypes.c_uint64)]
         self.rocm_lib.rsmi_dev_firmware_version_get.restype = ctypes.c_int
         self.functions["rocm_get_device_firmware_version"] =self.rocm_lib.rsmi_dev_firmware_version_get
 
         #Clock info
-        self.rocm_lib.rsmi_dev_gpu_clk_freq_get.argtypes = [ctypes.c_uint32, rsmi_clk_type_t, ctypes.POINTER(rsmi_frequencies_t)]
+        self.rocm_lib.rsmi_dev_gpu_clk_freq_get.argtypes = [ctypes.c_uint32, ctypes.c_uint, ctypes.POINTER(rsmi_frequencies_t)]
         self.rocm_lib.rsmi_dev_gpu_clk_freq_get.restype = ctypes.c_int
         self.functions["rocm_get_clock_frequencies_info"] =self.rocm_lib.rsmi_dev_gpu_clk_freq_get
-        
+
         self.rocm_lib.rsmi_dev_od_volt_info_get.argtypes = [ctypes.c_uint32, ctypes.POINTER(rsmi_od_volt_freq_data_t)]
         self.rocm_lib.rsmi_dev_od_volt_info_get.restype = ctypes.c_int
         self.functions["rocm_get_device_od_volt_info"] =self.rocm_lib.rsmi_dev_od_volt_info_get
-
