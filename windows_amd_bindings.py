@@ -38,6 +38,24 @@ class ADLChipSetInfo(ctypes.Structure):
         ('iCurrentAGPSpeed', ctypes.c_int)
     ]
 
+class ADLMemoryInfo2(ctypes.Structure):
+    _fields_ = [
+        ('iMemorySize', ctypes.c_longlong),
+        ('strMemoryType', ctypes.c_char * 256),
+        ('iMemoryBandwidth', ctypes.c_longlong),
+        ('iHyperMemorySize', ctypes.c_longlong),
+        ('iInvisibleMemorySize', ctypes.c_longlong),
+        ('iVisibleMemorySize', ctypes.c_longlong)
+    ]
+
+class ADLBiosInfo(ctypes.Structure):
+    _fields_ = [
+        ('strPartNumber', ctypes.c_char * 256),
+        ('strVersion', ctypes.c_char * 256),
+        ('strDate', ctypes.c_char * 256)
+    ]
+
+
 class Ctypes_ADL():
     adl_lib = None
     functions = {
@@ -47,7 +65,10 @@ class Ctypes_ADL():
         "adl_get_driver_version": None,
         "adl_get_device_adapter_info": None,
         "adl_get_device_asic_family_type": None,
-        "adl_get_device_chipset_info": None
+        "adl_get_device_chipset_info": None,
+        "adl_get_device_id": None,
+        "adl_get_device_memory_info2": None,
+        "adl_get_device_vbios_info": None
     }
 
     def __init__(self) -> None:
@@ -80,3 +101,15 @@ class Ctypes_ADL():
         self.adl_lib.get_device_chipset_info.argtypes = [ctypes.c_int, ctypes.POINTER(ADLChipSetInfo)]
         self.adl_lib.get_device_chipset_info.restype = ctypes.c_int
         self.functions["adl_get_device_chipset_info"] = self.adl_lib.get_device_chipset_info
+
+        self.adl_lib.get_device_id.argtypes = [ctypes.c_int, ctypes.POINTER(ctypes.c_int)]
+        self.adl_lib.get_device_id.restype = ctypes.c_int
+        self.functions["adl_get_device_id"] = self.adl_lib.get_device_id
+
+        self.adl_lib.get_device_memory_info2.argtypes = [ctypes.c_int, ctypes.POINTER(ADLMemoryInfo2)]
+        self.adl_lib.get_device_memory_info2.restype = ctypes.c_int
+        self.functions["adl_get_device_memory_info2"] = self.adl_lib.get_device_memory_info2
+
+        self.adl_lib.get_device_vbios_info.argtypes = [ctypes.c_int, ctypes.POINTER(ADLBiosInfo)]
+        self.adl_lib.get_device_vbios_info.restype = ctypes.c_int
+        self.functions["adl_get_device_vbios_info"] = self.adl_lib.get_device_vbios_info

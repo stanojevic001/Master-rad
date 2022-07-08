@@ -2,8 +2,8 @@ import ctypes
 from typing import Any
 from common_api import CommonAPI, StatusCode
 from ctypes import *
-from windows_amd_bindings import ADLChipSetInfo, AdapterInfoX2, Ctypes_ADL as cadl_win, ADLVersionsInfo
-
+from windows_amd_bindings import ADLBiosInfo, ADLChipSetInfo, ADLMemoryInfo2, AdapterInfoX2, Ctypes_ADL as cadl_win, ADLVersionsInfo
+from utils import bytes_to_megabytes
 class WindowsAMD_API(CommonAPI):
 
     adl_clib = None
@@ -34,8 +34,8 @@ class WindowsAMD_API(CommonAPI):
     def get_device_catalog_info(self, handle) -> Any:
         device_index = ctypes.c_int(handle)
 
-        numAdapters = ctypes.c_int()
-
+        
+        #numAdapters = ctypes.c_int()
         #lppAdapterInfoX2 = ctypes.POINTER(AdapterInfoX2)()
         #status = self.adl_clib.functions["adl_get_device_adapter_info"](device_index, ctypes.byref(numAdapters), ctypes.byref(lppAdapterInfoX2))
         #if status not in (self.adl_clib.ADL_OK, self.adl_clib.ADL_OK_WARNING):
@@ -43,10 +43,18 @@ class WindowsAMD_API(CommonAPI):
         #else:
         #    pass
 
+        device_id = ctypes.c_int()
+        status = self.adl_clib.functions["adl_get_device_id"](device_index, ctypes.byref(device_id))
+        if status not in (0, 1):
+            device_id = "Not supported"
+        else:
+            device_id = device_id.value
+
+
         lpAsicTypes = ctypes.c_int()
         lpValids = ctypes.c_int()        
         status = self.adl_clib.functions["adl_get_device_asic_family_type"](device_index, ctypes.byref(lpAsicTypes), ctypes.byref(lpValids))
-        if status not in (self.adl_clib.ADL_OK, self.adl_clib.ADL_OK_WARNING):
+        if status not in (0, 1):
             lpAsicTypes = "Not supported"
             lpValids = "Not supported"
         else:
@@ -54,13 +62,45 @@ class WindowsAMD_API(CommonAPI):
             lpValids = lpValids.value
         
         return {
+            "Device ID": device_id,
             "LP ASIC types": lpAsicTypes,
             "LP Valids": lpValids
         }
     
     def get_device_memory_info(self, handle) -> Any:
-        return super().get_device_memory_info(handle)
-    
+        device_index = ctypes.c_int(handle)
+        memory_info2 = ADLMemoryInfo2()
+        status = self.adl_clib.functions["adl_get_device_memory_info2"](device_index, ctypes.byref(memory_info2))
+        memorySize = None
+        strMemoryType = None
+        iMemoryBandwidth = None
+        iHyperMemorySize = None
+        iInvisibleMemorySize = None
+        iVisibleMemorySize = None
+        if status not in (0, 1):
+            memorySize = "Not supported"
+            strMemoryType = "Not supported"
+            iMemoryBandwidth = "Not supported"
+            iHyperMemorySize = "Not supported"
+            iInvisibleMemorySize = "Not supported"
+            iVisibleMemorySize = "Not supported"
+        else:
+            memorySize = bytes_to_megabytes(memory_info2.iMemorySize)
+            strMemoryType = bytes(memory_info2.strMemoryType).decode('ASCII')
+            iMemoryBandwidth = memory_info2.iMemoryBandwidth
+            iHyperMemorySize = bytes_to_megabytes(memory_info2.iHyperMemorySize)
+            iInvisibleMemorySize = bytes_to_megabytes(memory_info2.iInvisibleMemorySize)
+            iVisibleMemorySize = bytes_to_megabytes(memory_info2.iVisibleMemorySize)
+
+        return {
+            "Memory Size": memorySize,
+            "Memory Type": strMemoryType,
+            "Memory Bandwidth": iMemoryBandwidth,
+            "Hyper Memory Size": iHyperMemorySize,
+            "InvisibleMemory Size": iInvisibleMemorySize,
+            "Visible Memory Size": iVisibleMemorySize
+        }
+
     def get_device_clocks_info(self, handle) -> Any:
         return super().get_device_clocks_info(handle)
     
@@ -101,10 +141,29 @@ class WindowsAMD_API(CommonAPI):
         }
     
     def get_device_versions_info(self, handle) -> Any:
+        device_index = ctypes.c_int(handle)
+
         versionsInfo = ADLVersionsInfo()
         self.adl_clib.functions["adl_get_driver_version"](ctypes.byref(versionsInfo))
         driver_version =  bytes(versionsInfo.strDriverVer).decode('ASCII')
 
+        vbios_info = ADLBiosInfo()
+        status = self.adl_clib.functions["adl_get_device_vbios_info"](device_index, ctypes.byref(vbios_info))
+        vbios_info_strPartNumber = None
+        vbios_info_strVersion = None
+        vbios_info_strDate = None
+        if status not in (0, 1):
+            vbios_info_strPartNumber = "Not supported"
+            vbios_info_strVersion = "Not supported"
+            vbios_info_strDate = "Not supported"
+        else:
+            vbios_info_strPartNumber = bytes(vbios_info.strPartNumber).decode('ASCII')
+            vbios_info_strVersion = bytes(vbios_info.strVersion).decode('ASCII')
+            vbios_info_strDate = bytes(vbios_info.strDate).decode('ASCII')
+
         return {
-            "Driver version": driver_version
+            "Driver version": driver_version,
+            "VBIOS part number": vbios_info_strPartNumber,
+            "VBIOS version": vbios_info_strVersion,
+            "VBIOS date": vbios_info_strDate
         }
