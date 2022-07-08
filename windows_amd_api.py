@@ -35,12 +35,13 @@ class WindowsAMD_API(CommonAPI):
         device_index = ctypes.c_int(handle)
 
         numAdapters = ctypes.c_int()
-        lppAdapterInfoX2 = AdapterInfoX2()
-        status = self.adl_clib.functions["adl_get_device_adapter_info"](device_index, ctypes.byref(numAdapters), ctypes.byref(ctypes.byref(lppAdapterInfoX2)))
-        if status not in (self.adl_clib.ADL_OK, self.adl_clib.ADL_OK_WARNING):
-            lppAdapterInfoX2 = "Not supported"
-        else:
-            pass
+
+        #lppAdapterInfoX2 = ctypes.POINTER(AdapterInfoX2)()
+        #status = self.adl_clib.functions["adl_get_device_adapter_info"](device_index, ctypes.byref(numAdapters), ctypes.byref(lppAdapterInfoX2))
+        #if status not in (self.adl_clib.ADL_OK, self.adl_clib.ADL_OK_WARNING):
+        #    lppAdapterInfoX2 = "Not supported"
+        #else:
+        #    pass
 
         lpAsicTypes = ctypes.c_int()
         lpValids = ctypes.c_int()        
@@ -68,10 +69,36 @@ class WindowsAMD_API(CommonAPI):
 
         lpChipSetInfo = ADLChipSetInfo()
         status = self.adl_clib.functions["adl_get_device_chipset_info"](device_index, ctypes.byref(lpChipSetInfo))
-        if status not in (self.adl_clib.ADL_OK, self.adl_clib.ADL_OK_WARNING):
-            lpChipSetInfo = "Not supported"
+        lpChipSetInfo_busType = None
+        lpChipSetInfo_BusSpeedType = None
+        lpChipSetInfo_MaxPCIELaneWidth = None
+        lpChipSetInfo_CurrentPCIELaneWidth = None
+        lpChipSetInfo_iSupportedAGPSpeeds = None
+        lpChipSetInfo_CurrentAGPSpeed = None
+
+        if status not in (0, 1):
+            lpChipSetInfo_busType = "Not supported"
+            lpChipSetInfo_BusSpeedType = "Not supported"
+            lpChipSetInfo_MaxPCIELaneWidth = "Not supported"
+            lpChipSetInfo_CurrentPCIELaneWidth = "Not supported"
+            lpChipSetInfo_iSupportedAGPSpeeds = "Not supported"
+            lpChipSetInfo_CurrentAGPSpeed = "Not supported"
         else:
-            pass
+            lpChipSetInfo_busType = lpChipSetInfo.iBusType
+            lpChipSetInfo_BusSpeedType = lpChipSetInfo.iBusSpeedType
+            lpChipSetInfo_MaxPCIELaneWidth = lpChipSetInfo.iMaxPCIELaneWidth
+            lpChipSetInfo_CurrentPCIELaneWidth = lpChipSetInfo.iCurrentPCIELaneWidth
+            lpChipSetInfo_iSupportedAGPSpeeds = lpChipSetInfo.iSupportedAGPSpeeds
+            lpChipSetInfo_CurrentAGPSpeed = lpChipSetInfo.iCurrentAGPSpeed
+
+        return {
+           "Bus type": lpChipSetInfo_busType,
+           "Bus speed type": lpChipSetInfo_BusSpeedType,
+           "Max PCIe Lane Width": lpChipSetInfo_MaxPCIELaneWidth,
+           "Current PCIe Lane Width": lpChipSetInfo_CurrentPCIELaneWidth,
+           "Supported AGP speeds": lpChipSetInfo_iSupportedAGPSpeeds,
+           "Current AGP Speed": lpChipSetInfo_CurrentAGPSpeed
+        }
     
     def get_device_versions_info(self, handle) -> Any:
         versionsInfo = ADLVersionsInfo()

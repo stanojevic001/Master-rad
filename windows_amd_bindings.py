@@ -29,7 +29,7 @@ class AdapterInfoX2(ctypes.Structure):
     ]
 
 class ADLChipSetInfo(ctypes.Structure):
-    __fields__ = [
+    _fields_ = [
         ('iBusType', ctypes.c_int),
         ('iBusSpeedType', ctypes.c_int),
         ('iMaxPCIELaneWidth', ctypes.c_int),
