@@ -68,7 +68,8 @@ class Ctypes_ADL():
         "adl_get_device_chipset_info": None,
         "adl_get_device_id": None,
         "adl_get_device_memory_info2": None,
-        "adl_get_device_vbios_info": None
+        "adl_get_device_vbios_info": None,
+        "adl_get_device_observed_clock_info": None
     }
 
     def __init__(self) -> None:
@@ -113,3 +114,15 @@ class Ctypes_ADL():
         self.adl_lib.get_device_vbios_info.argtypes = [ctypes.c_int, ctypes.POINTER(ADLBiosInfo)]
         self.adl_lib.get_device_vbios_info.restype = ctypes.c_int
         self.functions["adl_get_device_vbios_info"] = self.adl_lib.get_device_vbios_info
+
+        self.adl_lib.get_device_observed_clock_info.argtypes = [ctypes.c_int, ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int)]
+        self.adl_lib.get_device_observed_clock_info.restype = ctypes.c_int
+        self.functions["adl_get_device_observed_clock_info"] = self.adl_lib.get_device_observed_clock_info
+
+        self.adl_lib.get_primary_display_adapter_index.argtypes = [ctypes.POINTER(ctypes.c_int)]
+        self.adl_lib.get_primary_display_adapter_index.restype = ctypes.c_int
+        self.functions["adl_get_primary_display_adapter_index"] = self.adl_lib.get_primary_display_adapter_index
+
+        self.adl_lib.get_device_is_active_status.argtypes = [ctypes.c_int, ctypes.POINTER(ctypes.c_int)]
+        self.adl_lib.get_device_is_active_status.restype = ctypes.c_int
+        self.functions["adl_get_device_is_active_status"] = self.adl_lib.get_device_is_active_status

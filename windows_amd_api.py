@@ -60,11 +60,36 @@ class WindowsAMD_API(CommonAPI):
         else:
             lpAsicTypes = lpAsicTypes.value
             lpValids = lpValids.value
+
+        primary_display_adapter_index = ctypes.c_int()
+        status = self.adl_clib.functions["adl_get_primary_display_adapter_index"](ctypes.byref(primary_display_adapter_index))
+        if status not in (0, 1):
+            primary_display_adapter_index = "Not supported"
+        else:
+            primary_display_adapter_index = primary_display_adapter_index.value
+            if device_index.value == primary_display_adapter_index:
+                primary_display_adapter_index = "Yes"
+            else:
+                primary_display_adapter_index = "No"
+        
+        is_active_status = ctypes.c_int()        
+        status = self.adl_clib.functions["adl_get_device_is_active_status"](device_index, ctypes.byref(is_active_status))
+        if status not in (0, 1):
+            is_active_status = "Not supported"
+        else:
+            if is_active_status.value == 0:
+                #False
+                is_active_status = "No"
+            else:
+                #True
+                is_active_status = "Yes"
         
         return {
             "Device ID": device_id,
             "LP ASIC types": lpAsicTypes,
-            "LP Valids": lpValids
+            "LP Valids": lpValids,
+            "Is primary display adapter": primary_display_adapter_index,
+            "Is adapter active": is_active_status
         }
     
     def get_device_memory_info(self, handle) -> Any:
@@ -102,7 +127,23 @@ class WindowsAMD_API(CommonAPI):
         }
 
     def get_device_clocks_info(self, handle) -> Any:
-        return super().get_device_clocks_info(handle)
+        device_index = ctypes.c_int(handle)
+
+        lpCoreClock = ctypes.c_int()
+        lpMemoryClock = ctypes.c_int()
+        status = self.adl_clib.functions["adl_get_device_observed_clock_info"](device_index, ctypes.byref(lpCoreClock), ctypes.byref(lpMemoryClock))
+
+        if status not in (0, 1):
+            lpCoreClock = "Not supported"
+            lpMemoryClock = "Not supported"
+        else:
+            lpCoreClock = lpCoreClock.value
+            lpMemoryClock = lpMemoryClock.value
+
+        return {
+           "Core clock (MHz)": lpCoreClock,
+           "Memory clock (MHz)": lpMemoryClock
+        }
     
     def get_device_bus_info(self, handle) -> Any:
         device_index = ctypes.c_int(handle)
