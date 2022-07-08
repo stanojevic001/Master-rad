@@ -1,6 +1,5 @@
 import enum
 import importlib
-from lib2to3.pgen2 import driver
 from typing import Any
 from common_api import CommonAPI, StatusCode
 from utils import bytes_to_megabytes
