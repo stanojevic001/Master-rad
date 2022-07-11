@@ -33,9 +33,7 @@ class Linux_ROCm_SMI_Wrapper(CommonAPI):
     
     def get_device_clocks_info(self, handle) -> Any:
         device_index = ctypes.c_uint32(handle)
-        status = self.rocm_clib.rsmi_status
 
-        clocks_info = {}
         for clock_type in range(rsmi_clk_type_t.RSMI_CLK_TYPE_FIRST.value, rsmi_clk_type_t.RSMI_CLK_TYPE_LAST.value+1):
             frequencies = rsmi_frequencies_t()
             status = self.rocm_clib.functions["rocm_get_clock_frequencies_info"](device_index, rsmi_clk_type_t(clock_type), ctypes.byref(frequencies))
@@ -75,26 +73,38 @@ class Linux_ROCm_SMI_Wrapper(CommonAPI):
         for memory_type in range(rsmi_memory_type_t.RSMI_MEM_TYPE_FIRST, rsmi_memory_type_t.RSMI_MEM_TYPE_LAST):
             total_mem_by_type = ctypes.c_uint64(0)
             status = self.rocm_clib.functions["rocm_get_device_memory_total"](device_index, rsmi_memory_type_t(memory_type), ctypes.byref(total_mem_by_type))
-            print(status)
-            total_memories_by_type[rsmi_memory_type_t(memory_type).name.replace("RSMI_MEM_TYPE_", "")] = total_mem_by_type
+            if status != 0:
+                total_memories_by_type[rsmi_memory_type_t(memory_type).name.replace("RSMI_MEM_TYPE_", "")] = "Not supported"
+            else:
+                total_memories_by_type[rsmi_memory_type_t(memory_type).name.replace("RSMI_MEM_TYPE_", "")] = total_mem_by_type
 
 
         total_memory_usages_by_type = dict()
         for memory_usage_type in range(rsmi_memory_type_t.RSMI_MEM_TYPE_FIRST, rsmi_memory_type_t.RSMI_MEM_TYPE_LAST):
             total_mem_usage_by_type = ctypes.c_uint64(0)
             status = self.rocm_clib.functions["rocm_get_device_memory_usage"](device_index, rsmi_memory_type_t(memory_usage_type), ctypes.byref(total_mem_usage_by_type))
-            print(status)
-            total_memory_usages_by_type[rsmi_memory_type_t(memory_usage_type).name.replace("RSMI_MEM_TYPE_", "")] = total_mem_usage_by_type
+            if status != 0:
+                total_memory_usages_by_type[rsmi_memory_type_t(memory_usage_type).name.replace("RSMI_MEM_TYPE_", "")] = "Not supported"
+            else:
+                total_memory_usages_by_type[rsmi_memory_type_t(memory_usage_type).name.replace("RSMI_MEM_TYPE_", "")] = total_mem_usage_by_type
 
 
         busy_percent = ctypes.c_uint32(0)
         status = self.rocm_clib.functions["rocm_get_device_memory_busy_percent"](device_index, ctypes.byref(busy_percent))
-        print(status)
+        if status != 0:
+            busy_percent = "Not supported"
+        else:
+            busy_percent = busy_percent.value
 
         num_pages = ctypes.c_uint32()
         records = rsmi_retired_page_record_t()
         status = self.rocm_clib.functions["rocm_get_device_memory_reserved_pages"](device_index, ctypes.byref(num_pages), ctypes.byref(records))
-        print(status)
+        if status != 0:
+            num_pages = "Not supported"
+            records = "Not supported"
+        else:
+            num_pages = num_pages.value
+
 
         return {
             "Total memory amount by type": total_memories_by_type,
@@ -105,7 +115,7 @@ class Linux_ROCm_SMI_Wrapper(CommonAPI):
         }
 
     def get_device_bus_info(self, handle) -> Any:
-        device_index = ctypes.c_uin32(handle)
+        device_index = ctypes.c_uint32(handle)
         
         pcie_bandwidth = rsmi_pcie_bandwidth_t()
         status = self.rocm_clib.functions["rocm_get_device_pci_bandwidth"](device_index, ctypes.byref(pcie_bandwidth))
@@ -182,7 +192,7 @@ class Linux_ROCm_SMI_Wrapper(CommonAPI):
 
         brand_name = (ctypes.c_char * 200)()
         brand_len = ctypes.c_uint32(200)
-        status = self.rocm_clib.functions["rocm_get_device_brand"](device_index, ctypes.byref(brand_name), brand_len)
+        status = self.rocm_clib.functions["rocm_get_device_brand"](device_index, brand_name, brand_len)
         if status != 0:
             brand_name = "Not supported"
         else:
@@ -190,7 +200,7 @@ class Linux_ROCm_SMI_Wrapper(CommonAPI):
 
         vendor_name = (ctypes.c_char * 200)()
         vendor_name_len = ctypes.c_size_t(200)
-        status = self.rocm_clib.functions["rocm_get_device_vendor_name"](device_index, ctypes.byref(vendor_name), vendor_name_len)
+        status = self.rocm_clib.functions["rocm_get_device_vendor_name"](device_index, vendor_name, vendor_name_len)
         if status != 0:
             vendor_name = "Not supported"
         else:
@@ -198,7 +208,7 @@ class Linux_ROCm_SMI_Wrapper(CommonAPI):
 
         vram_vendor_name = (ctypes.c_char * 200)()
         vram_vendor_len = ctypes.c_uint32(200)
-        status = self.rocm_clib.functions["rocm_get_device_vram_vendor"](device_index, ctypes.byref(vram_vendor_name), vram_vendor_len)
+        status = self.rocm_clib.functions["rocm_get_device_vram_vendor"](device_index, vram_vendor_name, vram_vendor_len)
         if status != 0:
             vram_vendor_name = "Not supported"
         else:
@@ -206,7 +216,7 @@ class Linux_ROCm_SMI_Wrapper(CommonAPI):
 
         serial_number = (ctypes.c_char * 200)()
         serial_num_len = ctypes.c_uint32(200)
-        status = self.rocm_clib.functions["rocm_get_device_serial_number"](device_index, ctypes.byref(serial_number), serial_num_len)
+        status = self.rocm_clib.functions["rocm_get_device_serial_number"](device_index, serial_number, serial_num_len)
         if status != 0:
             serial_number = "Not supported"
         else:
@@ -219,10 +229,9 @@ class Linux_ROCm_SMI_Wrapper(CommonAPI):
         else:
             device_subsystem_id = device_subsystem_id.value
 
-
         device_subsystem_name = (ctypes.c_char * 200)()
         device_subsystem_name_len = ctypes.c_size_t(200)
-        status = self.rocm_clib.functions["rocm_get_device_subsystem_name"](device_index, ctypes.byref(device_subsystem_name), device_subsystem_name_len)
+        status = self.rocm_clib.functions["rocm_get_device_subsystem_name"](device_index, device_subsystem_name, device_subsystem_name_len)
         if status != 0:
             device_subsystem_name = "Not supported"
         else:
@@ -234,14 +243,14 @@ class Linux_ROCm_SMI_Wrapper(CommonAPI):
             minor_number = "Not supported"
         else:
             minor_number = minor_number.value
-        
+
         subsystem_vendor_id = ctypes.c_uint16()
         status = self.rocm_clib.functions["rocm_get_device_subsystem_vendor_id"](device_index, ctypes.byref(subsystem_vendor_id))
         if status != 0:
             subsystem_vendor_id = "Not supported"
         else:
             subsystem_vendor_id = subsystem_vendor_id.value
-        
+
         unique_id = ctypes.c_uint64()
         status = self.rocm_clib.functions["rocm_get_device_unique_id"](device_index, ctypes.byref(unique_id))
         if status != 0:
@@ -266,7 +275,7 @@ class Linux_ROCm_SMI_Wrapper(CommonAPI):
     
     def get_device_versions_info(self, handle) -> Any:
         device_index = ctypes.c_uint32(handle)
-
+ 
         rsmi_version = rsmi_version_t()
         status = self.rocm_clib.functions["rocm_get_rsmi_version"](ctypes.byref(rsmi_version))
         rsmi_version_major = ""
@@ -282,12 +291,12 @@ class Linux_ROCm_SMI_Wrapper(CommonAPI):
             rsmi_version_major = rsmi_version.major
             rsmi_version_minor = rsmi_version.minor
             rsmi_version_patch = rsmi_version.patch
-            rsmi_version_build = rsmi_version.build
-
+            rsmi_version_build = bytes(rsmi_version.build).decode('ASCII')
+ 
         sw_component = ctypes.c_int(0)
         driver_version = (ctypes.c_char * 200)()
         version_len = ctypes.c_uint32(200)
-        status = self.rocm_clib.functions["rocm_get_driver_version"](sw_component, ctypes.byref(driver_version), version_len)
+        status = self.rocm_clib.functions["rocm_get_driver_version"](sw_component, driver_version, version_len)
         if status != 0:
             driver_version = "Not supported"
         else:
@@ -295,7 +304,7 @@ class Linux_ROCm_SMI_Wrapper(CommonAPI):
 
         vbios_version = (ctypes.c_char * 200)()
         vbios_len = ctypes.c_uint32(200)
-        status = self.rocm_clib.functions["rocm_get_device_vbios_version"](device_index, ctypes.byref(vbios_version), vbios_len)
+        status = self.rocm_clib.functions["rocm_get_device_vbios_version"](device_index, vbios_version, vbios_len)
         if status != 0:
             vbios_version = "Not supported"
         else:

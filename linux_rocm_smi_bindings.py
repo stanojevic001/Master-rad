@@ -3,14 +3,14 @@ import enum
 
 RSMI_MAX_NUM_FREQUENCIES = 32
 class rsmi_frequencies_t(ctypes.Structure):
-    __fields__ = [
+    _fields_ = [
         ('num_supported', ctypes.c_uint32),
         ('current', ctypes.c_uint32),
         ('frequency', ctypes.c_uint64 * RSMI_MAX_NUM_FREQUENCIES)
     ]
 
 class rsmi_pcie_bandwidth_t(ctypes.Structure):
-    __fields__ = [
+    _fields_ = [
         ('transfer_rate', rsmi_frequencies_t),
         ('lanes', ctypes.c_uint32 * RSMI_MAX_NUM_FREQUENCIES)
     ]
@@ -28,10 +28,10 @@ class  rsmi_memory_page_status_t(enum.IntEnum):
     RSMI_MEM_PAGE_STATUS_UNRESERVABLE = enum.auto()
 
 class rsmi_retired_page_record_t(ctypes.Structure):
-    __fields__ = [
+    _fields_ = [
         ('page_address', ctypes.c_uint64),
         ('page_size', ctypes.c_uint64),
-        ('status', rsmi_memory_page_status_t)
+        ('status', ctypes.c_int)
     ]
 
 class rsmi_fw_block_t(enum.IntEnum):
@@ -60,7 +60,7 @@ class rsmi_fw_block_t(enum.IntEnum):
     RSMI_FW_BLOCK_LAST = RSMI_FW_BLOCK_VCN
 
 class rsmi_version_t(ctypes.Structure):
-    __fields__ = [
+    _fields_ = [
         ('major', ctypes.c_uint32),
         ('minor', ctypes.c_uint32),
         ('patch', ctypes.c_uint32),
@@ -78,25 +78,25 @@ class rsmi_clk_type_t(enum.IntEnum):
     RSMI_CLK_INVALID = 0xFFFFFFFF
 
 class rsmi_range_t(ctypes.Structure):
-    __fields__ = [
+    _fields_ = [
         ('lower_bound', ctypes.c_uint64),
         ('upper_bound', ctypes.c_uint64)
     ]
 
 class rsmi_od_vddc_point_t(ctypes.Structure):
-    __fields__ = [
+    _fields_ = [
         ('frequency', ctypes.c_uint64),
         ('voltage', ctypes.c_uint64)
     ]
 
 RSMI_NUM_VOLTAGE_CURVE_POINTS = 3
 class rsmi_od_volt_curve_t(ctypes.Structure):
-    __fields__ = [
+    _fields_ = [
         ('vc_points', rsmi_od_vddc_point_t * RSMI_NUM_VOLTAGE_CURVE_POINTS)
     ]
 
 class rsmi_od_volt_freq_data_t(ctypes.Structure):
-    __fields__ = [
+    _fields_ = [
         ('curr_sclk_range', rsmi_range_t),
         ('curr_mclk_range', rsmi_range_t),
         ('sclk_freq_limits', rsmi_range_t),
