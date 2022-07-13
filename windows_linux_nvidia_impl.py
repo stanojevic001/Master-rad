@@ -171,24 +171,19 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
             auto_boosted_clocks["is_enabled"] = "ENABLED" if isEnabled == 1 else "DISABLED"
             auto_boosted_clocks["default_is_enabled"] = "ENABLED" if defaultIsEnabled == 1 else "DISABLED"
             
-            clocks_mhz = list()
+            clocks_mhz = dict()
             for clock_type in range(0, nvmlClockType_t.NVML_CLOCK_COUNT.value):
+                clocks_mhz[nvmlClockType_t(clock_type).name.replace("NVML_CLOCK_", "")] = list()
                 for clock_id in range(0, nvmlClockId_t.NVML_CLOCK_ID_COUNT.value):
                     try:
                         clock_mhz = self.pynvml_lib.nvmlDeviceGetClock(handle, clock_type, clock_id)
-                        clocks_mhz.append({
-                            nvmlClockType_t(clock_type).name.replace("NVML_CLOCK_", ""):
-                            {
+                        clocks_mhz[nvmlClockType_t(clock_type).name.replace("NVML_CLOCK_", "")].append({
                                 nvmlClockId_t(clock_id).name.replace("NVML_CLOCK_ID_", ""): clock_mhz
-                            }
                         })
                     except Exception as e:
                         clock_mhz = "Not supported"
-                        clocks_mhz.append({
-                            nvmlClockType_t(clock_type).name.replace("NVML_CLOCK_", ""):
-                            {
+                        clocks_mhz[nvmlClockType_t(clock_type).name.replace("NVML_CLOCK_", "")].append({
                                 nvmlClockId_t(clock_id).name.replace("NVML_CLOCK_ID_", ""): clock_mhz
-                            }
                         })
 
             clocks_info = list()
@@ -219,7 +214,9 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
                     "No throttling": self.pynvml_lib.nvmlClocksThrottleReasonNone,
                     "All throttling reasons": self.pynvml_lib.nvmlClocksThrottleReasonAll 
                 }
-                result_throttle_reasons = list()
+                result_throttle_reasons = {
+                    "Reasons": list()
+                }
                 if (current_clocks_throttle_reasons & throttle_reasons_bitmasks["All throttling reasons"]) > 0:
                     found_throttle_reason = False
                     
@@ -228,14 +225,14 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
                             continue
                         if (current_clocks_throttle_reasons & throttle_reasons_bitmasks[key]) > 0:
                             found_throttle_reason = True
-                            result_throttle_reasons.append(str(key))
+                            result_throttle_reasons["Reasons"].append(str(key))
                     if not found_throttle_reason:
-                        result_throttle_reasons.append("Unknown")
+                        result_throttle_reasons["Reasons"].append("Unknown")
                 else:
-                    result_throttle_reasons.append("No throttling")
+                    result_throttle_reasons["Reasons"].append("No throttling")
 
             except Exception as e:
-                result_throttle_reasons.append("Not supported")
+                result_throttle_reasons["Reasons"].append("Not supported")
 
             default_application_clocks = list()
             for clock_type in range(0, nvmlClockType_t.NVML_CLOCK_COUNT.value):
@@ -504,8 +501,11 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
         except Exception as e:
             inforom_image_version = "Not supported"
 
-        inforom_versions = list()   
-        for inforom_obj_type in range(0, nvmlInforomObject_t.NVML_INFOROM_COUNT.value):
+        inforom_versions = list()
+        for inforom_obj_type_dict_key, inforom_obj_dict_enum in nvmlInforomObject_t.__members__.items():
+            if inforom_obj_type_dict_key == "NVML_INFOROM_COUNT":
+                continue
+            inforom_obj_type = inforom_obj_dict_enum
             try:
                 inforom_version = self.pynvml_lib.nvmlDeviceGetInforomVersion(handle, inforom_obj_type).decode('ASCII')
                 inforom_versions.append({

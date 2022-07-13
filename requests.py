@@ -1,5 +1,6 @@
 from common_api import StatusCode
 from output_templates import *
+from utils import process_complex_query_output
 
 class Request():
 
@@ -24,7 +25,28 @@ class Request():
             
             versions_info: dict = self.commandObj.apiObject.get_device_versions_info(handle)
             for key in versions_info.keys():
-                output += OutputTemplates.catalog_elem_output.format(name=str(key), value=versions_info[key])
+                '''if type(versions_info[key]) == list:
+                    output += OutputTemplates.catalog_elem_output.format(name=str(key), value="")
+                    for i in range(0, len(versions_info[key])):
+                        if type(versions_info[key][i]) == dict:
+                            for elem_key in versions_info[key][i].keys():
+                                output += OutputTemplates.catalog_elem_output_nested_level_1.format(name=str(elem_key), value=versions_info[key][i][elem_key])
+                        else:
+                            output += OutputTemplates.catalog_elem_output_nested_level_1.format(name=str("->"), value=versions_info[key][i])
+                elif type(versions_info[key]) == dict:
+                    output += OutputTemplates.catalog_elem_output.format(name=str(key), value="")
+                    for elem_key in versions_info[key].keys():
+                            output += OutputTemplates.catalog_elem_output_nested_level_1.format(name=str(elem_key), value=versions_info[key][elem_key])
+                else:
+                    output += OutputTemplates.catalog_elem_output.format(name=str(key), value=versions_info[key])'''
+                if type(versions_info[key]) == list:
+                    output += OutputTemplates.catalog_elem_output.format(name=str(key), value="")
+                    output = process_complex_query_output(versions_info[key], output, nesting_level=6)
+                elif type(versions_info[key]) == dict:
+                    output += OutputTemplates.catalog_elem_output.format(name=str(key), value="")
+                    output = process_complex_query_output(versions_info[key], output, nesting_level=6)
+                else:
+                    output += OutputTemplates.catalog_elem_output.format(name=str(key), value=versions_info[key])
             output += "\n"
         return output
     
@@ -43,7 +65,28 @@ class Request():
             
             catalog_info: dict = self.commandObj.apiObject.get_device_catalog_info(handle)
             for key in catalog_info.keys():
-                output += OutputTemplates.catalog_elem_output.format(name=str(key), value=catalog_info[key])
+                '''if type(catalog_info[key]) == list:
+                    output += OutputTemplates.catalog_elem_output.format(name=str(key), value="")
+                    for i in range(0, len(catalog_info[key])):
+                        if type(catalog_info[key][i]) == dict:
+                            for elem_key in catalog_info[key][i].keys():
+                                output += OutputTemplates.catalog_elem_output_nested_level_1.format(name=str(elem_key), value=catalog_info[key][i][elem_key])
+                        else:
+                            output += OutputTemplates.catalog_elem_output_nested_level_1.format(name=str("->"), value=catalog_info[key][i])
+                elif type(catalog_info[key]) == dict:
+                    output += OutputTemplates.catalog_elem_output.format(name=str(key), value="")
+                    for elem_key in catalog_info[key].keys():
+                            output += OutputTemplates.catalog_elem_output_nested_level_1.format(name=str(elem_key), value=catalog_info[key][elem_key])
+                else:
+                    output += OutputTemplates.catalog_elem_output.format(name=str(key), value=catalog_info[key])'''
+                if type(catalog_info[key]) == list:
+                    output += OutputTemplates.catalog_elem_output.format(name=str(key), value="")
+                    output = process_complex_query_output(catalog_info[key], output, nesting_level=6)
+                elif type(catalog_info[key]) == dict:
+                    output += OutputTemplates.catalog_elem_output.format(name=str(key), value="")
+                    output = process_complex_query_output(catalog_info[key], output, nesting_level=6)
+                else:
+                    output += OutputTemplates.catalog_elem_output.format(name=str(key), value=catalog_info[key])
             output += "\n"
         return output
     
@@ -86,7 +129,32 @@ class Request():
             
             clocks_info: dict = self.commandObj.apiObject.get_device_clocks_info(handle)
             for key in clocks_info.keys():
-                output += OutputTemplates.catalog_elem_output.format(name=str(key), value=clocks_info[key])
+                '''
+                if type(clocks_info[key]) == list:
+                    output += OutputTemplates.catalog_elem_output.format(name=str(key), value="")
+                    for i in range(0, len(clocks_info[key])):
+                        if type(clocks_info[key][i]) == dict:
+                            for elem_key in clocks_info[key][i].keys():
+                                output += OutputTemplates.catalog_elem_output_nested_level_1.format(name=str(elem_key), value=clocks_info[key][i][elem_key])
+                        else:
+                            output += OutputTemplates.catalog_elem_output_nested_level_1.format(name=str("->"), value=clocks_info[key][i])
+                elif type(clocks_info[key]) == dict:
+                    output += OutputTemplates.catalog_elem_output.format(name=str(key), value="")
+                    if type(clocks_info[key]) == dict:
+                        for elem_key in clocks_info[key].keys():
+                                output += OutputTemplates.catalog_elem_output_nested_level_1.format(name=str(elem_key), value=clocks_info[key][elem_key])
+                    
+                else:
+                    output += OutputTemplates.catalog_elem_output.format(name=str(key), value=clocks_info[key])
+                '''
+                if type(clocks_info[key]) == list:
+                    output += OutputTemplates.catalog_elem_output.format(name=str(key), value="")
+                    output = process_complex_query_output(clocks_info[key], output, nesting_level=6)
+                elif type(clocks_info[key]) == dict:
+                    output += OutputTemplates.catalog_elem_output.format(name=str(key), value="")
+                    output = process_complex_query_output(clocks_info[key], output, nesting_level=6)
+                else:
+                    output += OutputTemplates.catalog_elem_output.format(name=str(key), value=clocks_info[key])
             output += "\n"
         return output
     
@@ -104,7 +172,28 @@ class Request():
                 output += OutputTemplates.catalog_elem_output.format(name="Name", value=name)        
             memory_info: dict = self.commandObj.apiObject.get_device_memory_info(handle)
             for key in memory_info.keys():
-                output += OutputTemplates.catalog_elem_output.format(name=str(key), value=memory_info[key])
+                '''if type(memory_info[key]) == list:
+                    output += OutputTemplates.catalog_elem_output.format(name=str(key), value="")
+                    for i in range(0, len(memory_info[key])):
+                        if type(memory_info[key][i]) == dict:
+                            for elem_key in memory_info[key][i].keys():
+                                output += OutputTemplates.catalog_elem_output_nested_level_1.format(name=str(elem_key), value=memory_info[key][i][elem_key])
+                        else:
+                            output += OutputTemplates.catalog_elem_output_nested_level_1.format(name=str("->"), value=memory_info[key][i])
+                elif type(memory_info[key]) == dict:
+                    output += OutputTemplates.catalog_elem_output.format(name=str(key), value="")
+                    for elem_key in memory_info[key].keys():
+                            output += OutputTemplates.catalog_elem_output_nested_level_1.format(name=str(elem_key), value=memory_info[key][elem_key])
+                else:
+                    output += OutputTemplates.catalog_elem_output.format(name=str(key), value=memory_info[key])'''
+                if type(memory_info[key]) == list:
+                    output += OutputTemplates.catalog_elem_output.format(name=str(key), value="")
+                    output = process_complex_query_output(memory_info[key], output, nesting_level=6)
+                elif type(memory_info[key]) == dict:
+                    output += OutputTemplates.catalog_elem_output.format(name=str(key), value="")
+                    output = process_complex_query_output(memory_info[key], output, nesting_level=6)
+                else:
+                    output += OutputTemplates.catalog_elem_output.format(name=str(key), value=memory_info[key])
             output += "\n"
         return output
 
@@ -123,7 +212,28 @@ class Request():
    
             bus_info: dict = self.commandObj.apiObject.get_device_bus_info(handle)
             for key in bus_info.keys():
-                output += OutputTemplates.catalog_elem_output.format(name=str(key), value=bus_info[key])
+                '''if type(bus_info[key]) == list:
+                    output += OutputTemplates.catalog_elem_output.format(name=str(key), value="")
+                    for i in range(0, len(bus_info[key])):
+                        if type(bus_info[key][i]) == dict:
+                            for elem_key in bus_info[key][i].keys():
+                                output += OutputTemplates.catalog_elem_output_nested_level_1.format(name=str(elem_key), value=bus_info[key][i][elem_key])
+                        else:
+                            output += OutputTemplates.catalog_elem_output_nested_level_1.format(name=str("->"), value=bus_info[key][i])
+                elif type(bus_info[key]) == dict:
+                    output += OutputTemplates.catalog_elem_output.format(name=str(key), value="")
+                    for elem_key in bus_info[key].keys():
+                            output += OutputTemplates.catalog_elem_output_nested_level_1.format(name=str(elem_key), value=bus_info[key][elem_key])
+                else:
+                    output += OutputTemplates.catalog_elem_output.format(name=str(key), value=bus_info[key])'''
+                if type(bus_info[key]) == list:
+                    output += OutputTemplates.catalog_elem_output.format(name=str(key), value="")
+                    output = process_complex_query_output(bus_info[key], output, nesting_level=6)
+                elif type(bus_info[key]) == dict:
+                    output += OutputTemplates.catalog_elem_output.format(name=str(key), value="")
+                    output = process_complex_query_output(bus_info[key], output, nesting_level=6)
+                else:
+                    output += OutputTemplates.catalog_elem_output.format(name=str(key), value=bus_info[key])
             output += "\n"
         return output
 
