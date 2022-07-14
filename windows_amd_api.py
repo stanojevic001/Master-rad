@@ -122,7 +122,7 @@ class WindowsAMD_API(CommonAPI):
             "Memory Type": strMemoryType,
             "Memory Bandwidth": iMemoryBandwidth,
             "Hyper Memory Size": iHyperMemorySize,
-            "InvisibleMemory Size": iInvisibleMemorySize,
+            "Invisible Memory Size": iInvisibleMemorySize,
             "Visible Memory Size": iVisibleMemorySize
         }
 

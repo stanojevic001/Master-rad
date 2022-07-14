@@ -33,13 +33,15 @@ def process_complex_query_output(object, output, nesting_level=4):
             output += OutputTemplates.catalog_complex_elem_variable_nesting.format(nesting=str(" " * nesting_level), name=str(key), value="")
             output = process_complex_query_output(object[key], output, nesting_level+4)
     elif type(object) == list:
-        ''' if len(object) > 0 and (type(object[0]) not in (dict, list)):
+        if len(object) > 0 and (type(object[0]) not in (dict, list)):
                 output += OutputTemplates.catalog_simple_elem_variable_nesting.format(nesting=str(" " * nesting_level), value=object)
         else:
             for i in range(0, len(object)):
-                output = process_complex_query_output(object[i], output, nesting_level)'''
+                output = process_complex_query_output(object[i], output, nesting_level)
+        '''
         for i in range(0, len(object)):
             output = process_complex_query_output(object[i], output, nesting_level)
+        '''
     else:
         output += OutputTemplates.catalog_simple_elem_variable_nesting.format(nesting=str(" " * nesting_level), value=object)
     

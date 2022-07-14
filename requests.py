@@ -7,10 +7,29 @@ class Request():
     def __init__(self, command) -> None:
         self.commandObj = command
     
-    def process_command_full(self) -> str:
+    def process_command_full(self, is_for_all_devices=True, specific_device_index=None) -> str:
         output = ""
+        device_count = self.commandObj.apiObject.get_number_of_devices()
+        output += OutputTemplates.catalog_console_device_num.format(device_num=device_count)
+        i = 0
+        for i in range(0, device_count):
+            handle = self.commandObj.apiObject.get_device_handle_by_index(i)
+            output += OutputTemplates.catalog_console_device.format(index=i)
 
-    def process_command_versions(self) -> str:
+            name = self.commandObj.apiObject.get_device_name_by_handle(handle)
+            if name is not None:
+                output += OutputTemplates.catalog_elem_output.format(name="Name", value=name)
+  
+            self.process_command_catalog()
+            self.process_command_versions()
+            self.process_command_memory()
+            self.process_command_clocks()
+            self.process_command_bus()
+            self.process_command_temperature()
+            output += "\n"
+        return output
+
+    def process_command_versions(self, is_for_all_devices=True, specific_device_index=None) -> str:
         output = ""
         device_count = self.commandObj.apiObject.get_number_of_devices()
         output += OutputTemplates.catalog_console_device_num.format(device_num=device_count)
@@ -50,7 +69,7 @@ class Request():
             output += "\n"
         return output
     
-    def process_command_catalog(self) -> str:
+    def process_command_catalog(self, is_for_all_devices=True, specific_device_index=None) -> str:
         output = ""
         device_count = self.commandObj.apiObject.get_number_of_devices()
         output += OutputTemplates.catalog_console_device_num.format(device_num=device_count)
@@ -90,7 +109,7 @@ class Request():
             output += "\n"
         return output
     
-    def process_command_temperature(self) -> str:
+    def process_command_temperature(self, is_for_all_devices=True, specific_device_index=None) -> str:
         output = ""
         device_count = self.commandObj.apiObject.get_number_of_devices()
         i = 0
@@ -114,7 +133,7 @@ class Request():
                 output += OutputTemplates.temperature_console_element.format(name=name, value=value)
         return output
 
-    def process_command_clocks(self) -> str:
+    def process_command_clocks(self, is_for_all_devices=True, specific_device_index=None) -> str:
         output = ""
         device_count = self.commandObj.apiObject.get_number_of_devices()
         output += OutputTemplates.catalog_console_device_num.format(device_num=device_count)
@@ -158,7 +177,7 @@ class Request():
             output += "\n"
         return output
     
-    def process_command_memory(self) -> str:
+    def process_command_memory(self, is_for_all_devices=True, specific_device_index=None) -> str:
         output = ""
         device_count = self.commandObj.apiObject.get_number_of_devices()
         output += OutputTemplates.catalog_console_device_num.format(device_num=device_count)
@@ -197,7 +216,7 @@ class Request():
             output += "\n"
         return output
 
-    def process_command_bus(self) -> str:
+    def process_command_bus(self, is_for_all_devices=True, specific_device_index=None) -> str:
         output = ""
         device_count = self.commandObj.apiObject.get_number_of_devices()
         output += OutputTemplates.catalog_console_device_num.format(device_num=device_count)
@@ -237,22 +256,22 @@ class Request():
             output += "\n"
         return output
 
-    def process_command_ecc(self) -> str:
+    def process_command_ecc(self, is_for_all_devices=True, specific_device_index=None) -> str:
         pass
 
-    def process_command_performance(self) -> str:
+    def process_command_performance(self, is_for_all_devices=True, specific_device_index=None) -> str:
         pass
 
-    def process_command_modes(self) -> str:
+    def process_command_modes(self, is_for_all_devices=True, specific_device_index=None) -> str:
         pass
     
 
-    def process_command_help(self) -> str:
+    def process_command_help(self, is_for_all_devices=True, specific_device_index=None) -> str:
         output = ""
         output += OutputTemplates.help_console_output
         return output
     
-    def process_command_processes(self) -> str:
+    def process_command_processes(self, is_for_all_devices=True, specific_device_index=None) -> str:
         pass
 
     def process_request(self) -> StatusCode:

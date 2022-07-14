@@ -7,14 +7,16 @@ class OutputTemplates:
   catalog_console_device = "\n\
   Device {index}:\n\
 "
+  #catalog_elem_output ="\
+  #{nesting}{name}: {value}\n"
   catalog_elem_output ="\
     {name}: {value}\n"
   
-  catalog_elem_output_nested_level_1 ="\
-      {name}: {value}\n"
+  #catalog_elem_output_nested_level_1 ="\
+  #    {name}: {value}\n"
   
-  catalog_elem_level_one_nesting = "\
-      {name}: {value}\n"
+  #catalog_elem_level_one_nesting = "\
+  #    {name}: {value}\n"
   
   catalog_complex_elem_variable_nesting = "\
   {nesting}{name}: {value}\n"
