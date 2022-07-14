@@ -19,7 +19,7 @@ class Request():
 
                 name = self.commandObj.apiObject.get_device_name_by_handle(handle)
                 if name is not None:
-                    output += OutputTemplates.catalog_elem_output.format(name="Name", value=name)
+                    output += OutputTemplates.catalog_elem_output.format(name="Name", value=name, nesting=str(" "*2))
 
                 #Add catalog header
                 output = self.add_catalog_info_output(handle, output)
@@ -48,7 +48,7 @@ class Request():
 
                 name = self.commandObj.apiObject.get_device_name_by_handle(handle)
                 if name is not None:
-                    output += OutputTemplates.catalog_elem_output.format(name="Name", value=name)        
+                    output += OutputTemplates.catalog_elem_output.format(name="Name", value=name, nesting=str(" "*2))        
                 
                 output = self.add_versions_info_output(handle, output)
         return output
@@ -65,7 +65,7 @@ class Request():
 
                 name = self.commandObj.apiObject.get_device_name_by_handle(handle)
                 if name is not None:
-                    output += OutputTemplates.catalog_elem_output.format(name="Name", value=name)        
+                    output += OutputTemplates.catalog_elem_output.format(name="Name", value=name, nesting=str(" "*2))        
                 
                 output = self.add_catalog_info_output(handle, output)
 
@@ -83,7 +83,7 @@ class Request():
 
                 name = self.commandObj.apiObject.get_device_name_by_handle(handle)
                 if name is not None:
-                    output += OutputTemplates.catalog_elem_output.format(name="Name", value=name)
+                    output += OutputTemplates.catalog_elem_output.format(name="Name", value=name, nesting=str(" "*2))
 
                 output = self.add_temperature_info_output(handle, output) 
                 
@@ -101,7 +101,7 @@ class Request():
 
                 name = self.commandObj.apiObject.get_device_name_by_handle(handle)
                 if name is not None:
-                    output += OutputTemplates.catalog_elem_output.format(name="Name", value=name)        
+                    output += OutputTemplates.catalog_elem_output.format(name="Name", value=name, nesting=str(" "*2))        
                 
                 output = self.add_clocks_info_output(handle, output)
         return output
@@ -118,7 +118,7 @@ class Request():
 
                 name = self.commandObj.apiObject.get_device_name_by_handle(handle)
                 if name is not None:
-                    output += OutputTemplates.catalog_elem_output.format(name="Name", value=name)        
+                    output += OutputTemplates.catalog_elem_output.format(name="Name", value=name, nesting=str(" "*2))        
 
                 output = self.add_memory_info_output(handle, output)
 
@@ -136,7 +136,7 @@ class Request():
 
                 name = self.commandObj.apiObject.get_device_name_by_handle(handle)
                 if name is not None:
-                    output += OutputTemplates.catalog_elem_output.format(name="Name", value=name) 
+                    output += OutputTemplates.catalog_elem_output.format(name="Name", value=name, nesting=str(" "*2)) 
     
                 output = self.add_bus_info_output(handle, output)
 
@@ -162,6 +162,7 @@ class Request():
 
     def add_versions_info_output(self, handle, output) -> str:
         versions_info: dict = self.commandObj.apiObject.get_device_versions_info(handle)
+        output += OutputTemplates.catalog_elem_output.format(name="Versions info", value="", nesting=str(" "*2))
         for key in versions_info.keys():
             '''if type(versions_info[key]) == list:
                 output += OutputTemplates.catalog_elem_output.format(name=str(key), value="")
@@ -178,18 +179,19 @@ class Request():
             else:
                 output += OutputTemplates.catalog_elem_output.format(name=str(key), value=versions_info[key])'''
             if type(versions_info[key]) == list:
-                output += OutputTemplates.catalog_elem_output.format(name=str(key), value="")
+                output += OutputTemplates.catalog_elem_output.format(name=str(key), value="", nesting=str(" "*4))
                 output = process_complex_query_output(versions_info[key], output, nesting_level=6)
             elif type(versions_info[key]) == dict:
-                output += OutputTemplates.catalog_elem_output.format(name=str(key), value="")
+                output += OutputTemplates.catalog_elem_output.format(name=str(key), value="", nesting=str(" "*4))
                 output = process_complex_query_output(versions_info[key], output, nesting_level=6)
             else:
-                output += OutputTemplates.catalog_elem_output.format(name=str(key), value=versions_info[key])
+                output += OutputTemplates.catalog_elem_output.format(name=str(key), value=versions_info[key], nesting=str(" "*4))
         output += "\n"
         return output
 
     def add_catalog_info_output(self, handle, output) -> str:
         catalog_info: dict = self.commandObj.apiObject.get_device_catalog_info(handle)
+        output += OutputTemplates.catalog_elem_output.format(name="Catalog info", value="", nesting=str(" "*2))
         for key in catalog_info.keys():
             '''if type(catalog_info[key]) == list:
                 output += OutputTemplates.catalog_elem_output.format(name=str(key), value="")
@@ -206,20 +208,20 @@ class Request():
             else:
                 output += OutputTemplates.catalog_elem_output.format(name=str(key), value=catalog_info[key])'''
             if type(catalog_info[key]) == list:
-                output += OutputTemplates.catalog_elem_output.format(name=str(key), value="")
+                output += OutputTemplates.catalog_elem_output.format(name=str(key), value="", nesting=str(" "*4))
                 output = process_complex_query_output(catalog_info[key], output, nesting_level=6)
             elif type(catalog_info[key]) == dict:
-                output += OutputTemplates.catalog_elem_output.format(name=str(key), value="")
+                output += OutputTemplates.catalog_elem_output.format(name=str(key), value="", nesting=str(" "*4))
                 output = process_complex_query_output(catalog_info[key], output, nesting_level=6)
             else:
-                output += OutputTemplates.catalog_elem_output.format(name=str(key), value=catalog_info[key])
+                output += OutputTemplates.catalog_elem_output.format(name=str(key), value=catalog_info[key], nesting=str(" "*4))
         output += "\n"
         return output
 
     def add_temperature_info_output(self, handle, output) -> str:
         temperature_info = self.commandObj.apiObject.get_device_temperature_info(handle)
-        output += OutputTemplates.temperature_console_readings_title
-        if temperature_info is None:
+        output += OutputTemplates.catalog_elem_output.format(name="Temperature info", value="", nesting=str(" "*2))
+        '''if temperature_info is None:
             return StatusCode.NOT_SUPPORTED_FEATURE
         for j in range(0, len(temperature_info["temp_readings_values"])):
             name = temperature_info["temp_readings_sensor_types"][j]
@@ -231,11 +233,22 @@ class Request():
             name = temperature_info["temp_thresholds_types"][k]
             value = temperature_info["temp_thresholds_values"][k]
             output += OutputTemplates.temperature_console_element.format(name=name, value=value)
-
+        '''
+        for key in temperature_info.keys():
+            if type(temperature_info[key]) == list:
+                output += OutputTemplates.catalog_elem_output.format(name=str(key), value="", nesting=str(" "*4))
+                output = process_complex_query_output(temperature_info[key], output, nesting_level=6)
+            elif type(temperature_info[key]) == dict:
+                output += OutputTemplates.catalog_elem_output.format(name=str(key), value="", nesting=str(" "*4))
+                output = process_complex_query_output(temperature_info[key], output, nesting_level=6)
+            else:
+                output += OutputTemplates.catalog_elem_output.format(name=str(key), value=temperature_info[key], nesting=str(" "*4))
+        output += "\n"
         return output
 
     def add_clocks_info_output(self, handle, output) -> str:
         clocks_info: dict = self.commandObj.apiObject.get_device_clocks_info(handle)
+        output += OutputTemplates.catalog_elem_output.format(name="Clocks info", value="", nesting=str(" "*2))
         for key in clocks_info.keys():
             '''
             if type(clocks_info[key]) == list:
@@ -256,18 +269,19 @@ class Request():
                 output += OutputTemplates.catalog_elem_output.format(name=str(key), value=clocks_info[key])
             '''
             if type(clocks_info[key]) == list:
-                output += OutputTemplates.catalog_elem_output.format(name=str(key), value="")
+                output += OutputTemplates.catalog_elem_output.format(name=str(key), value="", nesting=str(" "*4))
                 output = process_complex_query_output(clocks_info[key], output, nesting_level=6)
             elif type(clocks_info[key]) == dict:
-                output += OutputTemplates.catalog_elem_output.format(name=str(key), value="")
+                output += OutputTemplates.catalog_elem_output.format(name=str(key), value="", nesting=str(" "*4))
                 output = process_complex_query_output(clocks_info[key], output, nesting_level=6)
             else:
-                output += OutputTemplates.catalog_elem_output.format(name=str(key), value=clocks_info[key])
+                output += OutputTemplates.catalog_elem_output.format(name=str(key), value=clocks_info[key], nesting=str(" "*4))
         output += "\n"
         return output
 
     def add_memory_info_output(self, handle, output) -> str:
         memory_info: dict = self.commandObj.apiObject.get_device_memory_info(handle)
+        output += OutputTemplates.catalog_elem_output.format(name="Memory info", value="", nesting=str(" "*2))
         for key in memory_info.keys():
             '''if type(memory_info[key]) == list:
                 output += OutputTemplates.catalog_elem_output.format(name=str(key), value="")
@@ -284,18 +298,19 @@ class Request():
             else:
                 output += OutputTemplates.catalog_elem_output.format(name=str(key), value=memory_info[key])'''
             if type(memory_info[key]) == list:
-                output += OutputTemplates.catalog_elem_output.format(name=str(key), value="")
+                output += OutputTemplates.catalog_elem_output.format(name=str(key), value="", nesting=str(" "*4))
                 output = process_complex_query_output(memory_info[key], output, nesting_level=6)
             elif type(memory_info[key]) == dict:
-                output += OutputTemplates.catalog_elem_output.format(name=str(key), value="")
+                output += OutputTemplates.catalog_elem_output.format(name=str(key), value="", nesting=str(" "*4))
                 output = process_complex_query_output(memory_info[key], output, nesting_level=6)
             else:
-                output += OutputTemplates.catalog_elem_output.format(name=str(key), value=memory_info[key])
+                output += OutputTemplates.catalog_elem_output.format(name=str(key), value=memory_info[key], nesting=str(" "*4))
         output += "\n"
         return output
 
     def add_bus_info_output(self, handle, output) -> str:
         bus_info: dict = self.commandObj.apiObject.get_device_bus_info(handle)
+        output += OutputTemplates.catalog_elem_output.format(name="Bus info", value="", nesting=str(" "*2))
         for key in bus_info.keys():
             '''if type(bus_info[key]) == list:
                 output += OutputTemplates.catalog_elem_output.format(name=str(key), value="")
@@ -312,13 +327,13 @@ class Request():
             else:
                 output += OutputTemplates.catalog_elem_output.format(name=str(key), value=bus_info[key])'''
             if type(bus_info[key]) == list:
-                output += OutputTemplates.catalog_elem_output.format(name=str(key), value="")
+                output += OutputTemplates.catalog_elem_output.format(name=str(key), value="", nesting=str(" "*4))
                 output = process_complex_query_output(bus_info[key], output, nesting_level=6)
             elif type(bus_info[key]) == dict:
-                output += OutputTemplates.catalog_elem_output.format(name=str(key), value="")
+                output += OutputTemplates.catalog_elem_output.format(name=str(key), value="", nesting=str(" "*4))
                 output = process_complex_query_output(bus_info[key], output, nesting_level=6)
             else:
-                output += OutputTemplates.catalog_elem_output.format(name=str(key), value=bus_info[key])
+                output += OutputTemplates.catalog_elem_output.format(name=str(key), value=bus_info[key], nesting=str(" "*4))
         output += "\n"
         return output
 

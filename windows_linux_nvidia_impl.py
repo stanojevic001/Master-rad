@@ -62,6 +62,20 @@ class nvmlPcieLinkMaxSpeed_t(enum.IntEnum):
     NVML_PCIE_LINK_MAX_SPEED_16000MBPS = 0x00000004
     NVML_PCIE_LINK_MAX_SPEED_32000MBPS = 0x00000005
 
+class nvmlTemperatureSensors_t(enum.IntEnum):
+    NVML_TEMPERATURE_GPU     = 0
+    NVML_TEMPERATURE_COUNT   = 1
+
+class nvmlTemperatureThresholds_t(enum.IntEnum):
+    NVML_TEMPERATURE_THRESHOLD_SHUTDOWN      = 0
+    NVML_TEMPERATURE_THRESHOLD_SLOWDOWN      = 1
+    NVML_TEMPERATURE_THRESHOLD_MEM_MAX       = 2
+    NVML_TEMPERATURE_THRESHOLD_GPU_MAX       = 3
+    NVML_TEMPERATURE_THRESHOLD_ACOUSTIC_MIN  = 4
+    NVML_TEMPERATURE_THRESHOLD_ACOUSTIC_CURR = 5
+    NVML_TEMPERATURE_THRESHOLD_ACOUSTIC_MAX  = 6
+    NVML_TEMPERATURE_THRESHOLD_COUNT         = 7
+
 class WindowsLinux_NVIDIA_API(CommonAPI):
     error_dict = None
     pynvml_lib = None
@@ -95,11 +109,12 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
     
     def get_device_temperature_info(self, handle) -> Any:
         try:
+            '''
             temp_readings_count = self.pynvml_lib.NVML_TEMPERATURE_COUNT
             temp_thresholds_count = self.pynvml_lib.NVML_TEMPERATURE_THRESHOLD_COUNT
             temp_readings = []
             temp_thresholds = []
-
+            
             for i in range(0,temp_readings_count):
                 try:
                     reading = self.pynvml_lib.nvmlDeviceGetTemperature(handle, i)
@@ -119,12 +134,42 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
                     if error_code in (self.pynvml_lib.NVML_ERROR_NOT_SUPPORTED, self.pynvml_lib.NVML_ERROR_INVALID_ARGUMENT):
                         temp_thresholds.append("Not supported")
                         continue
+            '''
+            temp_readings_sensors = list()
+            for temp_readings_sensor_type_key, temp_readings_sensor_type_enum in nvmlTemperatureSensors_t.__members__.items():
+                if temp_readings_sensor_type_key == "NVML_TEMPERATURE_COUNT":
+                    continue
+                temp_reading = temp_readings_sensor_type_enum
+                try:
+                    temp_reading_value = self.pynvml_lib.nvmlDeviceGetTemperature(handle, temp_reading.value)
+                    temp_readings_sensors.append({
+                        nvmlTemperatureSensors_t(temp_reading).name.replace("NVML_TEMPERATURE_", ""): temp_reading_value
+                    })
+                except Exception as e:
+                    temp_reading_value = "Not supported"
+                    temp_readings_sensors.append({
+                        nvmlTemperatureSensors_t(temp_reading).name.replace("NVML_TEMPERATURE_", "").replace("_", " "): temp_reading_value
+                    })
+
+            temp_readings_thresholds = list()
+            for temp_readings_threshold_type_key, temp_readings_threshold_type_enum in nvmlTemperatureThresholds_t.__members__.items():
+                if temp_readings_threshold_type_key == "NVML_TEMPERATURE_THRESHOLD_COUNT":
+                    continue
+                temp_reading_threshold = temp_readings_threshold_type_enum
+                try:
+                    temp_reading_threshold_value = self.pynvml_lib.nvmlDeviceGetTemperatureThreshold(handle, temp_reading_threshold.value)
+                    temp_readings_thresholds.append({
+                        nvmlTemperatureThresholds_t(temp_reading_threshold).name.replace("NVML_TEMPERATURE_THRESHOLD_", "").replace("_"," "): temp_reading_threshold_value
+                    })
+                except Exception as e:
+                    temp_reading_threshold_value = "Not supported"
+                    temp_readings_thresholds.append({
+                        nvmlTemperatureThresholds_t(temp_reading_threshold).name.replace("NVML_TEMPERATURE_THRESHOLD_", "").replace("_"," "): temp_reading_threshold_value
+                    })
 
             return {
-                "temp_readings_sensor_types": ["GPU"],
-                "temp_readings_values": temp_readings,
-                "temp_thresholds_types": ["Shutdown", "Slowdown", "Mem Max", "GPU Max", "Acoustic Min", "Acoustic Curr", "Acoustic Max"],
-                "temp_thresholds_values": temp_thresholds
+                "Temperature readings from sensors (Celsius)": temp_readings_sensors,
+                "Temperature thresholds by type (Celsius)": temp_readings_thresholds
             }
         except self.pynvml_lib.NVMLError as e:
             error_code = e.args[0]

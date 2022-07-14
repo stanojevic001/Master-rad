@@ -10,7 +10,7 @@ class OutputTemplates:
   #catalog_elem_output ="\
   #{nesting}{name}: {value}\n"
   catalog_elem_output ="\
-    {name}: {value}\n"
+  {nesting}{name}: {value}\n"
   
   #catalog_elem_output_nested_level_1 ="\
   #    {name}: {value}\n"
