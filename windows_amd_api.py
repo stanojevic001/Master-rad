@@ -29,7 +29,7 @@ class WindowsAMD_API(CommonAPI):
         return ""
 
     def get_device_temperature_info(self, handle) -> Any:
-        return ""
+        return "Not supported"
     
     def get_device_catalog_info(self, handle) -> Any:
         device_index = ctypes.c_int(handle)
@@ -38,7 +38,7 @@ class WindowsAMD_API(CommonAPI):
         #numAdapters = ctypes.c_int()
         #lppAdapterInfoX2 = ctypes.POINTER(AdapterInfoX2)()
         #status = self.adl_clib.functions["adl_get_device_adapter_info"](device_index, ctypes.byref(numAdapters), ctypes.byref(lppAdapterInfoX2))
-        #if status not in (self.adl_clib.ADL_OK, self.adl_clib.ADL_OK_WARNING):
+        #if status not in (0, 1):
         #    lppAdapterInfoX2 = "Not supported"
         #else:
         #    pass

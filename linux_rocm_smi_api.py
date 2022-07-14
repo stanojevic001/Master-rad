@@ -29,7 +29,7 @@ class Linux_ROCm_SMI_Wrapper(CommonAPI):
         return index
 
     def get_device_temperature_info(self, handle) -> Any:
-        return ""
+        return "Not supported"
     
     def get_device_clocks_info(self, handle) -> Any:
         device_index = ctypes.c_uint32(handle)

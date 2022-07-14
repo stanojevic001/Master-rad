@@ -22,17 +22,41 @@ class Request():
                     output += OutputTemplates.catalog_elem_output.format(name="Name", value=name, nesting=str(" "*2))
 
                 #Add catalog header
-                output = self.add_catalog_info_output(handle, output)
+                result = self.add_catalog_info_output(handle, output)
+                if result == "Not supported":
+                    pass
+                else:
+                    output = result
                 #Add versions header
-                output = self.add_versions_info_output(handle, output)
+                result = self.add_versions_info_output(handle, output)
+                if result == "Not supported":
+                    pass
+                else:
+                    output = result
                 #Add bus header
-                output = self.add_bus_info_output(handle, output)
+                result = self.add_bus_info_output(handle, output)
+                if result == "Not supported":
+                    pass
+                else:
+                    output = result
                 #Add memory header
-                output = self.add_memory_info_output(handle, output)
+                result = self.add_memory_info_output(handle, output)
+                if result == "Not supported":
+                    pass
+                else:
+                    output = result
                 #Add clocks header
-                output = self.add_clocks_info_output(handle, output)
+                result = self.add_clocks_info_output(handle, output)
+                if result == "Not supported":
+                    pass
+                else:
+                    output = result
                 #Add temperature header
-                output = self.add_temperature_info_output(handle, output)
+                result = self.add_temperature_info_output(handle, output)
+                if result == "Not supported":
+                    pass
+                else:
+                    output = result
 
         return output
 
@@ -50,7 +74,12 @@ class Request():
                 if name is not None:
                     output += OutputTemplates.catalog_elem_output.format(name="Name", value=name, nesting=str(" "*2))        
                 
-                output = self.add_versions_info_output(handle, output)
+                result = self.add_versions_info_output(handle, output)
+                if result == "Not supported":
+                    output += OutputTemplates.catalog_elem_output.format(name="Versions info", value="Not supported", nesting=str(" "*2))
+                else:
+                    output = result
+
         return output
     
     def process_command_catalog(self, specific_device_index=None) -> str:
@@ -67,7 +96,11 @@ class Request():
                 if name is not None:
                     output += OutputTemplates.catalog_elem_output.format(name="Name", value=name, nesting=str(" "*2))        
                 
-                output = self.add_catalog_info_output(handle, output)
+                result = self.add_catalog_info_output(handle, output)
+                if result == "Not supported":
+                    output += OutputTemplates.catalog_elem_output.format(name="Catalog info", value="Not supported", nesting=str(" "*2))
+                else:
+                    output = result
 
         return output
     
@@ -85,8 +118,12 @@ class Request():
                 if name is not None:
                     output += OutputTemplates.catalog_elem_output.format(name="Name", value=name, nesting=str(" "*2))
 
-                output = self.add_temperature_info_output(handle, output) 
-                
+                result = self.add_temperature_info_output(handle, output) 
+                if result == "Not supported":
+                    output += OutputTemplates.catalog_elem_output.format(name="Temperature info", value="Not supported", nesting=str(" "*2))
+                else:
+                    output = result
+
         return output
 
     def process_command_clocks(self, specific_device_index=None) -> str:
@@ -103,7 +140,12 @@ class Request():
                 if name is not None:
                     output += OutputTemplates.catalog_elem_output.format(name="Name", value=name, nesting=str(" "*2))        
                 
-                output = self.add_clocks_info_output(handle, output)
+                result = self.add_clocks_info_output(handle, output)
+                if result == "Not supported":
+                    output += OutputTemplates.catalog_elem_output.format(name="Clocks info", value="Not supported", nesting=str(" "*2))
+                else:
+                    output = result
+
         return output
     
     def process_command_memory(self, specific_device_index=None) -> str:
@@ -120,7 +162,11 @@ class Request():
                 if name is not None:
                     output += OutputTemplates.catalog_elem_output.format(name="Name", value=name, nesting=str(" "*2))        
 
-                output = self.add_memory_info_output(handle, output)
+                result = self.add_memory_info_output(handle, output)
+                if result == "Not supported":
+                    output += OutputTemplates.catalog_elem_output.format(name="Memory info", value="Not supported", nesting=str(" "*2))
+                else:
+                    output = result
 
         return output
 
@@ -138,7 +184,11 @@ class Request():
                 if name is not None:
                     output += OutputTemplates.catalog_elem_output.format(name="Name", value=name, nesting=str(" "*2)) 
     
-                output = self.add_bus_info_output(handle, output)
+                result = self.add_bus_info_output(handle, output)
+                if result == "Not supported":
+                    output += OutputTemplates.catalog_elem_output.format(name="Bus info", value="Not supported", nesting=str(" "*2))
+                else:
+                    output = result
 
         return output
 
@@ -162,6 +212,8 @@ class Request():
 
     def add_versions_info_output(self, handle, output) -> str:
         versions_info: dict = self.commandObj.apiObject.get_device_versions_info(handle)
+        if versions_info == "Not supported":
+            return "Not supported"
         output += OutputTemplates.catalog_elem_output.format(name="Versions info", value="", nesting=str(" "*2))
         for key in versions_info.keys():
             '''if type(versions_info[key]) == list:
@@ -191,6 +243,8 @@ class Request():
 
     def add_catalog_info_output(self, handle, output) -> str:
         catalog_info: dict = self.commandObj.apiObject.get_device_catalog_info(handle)
+        if catalog_info == "Not supported":
+            return "Not supported"
         output += OutputTemplates.catalog_elem_output.format(name="Catalog info", value="", nesting=str(" "*2))
         for key in catalog_info.keys():
             '''if type(catalog_info[key]) == list:
@@ -220,6 +274,8 @@ class Request():
 
     def add_temperature_info_output(self, handle, output) -> str:
         temperature_info = self.commandObj.apiObject.get_device_temperature_info(handle)
+        if temperature_info == "Not supported":
+            return "Not supported"
         output += OutputTemplates.catalog_elem_output.format(name="Temperature info", value="", nesting=str(" "*2))
         '''if temperature_info is None:
             return StatusCode.NOT_SUPPORTED_FEATURE
@@ -248,6 +304,8 @@ class Request():
 
     def add_clocks_info_output(self, handle, output) -> str:
         clocks_info: dict = self.commandObj.apiObject.get_device_clocks_info(handle)
+        if clocks_info == "Not supported":
+            return "Not supported"
         output += OutputTemplates.catalog_elem_output.format(name="Clocks info", value="", nesting=str(" "*2))
         for key in clocks_info.keys():
             '''
@@ -281,6 +339,8 @@ class Request():
 
     def add_memory_info_output(self, handle, output) -> str:
         memory_info: dict = self.commandObj.apiObject.get_device_memory_info(handle)
+        if memory_info == "Not supported":
+            return "Not supported"
         output += OutputTemplates.catalog_elem_output.format(name="Memory info", value="", nesting=str(" "*2))
         for key in memory_info.keys():
             '''if type(memory_info[key]) == list:
@@ -310,6 +370,8 @@ class Request():
 
     def add_bus_info_output(self, handle, output) -> str:
         bus_info: dict = self.commandObj.apiObject.get_device_bus_info(handle)
+        if bus_info == "Not supported":
+            return "Not supported"
         output += OutputTemplates.catalog_elem_output.format(name="Bus info", value="", nesting=str(" "*2))
         for key in bus_info.keys():
             '''if type(bus_info[key]) == list:
