@@ -438,8 +438,6 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
                 pcie_replay_counter = self.pynvml_lib.nvmlDeviceGetPcieReplayCounter(handle)
             except Exception as e:
                 curr_pcie_link_width = "Not supported"
-            
-            print(pci_info)
 
             result = {
                 "Current PCIe Link Generation": curr_pcie_link_gen,
