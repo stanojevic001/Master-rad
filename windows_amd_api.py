@@ -2,7 +2,7 @@ import ctypes
 from typing import Any
 from common_api import CommonAPI, StatusCode
 from ctypes import *
-from windows_amd_bindings import ADLBiosInfo, ADLChipSetInfo, ADLMemoryInfo2, AdapterInfoX2, Ctypes_ADL as cadl_win, ADLVersionsInfo, DetailedAsicTypes
+from windows_amd_bindings import ADL_BusType, ADLBiosInfo, ADLChipSetInfo, ADLMemoryInfo2, AdapterInfoX2, Ctypes_ADL as cadl_win, ADLVersionsInfo, DetailedAsicTypes
 from utils import bytes_to_megabytes
 class WindowsAMD_API(CommonAPI):
 
@@ -209,12 +209,12 @@ class WindowsAMD_API(CommonAPI):
             dedicated_vram_usage_in_MB = dedicated_vram_usage_in_MB.value
 
         return {
-            "Memory Size": memorySize,
+            "Memory Size (MB)": memorySize,
             "Memory Type": strMemoryType,
-            "Memory Bandwidth": iMemoryBandwidth,
-            "Hyper Memory Size": iHyperMemorySize,
-            "Invisible Memory Size": iInvisibleMemorySize,
-            "Visible Memory Size": iVisibleMemorySize,
+            "Memory Bandwidth (MB/s)": iMemoryBandwidth,
+            "Hyper Memory Size (MB)": iHyperMemorySize,
+            "Invisible Memory Size (MB)": iInvisibleMemorySize,
+            "Visible Memory Size (MB)": iVisibleMemorySize,
             "Video RAM (VRAM) Usage (MB)": vram_usage_in_MB,
             "Dedicated Video RAM (VRAM) Usage (MB)": dedicated_vram_usage_in_MB
         }
@@ -277,12 +277,14 @@ class WindowsAMD_API(CommonAPI):
             lpChipSetInfo_iSupportedAGPSpeeds = "Not supported"
             lpChipSetInfo_CurrentAGPSpeed = "Not supported"
         else:
-            lpChipSetInfo_busType = lpChipSetInfo.iBusType
-            lpChipSetInfo_BusSpeedType = lpChipSetInfo.iBusSpeedType
+            lpChipSetInfo_busType = ADL_BusType(lpChipSetInfo.iBusType).name.replace("ADL_BUSTYPE_", "").replace("_", " ")
+            lpChipSetInfo_BusSpeedType = ADL_BusType(lpChipSetInfo.iBusSpeedType).name.replace("ADL_BUSTYPE_", "").replace("_", " ")
             lpChipSetInfo_MaxPCIELaneWidth = lpChipSetInfo.iMaxPCIELaneWidth
             lpChipSetInfo_CurrentPCIELaneWidth = lpChipSetInfo.iCurrentPCIELaneWidth
-            lpChipSetInfo_iSupportedAGPSpeeds = lpChipSetInfo.iSupportedAGPSpeeds
-            lpChipSetInfo_CurrentAGPSpeed = lpChipSetInfo.iCurrentAGPSpeed
+            lpChipSetInfo_iSupportedAGPSpeeds = "Current bus type not AGP" if ADL_BusType(lpChipSetInfo.iBusType) != ADL_BusType.ADL_BUSTYPE_AGP \
+                                                                            else lpChipSetInfo.iSupportedAGPSpeeds
+            lpChipSetInfo_CurrentAGPSpeed = "Current bus type not AGP" if ADL_BusType(lpChipSetInfo.iBusType) != ADL_BusType.ADL_BUSTYPE_AGP \
+                                                                            else lpChipSetInfo.iCurrentAGPSpeed
 
         numOfAdapters = self.get_number_of_devices()
         adapterInfoX2_object = (AdapterInfoX2 * numOfAdapters)()
@@ -301,13 +303,13 @@ class WindowsAMD_API(CommonAPI):
             iFunctionNumber = adapterInfoX2_object[device_index.value].iFunctionNumber
 
         return {
-            "PCI Bus Number": "{0:#0{1}x}".format(iBusNumber, 4),
-            "PCI Device Number": "{0:#0{1}x}".format(iDeviceNumber, 4),
-            "PCI Function Number": "{0:#0{1}x}".format(iFunctionNumber, 3),
+            "Bus Number": "{0:#0{1}x}".format(iBusNumber, 4),
+            "Device Number": "{0:#0{1}x}".format(iDeviceNumber, 4),
+            "Function Number": "{0:#0{1}x}".format(iFunctionNumber, 3),
             "Bus type": lpChipSetInfo_busType,
-            "Bus speed type": lpChipSetInfo_BusSpeedType,
-            "Max PCIe Lane Width": lpChipSetInfo_MaxPCIELaneWidth,
-            "Current PCIe Lane Width": lpChipSetInfo_CurrentPCIELaneWidth,
+            "Max bus speed type": lpChipSetInfo_BusSpeedType,
+            "Max PCIe Lane Width (Lanes)": lpChipSetInfo_MaxPCIELaneWidth,
+            "Current PCIe Lane Width (Lanes)": lpChipSetInfo_CurrentPCIELaneWidth,
             "Supported AGP speeds": lpChipSetInfo_iSupportedAGPSpeeds,
             "Current AGP Speed": lpChipSetInfo_CurrentAGPSpeed
         }

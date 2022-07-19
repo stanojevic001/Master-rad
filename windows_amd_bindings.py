@@ -68,6 +68,14 @@ class DetailedAsicTypes(enum.IntEnum):
     ADL_ASIC_EMBEDDED      = (1 << 7)
     ADL_ASIC_FIREGL = ADL_ASIC_WORKSTATION
 
+class ADL_BusType(enum.IntEnum):
+    ADL_BUSTYPE_PCI          = 0       # PCI bus                          
+    ADL_BUSTYPE_AGP          = 1       # AGP bus                  
+    ADL_BUSTYPE_PCIE         = 2       # PCI Express bus       
+    ADL_BUSTYPE_PCIE_GEN2    = 3       # PCI Express 2nd generation bus
+    ADL_BUSTYPE_PCIE_GEN3    = 4       # PCI Express 3rd generation bus
+    ADL_BUSTYPE_PCIE_GEN4    = 5       # PCI Express 4th generation bus
+
 class Ctypes_ADL():
     adl_lib = None
     functions = {
