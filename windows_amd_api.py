@@ -34,13 +34,62 @@ class WindowsAMD_API(CommonAPI):
     def get_device_catalog_info(self, handle) -> Any:
         device_index = ctypes.c_int(handle)
 
-        
-        #lppAdapterInfoX2 = (AdapterInfoX2 * 100)()
-        #status = self.adl_clib.functions["adl_get_device_adapter_info"](device_index, ctypes.byref(lppAdapterInfoX2))
-        #if status not in (0, 1):
-        #    lppAdapterInfoX2 = "Not supported"
-        #else:
-        #    pass
+        numOfAdapters = self.get_number_of_devices()
+        adapterInfoX2_object = (AdapterInfoX2 * numOfAdapters)()
+        status = self.adl_clib.functions["adl_get_device_adapter_info"](adapterInfoX2_object, numOfAdapters)
+        iSize = None
+        iAdapterIndex = None
+        strUDID = None
+        iBusNumber = None
+        iDeviceNumber =  None
+        iFunctionNumber = None
+        iVendorID = None
+        strAdapterName = None
+        strDisplayName = None
+        iPresent = None
+        iExist =  None
+        strDriverPath = None
+        strDriverPathExt = None
+        strPNPString = None
+        iOSDisplayIndex = None
+        iInfoMask = None
+        iInfoValue = None
+        if status not in (0, 1):
+            iSize = "Not supported"
+            iAdapterIndex = "Not supported"
+            strUDID = "Not supported"
+            iBusNumber = "Not supported"
+            iDeviceNumber =  "Not supported"
+            iFunctionNumber = "Not supported"
+            iVendorID = "Not supported"
+            strAdapterName = "Not supported"
+            strDisplayName = "Not supported"
+            iPresent = "Not supported"
+            iExist =  "Not supported"
+            strDriverPath = "Not supported"
+            strDriverPathExt = "Not supported"
+            strPNPString = "Not supported"
+            iOSDisplayIndex = "Not supported"
+            iInfoMask = "Not supported"
+            iInfoValue = "Not supported"
+        else:
+            iSize = adapterInfoX2_object[device_index.value].iSize
+            iAdapterIndex = adapterInfoX2_object[device_index.value].iAdapterIndex
+            strUDID = adapterInfoX2_object[device_index.value].strUDID
+            iBusNumber = adapterInfoX2_object[device_index.value].iBusNumber
+            iDeviceNumber =  adapterInfoX2_object[device_index.value].iDeviceNumber
+            iFunctionNumber = adapterInfoX2_object[device_index.value].iFunctionNumber
+            iVendorID = adapterInfoX2_object[device_index.value].iVendorID
+            strAdapterName = adapterInfoX2_object[device_index.value].strAdapterName
+            strDisplayName = adapterInfoX2_object[device_index.value].strDisplayName
+            iPresent = adapterInfoX2_object[device_index.value].iPresent
+            iExist =  adapterInfoX2_object[device_index.value].iExist
+            strDriverPath = adapterInfoX2_object[device_index.value].strDriverPath
+            strDriverPathExt = adapterInfoX2_object[device_index.value].strDriverPathExt
+            strPNPString = adapterInfoX2_object[device_index.value].strPNPString
+            iOSDisplayIndex = adapterInfoX2_object[device_index.value].iOSDisplayIndex
+            iInfoMask = adapterInfoX2_object[device_index.value].iInfoMask
+            iInfoValue = adapterInfoX2_object[device_index.value].iInfoValue
 
         device_id = ctypes.c_int()
         status = self.adl_clib.functions["adl_get_device_id"](device_index, ctypes.byref(device_id))
@@ -96,6 +145,23 @@ class WindowsAMD_API(CommonAPI):
                 is_active_status = "Yes"
         
         return {
+            "iSize": iSize,
+            "iAdapterIndex": iAdapterIndex,
+            "strUDID": strUDID,
+            "iBusNumber": iBusNumber,
+            "iDeviceNumber": iDeviceNumber,
+            "iFunctionNumber": iFunctionNumber,
+            "iVendorID": iVendorID,
+            "strAdapterName": strAdapterName,
+            "strDisplayName": strDisplayName,
+            "iPresent": iPresent,
+            "iExist": iExist,
+            "strDriverPath": strDriverPath,
+            "strDriverPathExt": strDriverPathExt,
+            "strPNPString": strPNPString,
+            "iOSDisplayIndex": iOSDisplayIndex,
+            "iInfoMask":iInfoMask,
+            "iInfoValue": iInfoValue,
             "Device ID": device_id,
             "LP ASIC types": lpAsicTypes,
             "LP Valids": lpValids,
@@ -136,6 +202,13 @@ class WindowsAMD_API(CommonAPI):
         else:
             vram_usage_in_MB = vram_usage_in_MB.value
 
+        dedicated_vram_usage_in_MB = ctypes.c_int()
+        status = self.adl_clib.functions["adl_get_device_dedicated_vram_usage_info"](device_index, ctypes.byref(dedicated_vram_usage_in_MB))
+        if status not in (0, 1):
+            dedicated_vram_usage_in_MB = "Not supported"
+        else:
+            dedicated_vram_usage_in_MB = dedicated_vram_usage_in_MB.value
+
         return {
             "Memory Size": memorySize,
             "Memory Type": strMemoryType,
@@ -143,7 +216,8 @@ class WindowsAMD_API(CommonAPI):
             "Hyper Memory Size": iHyperMemorySize,
             "Invisible Memory Size": iInvisibleMemorySize,
             "Visible Memory Size": iVisibleMemorySize,
-            "Video RAM (VRAM) Usage (MB)": vram_usage_in_MB
+            "Video RAM (VRAM) Usage (MB)": vram_usage_in_MB,
+            "Dedicated Video RAM (VRAM) Usage (MB)": dedicated_vram_usage_in_MB
         }
 
     def get_device_clocks_info(self, handle) -> Any:

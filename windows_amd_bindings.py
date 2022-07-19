@@ -73,7 +73,8 @@ class Ctypes_ADL():
         "adl_get_primary_display_adapter_index": None,
         "adl_get_device_is_active_status": None,
         "adl_get_device_is_accessible_status": None,
-        "adl_get_device_vram_usage_info": None
+        "adl_get_device_vram_usage_info": None,
+        "adl_get_device_dedicated_vram_usage_info": None
     }
 
     def __init__(self) -> None:
@@ -95,7 +96,7 @@ class Ctypes_ADL():
         self.adl_lib.get_number_of_devices.restype = ctypes.c_int
         self.functions["adl_get_number_of_devices"] = self.adl_lib.get_number_of_devices
 
-        self.adl_lib.get_device_adapter_info.argtypes = [ctypes.c_int, ctypes.POINTER(AdapterInfoX2 * 100)]
+        self.adl_lib.get_device_adapter_info.argtypes = [ctypes.POINTER(AdapterInfoX2), ctypes.c_int]
         self.adl_lib.get_device_adapter_info.restype = ctypes.c_int
         self.functions["adl_get_device_adapter_info"] = self.adl_lib.get_device_adapter_info
 
@@ -138,4 +139,8 @@ class Ctypes_ADL():
         self.adl_lib.get_device_vram_usage_info.argtypes = [ctypes.c_int, ctypes.POINTER(ctypes.c_int)]
         self.adl_lib.get_device_vram_usage_info.restype = ctypes.c_int
         self.functions["adl_get_device_vram_usage_info"] = self.adl_lib.get_device_vram_usage_info
+
+        self.adl_lib.get_device_dedicated_vram_usage_info.argtypes = [ctypes.c_int, ctypes.POINTER(ctypes.c_int)]
+        self.adl_lib.get_device_dedicated_vram_usage_info.restype = ctypes.c_int
+        self.functions["adl_get_device_dedicated_vram_usage_info"] = self.adl_lib.get_device_dedicated_vram_usage_info
 
