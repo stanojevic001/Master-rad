@@ -1,4 +1,5 @@
 import ctypes
+import enum
 
 class ADLVersionsInfo(ctypes.Structure):
     _fields_ = [
@@ -55,6 +56,17 @@ class ADLBiosInfo(ctypes.Structure):
         ('strDate', ctypes.c_char * 256)
     ]
 
+class DetailedAsicTypes(enum.IntEnum):
+    ADL_ASIC_UNDEFINED    =  0
+    ADL_ASIC_DISCRETE      = (1 << 0)
+    ADL_ASIC_INTEGRATED    = (1 << 1)
+    ADL_ASIC_WORKSTATION  =  (1 << 2)
+    ADL_ASIC_FIREMV        = (1 << 3)
+    ADL_ASIC_XGP           = (1 << 4)
+    ADL_ASIC_FUSION        = (1 << 5)
+    ADL_ASIC_FIRESTREAM    = (1 << 6)
+    ADL_ASIC_EMBEDDED      = (1 << 7)
+    ADL_ASIC_FIREGL = ADL_ASIC_WORKSTATION
 
 class Ctypes_ADL():
     adl_lib = None

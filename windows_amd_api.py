@@ -2,7 +2,7 @@ import ctypes
 from typing import Any
 from common_api import CommonAPI, StatusCode
 from ctypes import *
-from windows_amd_bindings import ADLBiosInfo, ADLChipSetInfo, ADLMemoryInfo2, AdapterInfoX2, Ctypes_ADL as cadl_win, ADLVersionsInfo
+from windows_amd_bindings import ADLBiosInfo, ADLChipSetInfo, ADLMemoryInfo2, AdapterInfoX2, Ctypes_ADL as cadl_win, ADLVersionsInfo, DetailedAsicTypes
 from utils import bytes_to_megabytes
 class WindowsAMD_API(CommonAPI):
 
@@ -26,7 +26,17 @@ class WindowsAMD_API(CommonAPI):
         return index
 
     def get_device_name_by_handle(self, handle) -> Any:
-        return ""
+        device_index = ctypes.c_int(handle)
+        numOfAdapters = self.get_number_of_devices()
+        adapterInfoX2_object = (AdapterInfoX2 * numOfAdapters)()
+        status = self.adl_clib.functions["adl_get_device_adapter_info"](adapterInfoX2_object, numOfAdapters)
+        strAdapterName = None
+        if status not in (0, 1):
+            strAdapterName = "Not supported"
+        else:
+            strAdapterName = bytes(adapterInfoX2_object[device_index.value].strAdapterName).decode('ASCII')
+        
+        return strAdapterName
 
     def get_device_temperature_info(self, handle) -> Any:
         return "Not supported"
@@ -37,14 +47,9 @@ class WindowsAMD_API(CommonAPI):
         numOfAdapters = self.get_number_of_devices()
         adapterInfoX2_object = (AdapterInfoX2 * numOfAdapters)()
         status = self.adl_clib.functions["adl_get_device_adapter_info"](adapterInfoX2_object, numOfAdapters)
-        iSize = None
         iAdapterIndex = None
         strUDID = None
-        iBusNumber = None
-        iDeviceNumber =  None
-        iFunctionNumber = None
         iVendorID = None
-        strAdapterName = None
         strDisplayName = None
         iPresent = None
         iExist =  None
@@ -55,14 +60,9 @@ class WindowsAMD_API(CommonAPI):
         iInfoMask = None
         iInfoValue = None
         if status not in (0, 1):
-            iSize = "Not supported"
             iAdapterIndex = "Not supported"
             strUDID = "Not supported"
-            iBusNumber = "Not supported"
-            iDeviceNumber =  "Not supported"
-            iFunctionNumber = "Not supported"
             iVendorID = "Not supported"
-            strAdapterName = "Not supported"
             strDisplayName = "Not supported"
             iPresent = "Not supported"
             iExist =  "Not supported"
@@ -70,44 +70,51 @@ class WindowsAMD_API(CommonAPI):
             strDriverPathExt = "Not supported"
             strPNPString = "Not supported"
             iOSDisplayIndex = "Not supported"
-            iInfoMask = "Not supported"
-            iInfoValue = "Not supported"
         else:
-            iSize = adapterInfoX2_object[device_index.value].iSize
             iAdapterIndex = adapterInfoX2_object[device_index.value].iAdapterIndex
-            strUDID = adapterInfoX2_object[device_index.value].strUDID
-            iBusNumber = adapterInfoX2_object[device_index.value].iBusNumber
-            iDeviceNumber =  adapterInfoX2_object[device_index.value].iDeviceNumber
-            iFunctionNumber = adapterInfoX2_object[device_index.value].iFunctionNumber
+            strUDID = bytes(adapterInfoX2_object[device_index.value].strUDID).decode('ASCII')
             iVendorID = adapterInfoX2_object[device_index.value].iVendorID
-            strAdapterName = adapterInfoX2_object[device_index.value].strAdapterName
-            strDisplayName = adapterInfoX2_object[device_index.value].strDisplayName
-            iPresent = adapterInfoX2_object[device_index.value].iPresent
-            iExist =  adapterInfoX2_object[device_index.value].iExist
-            strDriverPath = adapterInfoX2_object[device_index.value].strDriverPath
-            strDriverPathExt = adapterInfoX2_object[device_index.value].strDriverPathExt
-            strPNPString = adapterInfoX2_object[device_index.value].strPNPString
+            strDisplayName = bytes(adapterInfoX2_object[device_index.value].strDisplayName).decode('ASCII')
+            iPresent = "No" if adapterInfoX2_object[device_index.value].iPresent == 0 else "Yes"
+            iExist =  "No" if adapterInfoX2_object[device_index.value].iExist == 0 else "Yes"
+            strDriverPath = bytes(adapterInfoX2_object[device_index.value].strDriverPath).decode('ASCII')
+            strDriverPathExt = bytes(adapterInfoX2_object[device_index.value].strDriverPathExt).decode('ASCII')
+            strPNPString = bytes(adapterInfoX2_object[device_index.value].strPNPString).decode('ASCII')
             iOSDisplayIndex = adapterInfoX2_object[device_index.value].iOSDisplayIndex
-            iInfoMask = adapterInfoX2_object[device_index.value].iInfoMask
-            iInfoValue = adapterInfoX2_object[device_index.value].iInfoValue
 
-        device_id = ctypes.c_int()
-        status = self.adl_clib.functions["adl_get_device_id"](device_index, ctypes.byref(device_id))
-        if status not in (0, 1):
-            device_id = "Not supported"
-        else:
-            device_id = device_id.value
+        #device_id = ctypes.c_int()
+        #status = self.adl_clib.functions["adl_get_device_id"](device_index, ctypes.byref(device_id))
+        #if status not in (0, 1):
+        #    device_id = "Not supported"
+        #else:
+        #    device_id = device_id.value
 
 
         lpAsicTypes = ctypes.c_int()
-        lpValids = ctypes.c_int()        
+        lpValids = ctypes.c_int()    
+        asicTypes = list() 
+        asicValids = list() 
         status = self.adl_clib.functions["adl_get_device_asic_family_type"](device_index, ctypes.byref(lpAsicTypes), ctypes.byref(lpValids))
         if status not in (0, 1):
-            lpAsicTypes = "Not supported"
-            lpValids = "Not supported"
+            asicTypes = "Not supported"
+            asicValids = "Not supported"
         else:
             lpAsicTypes = lpAsicTypes.value
             lpValids = lpValids.value
+            for asic_types_dict_key, asic_types_dict_enum in DetailedAsicTypes.__members__.items():
+                if asic_types_dict_key == "ADL_ASIC_UNDEFINED":
+                    continue
+                
+                if asic_types_dict_enum.value & lpAsicTypes:
+                    asicTypes.append(asic_types_dict_key.replace("ADL_ASIC_", "").replace("_"," "))
+
+            for asic_valids_dict_key, asic_valids_dict_enum in DetailedAsicTypes.__members__.items():
+                if asic_valids_dict_key == "ADL_ASIC_UNDEFINED":
+                    continue
+                
+                if asic_valids_dict_enum.value & lpValids:
+                    asicValids.append(asic_valids_dict_key.replace("ADL_ASIC_", "").replace("_"," ")) 
+
 
         is_accessible_status = ctypes.c_int()
         status = self.adl_clib.functions["adl_get_device_is_accessible_status"](device_index, ctypes.byref(is_accessible_status))
@@ -145,26 +152,18 @@ class WindowsAMD_API(CommonAPI):
                 is_active_status = "Yes"
         
         return {
-            "iSize": iSize,
-            "iAdapterIndex": iAdapterIndex,
-            "strUDID": strUDID,
-            "iBusNumber": iBusNumber,
-            "iDeviceNumber": iDeviceNumber,
-            "iFunctionNumber": iFunctionNumber,
-            "iVendorID": iVendorID,
-            "strAdapterName": strAdapterName,
-            "strDisplayName": strDisplayName,
-            "iPresent": iPresent,
-            "iExist": iExist,
-            "strDriverPath": strDriverPath,
-            "strDriverPathExt": strDriverPathExt,
-            "strPNPString": strPNPString,
-            "iOSDisplayIndex": iOSDisplayIndex,
-            "iInfoMask":iInfoMask,
-            "iInfoValue": iInfoValue,
-            "Device ID": device_id,
-            "LP ASIC types": lpAsicTypes,
-            "LP Valids": lpValids,
+            "Display name": strDisplayName,
+            "Adapter index": iAdapterIndex,
+            "Display index": iOSDisplayIndex,
+            "Universal Unique Device Identifier (UUID)": strUDID,
+            "Vendor ID": iVendorID,
+            "Driver Path": strDriverPath,
+            "Driver Path Ext": strDriverPathExt,
+            "Plug and Play (PnP) string": strPNPString,
+            "Valid ASIC types": asicValids,
+            "Current ASIC types": asicTypes,
+            "Is adapter present": iPresent,
+            "Does adapter exist": iExist,
             "Is adapter accessible": is_accessible_status,
             "Is primary display adapter": primary_display_adapter_index,
             "Is adapter active": is_active_status
@@ -266,13 +265,32 @@ class WindowsAMD_API(CommonAPI):
             lpChipSetInfo_iSupportedAGPSpeeds = lpChipSetInfo.iSupportedAGPSpeeds
             lpChipSetInfo_CurrentAGPSpeed = lpChipSetInfo.iCurrentAGPSpeed
 
+        numOfAdapters = self.get_number_of_devices()
+        adapterInfoX2_object = (AdapterInfoX2 * numOfAdapters)()
+        status = self.adl_clib.functions["adl_get_device_adapter_info"](adapterInfoX2_object, numOfAdapters)
+
+        iBusNumber = None
+        iDeviceNumber =  None
+        iFunctionNumber = None
+        if status not in (0, 1):
+            iBusNumber = "Not supported"
+            iDeviceNumber =  "Not supported"
+            iFunctionNumber = "Not supported"
+        else:
+            iBusNumber = adapterInfoX2_object[device_index.value].iBusNumber
+            iDeviceNumber =  adapterInfoX2_object[device_index.value].iDeviceNumber
+            iFunctionNumber = adapterInfoX2_object[device_index.value].iFunctionNumber
+
         return {
-           "Bus type": lpChipSetInfo_busType,
-           "Bus speed type": lpChipSetInfo_BusSpeedType,
-           "Max PCIe Lane Width": lpChipSetInfo_MaxPCIELaneWidth,
-           "Current PCIe Lane Width": lpChipSetInfo_CurrentPCIELaneWidth,
-           "Supported AGP speeds": lpChipSetInfo_iSupportedAGPSpeeds,
-           "Current AGP Speed": lpChipSetInfo_CurrentAGPSpeed
+            "PCI Bus Number": "{0:#0{1}x}".format(iBusNumber, 4),
+            "PCI Device Number": "{0:#0{1}x}".format(iDeviceNumber, 4),
+            "PCI Function Number": "{0:#0{1}x}".format(iFunctionNumber, 3),
+            "Bus type": lpChipSetInfo_busType,
+            "Bus speed type": lpChipSetInfo_BusSpeedType,
+            "Max PCIe Lane Width": lpChipSetInfo_MaxPCIELaneWidth,
+            "Current PCIe Lane Width": lpChipSetInfo_CurrentPCIELaneWidth,
+            "Supported AGP speeds": lpChipSetInfo_iSupportedAGPSpeeds,
+            "Current AGP Speed": lpChipSetInfo_CurrentAGPSpeed
         }
     
     def get_device_versions_info(self, handle) -> Any:
