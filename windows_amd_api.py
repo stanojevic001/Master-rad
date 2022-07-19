@@ -233,9 +233,28 @@ class WindowsAMD_API(CommonAPI):
             lpCoreClock = lpCoreClock.value
             lpMemoryClock = lpMemoryClock.value
 
+        baseClock = ctypes.c_int()
+        gameClock = ctypes.c_int()
+        boostClock = ctypes.c_int()
+        memoryClock = ctypes.c_int()
+        status = self.adl_clib.functions["adl_get_device_observed_game_clock_info"](device_index, ctypes.byref(baseClock), ctypes.byref(gameClock), ctypes.byref(boostClock), ctypes.byref(memoryClock))
+        if status not in (0, 1):
+            baseClock = "Not supported"
+            gameClock = "Not supported"
+            boostClock = "Not supported"
+            memoryClock = "Not supported"
+        else:
+            baseClock = baseClock.value
+            gameClock = gameClock.value
+            boostClock = boostClock.value
+            memoryClock = memoryClock.value
+
         return {
            "Core clock (MHz)": lpCoreClock,
-           "Memory clock (MHz)": lpMemoryClock
+           "Memory clock (MHz)": lpMemoryClock,
+           "Base clock (MHz)": baseClock,
+           "Game clock (MHz)": gameClock,
+           "Boost clock (MHz)": boostClock,
         }
     
     def get_device_bus_info(self, handle) -> Any:

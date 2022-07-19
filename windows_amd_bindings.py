@@ -86,7 +86,8 @@ class Ctypes_ADL():
         "adl_get_device_is_active_status": None,
         "adl_get_device_is_accessible_status": None,
         "adl_get_device_vram_usage_info": None,
-        "adl_get_device_dedicated_vram_usage_info": None
+        "adl_get_device_dedicated_vram_usage_info": None,
+        "adl_get_device_observed_game_clock_info": None
     }
 
     def __init__(self) -> None:
@@ -156,3 +157,6 @@ class Ctypes_ADL():
         self.adl_lib.get_device_dedicated_vram_usage_info.restype = ctypes.c_int
         self.functions["adl_get_device_dedicated_vram_usage_info"] = self.adl_lib.get_device_dedicated_vram_usage_info
 
+        self.adl_lib.get_device_observed_game_clock_info.argtypes = [ctypes.c_int, ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int)]
+        self.adl_lib.get_device_observed_game_clock_info.restype = ctypes.c_int
+        self.functions["adl_get_device_observed_game_clock_info"] = self.adl_lib.get_device_observed_game_clock_info
