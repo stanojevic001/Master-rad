@@ -35,9 +35,8 @@ class WindowsAMD_API(CommonAPI):
         device_index = ctypes.c_int(handle)
 
         
-        #numAdapters = ctypes.c_int()
-        #lppAdapterInfoX2 = ctypes.POINTER(AdapterInfoX2)()
-        #status = self.adl_clib.functions["adl_get_device_adapter_info"](device_index, ctypes.byref(numAdapters), ctypes.byref(lppAdapterInfoX2))
+        #lppAdapterInfoX2 = (AdapterInfoX2 * 100)()
+        #status = self.adl_clib.functions["adl_get_device_adapter_info"](device_index, ctypes.byref(lppAdapterInfoX2))
         #if status not in (0, 1):
         #    lppAdapterInfoX2 = "Not supported"
         #else:
@@ -60,6 +59,18 @@ class WindowsAMD_API(CommonAPI):
         else:
             lpAsicTypes = lpAsicTypes.value
             lpValids = lpValids.value
+
+        is_accessible_status = ctypes.c_int()
+        status = self.adl_clib.functions["adl_get_device_is_accessible_status"](device_index, ctypes.byref(is_accessible_status))
+        if status not in (0,1):
+            is_accessible_status = "Not supported"
+        else:
+            if is_accessible_status.value == 0:
+                #False
+                is_accessible_status = "No"
+            else:
+                #True
+                is_accessible_status = "Yes"
 
         primary_display_adapter_index = ctypes.c_int()
         status = self.adl_clib.functions["adl_get_primary_display_adapter_index"](ctypes.byref(primary_display_adapter_index))
@@ -88,6 +99,7 @@ class WindowsAMD_API(CommonAPI):
             "Device ID": device_id,
             "LP ASIC types": lpAsicTypes,
             "LP Valids": lpValids,
+            "Is adapter accessible": is_accessible_status,
             "Is primary display adapter": primary_display_adapter_index,
             "Is adapter active": is_active_status
         }
@@ -117,13 +129,21 @@ class WindowsAMD_API(CommonAPI):
             iInvisibleMemorySize = bytes_to_megabytes(memory_info2.iInvisibleMemorySize)
             iVisibleMemorySize = bytes_to_megabytes(memory_info2.iVisibleMemorySize)
 
+        vram_usage_in_MB = ctypes.c_int()
+        status = self.adl_clib.functions["adl_get_device_vram_usage_info"](device_index, ctypes.byref(vram_usage_in_MB))
+        if status not in (0, 1):
+            vram_usage_in_MB = "Not supported"
+        else:
+            vram_usage_in_MB = vram_usage_in_MB.value
+
         return {
             "Memory Size": memorySize,
             "Memory Type": strMemoryType,
             "Memory Bandwidth": iMemoryBandwidth,
             "Hyper Memory Size": iHyperMemorySize,
             "Invisible Memory Size": iInvisibleMemorySize,
-            "Visible Memory Size": iVisibleMemorySize
+            "Visible Memory Size": iVisibleMemorySize,
+            "Video RAM (VRAM) Usage (MB)": vram_usage_in_MB
         }
 
     def get_device_clocks_info(self, handle) -> Any:
