@@ -29,7 +29,8 @@ class StatusCode(Enum):
     NOT_SUPPORTED_FEATURE =3
 
 #--------COMMAND CONSTANTS-------#
-INSTALL_NVML = "pip install nvidia-ml-py"
+INSTALL_NVML = "pip install pynvml"
+#INSTALL_NVML = "pip install nvidia-ml-py"
 INSTALL_IGNORE_OPTION_NVML = "pip install --ignore-installed nvidia-ml-py"
 WINDOWS_GET_GPU_INFO = "wmic path win32_VideoController get name"
 LINUX_GET_GPU_INFO = "lshw -numeric -C display | grep vendor"
