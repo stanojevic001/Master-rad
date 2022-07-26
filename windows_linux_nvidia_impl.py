@@ -2,6 +2,7 @@ import enum
 import importlib
 from typing import Any
 from common_api import CommonAPI, StatusCode
+from defines import CURRENT_OS, SupportedOS
 from utils import bytes_to_megabytes
 # Library is called pynvml!
 class nvmlBrandType_t(enum.IntEnum):
@@ -606,7 +607,10 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
         except self.pynvml_lib.NVMLError as e:
             minor_number = "Not supported"
         try:
-            num_of_gpu_cores = self.pynvml_lib.nvmlDeviceGetNumGpuCores(handle)
+            if (CURRENT_OS == SupportedOS.WINDOWS):
+                num_of_gpu_cores = self.pynvml_lib.nvmlDeviceGetNumGpuCores(handle)
+            else:
+                num_of_gpu_cores = "Not supported"
         except self.pynvml_lib.NVMLError as e:
             num_of_gpu_cores = "Not supported"  
         
