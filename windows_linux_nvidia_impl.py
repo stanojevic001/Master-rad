@@ -607,7 +607,7 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
         except self.pynvml_lib.NVMLError as e:
             minor_number = "Not supported"
         try:
-            if (CURRENT_OS == SupportedOS.WINDOWS):
+            if (CURRENT_OS not in (SupportedOS.WINDOWS, SupportedOS.LINUX)):
                 num_of_gpu_cores = self.pynvml_lib.nvmlDeviceGetNumGpuCores(handle)
             else:
                 num_of_gpu_cores = "Not supported"
