@@ -144,12 +144,12 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
                 try:
                     temp_reading_value = self.pynvml_lib.nvmlDeviceGetTemperature(handle, temp_reading.value)
                     temp_readings_sensors.append({
-                        nvmlTemperatureSensors_t(temp_reading).name.replace("NVML_TEMPERATURE_", ""): temp_reading_value
+                        temp_readings_sensor_type_key.replace("NVML_TEMPERATURE_", ""): temp_reading_value
                     })
                 except Exception as e:
                     temp_reading_value = "Not supported"
                     temp_readings_sensors.append({
-                        nvmlTemperatureSensors_t(temp_reading).name.replace("NVML_TEMPERATURE_", "").replace("_", " "): temp_reading_value
+                        temp_readings_sensor_type_key.replace("NVML_TEMPERATURE_", "").replace("_", " "): temp_reading_value
                     })
 
             temp_readings_thresholds = list()
@@ -160,12 +160,12 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
                 try:
                     temp_reading_threshold_value = self.pynvml_lib.nvmlDeviceGetTemperatureThreshold(handle, temp_reading_threshold.value)
                     temp_readings_thresholds.append({
-                        nvmlTemperatureThresholds_t(temp_reading_threshold).name.replace("NVML_TEMPERATURE_THRESHOLD_", "").replace("_"," "): temp_reading_threshold_value
+                        temp_readings_threshold_type_key.replace("NVML_TEMPERATURE_THRESHOLD_", "").replace("_"," "): temp_reading_threshold_value
                     })
                 except Exception as e:
                     temp_reading_threshold_value = "Not supported"
                     temp_readings_thresholds.append({
-                        nvmlTemperatureThresholds_t(temp_reading_threshold).name.replace("NVML_TEMPERATURE_THRESHOLD_", "").replace("_"," "): temp_reading_threshold_value
+                        temp_readings_threshold_type_key.replace("NVML_TEMPERATURE_THRESHOLD_", "").replace("_"," "): temp_reading_threshold_value
                     })
 
             return {
@@ -553,12 +553,12 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
             try:
                 inforom_version = self.pynvml_lib.nvmlDeviceGetInforomVersion(handle, inforom_obj_type).decode('ASCII')
                 inforom_versions.append({
-                    nvmlInforomObject_t(inforom_obj_type).name.replace("NVML_INFOROM_", ""): inforom_version
+                    inforom_obj_type_dict_key.replace("NVML_INFOROM_", ""): inforom_version
                 })
             except Exception as e:
                 inforom_version = "Not supported"
                 inforom_versions.append({
-                    nvmlInforomObject_t(inforom_obj_type).name.replace("NVML_INFOROM_", ""): inforom_version
+                    inforom_obj_type_dict_key.replace("NVML_INFOROM_", ""): inforom_version
                 })
 
         try:

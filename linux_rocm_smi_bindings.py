@@ -22,7 +22,7 @@ class rsmi_memory_type_t(enum.IntEnum):
     RSMI_MEM_TYPE_GTT = 2
     RSMI_MEM_TYPE_LAST = RSMI_MEM_TYPE_GTT
 
-class  rsmi_memory_page_status_t(enum.IntEnum):
+class rsmi_memory_page_status_t(enum.IntEnum):
     RSMI_MEM_PAGE_STATUS_RESERVED = 0
     RSMI_MEM_PAGE_STATUS_PENDING = 1
     RSMI_MEM_PAGE_STATUS_UNRESERVABLE = enum.auto()
