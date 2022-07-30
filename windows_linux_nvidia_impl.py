@@ -545,12 +545,12 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
                 inforom_checksum = "Not supported"
             
             return {
-                "BAR1 Total Memory (MB)": bytes_to_megabytes(bar1_memory_info.bar1Total),
-                "BAR1 Used Memory (MB)": bytes_to_megabytes(bar1_memory_info.bar1Used),
-                "BAR1 Free Memory (MB)": bytes_to_megabytes(bar1_memory_info.bar1Free),
                 "GPU Total Memory (MB)": bytes_to_megabytes(memory_info.total),
                 "GPU Used Memory (MB)": bytes_to_megabytes(memory_info.used),
                 "GPU Free Memory (MB)": bytes_to_megabytes(memory_info.free),
+                "BAR1 Total Memory (MB)": bytes_to_megabytes(bar1_memory_info.bar1Total),
+                "BAR1 Used Memory (MB)": bytes_to_megabytes(bar1_memory_info.bar1Used),
+                "BAR1 Free Memory (MB)": bytes_to_megabytes(bar1_memory_info.bar1Free),
                 "InfoROM Checksum": inforom_checksum,
             }
         except self.pynvml_lib.NVMLError as e:
