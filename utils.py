@@ -25,7 +25,13 @@ def get_current_GPU_names():
         raise(e)
 
 def bytes_to_megabytes(bytes):
-    return int(int(bytes) * 0.00000095367432)
+    return round(float(bytes)/pow(pow(2, 10), 2), 2)
+
+def bytes_to_gigabytes(bytes):
+    return round(float(bytes)/pow(pow(2, 10), 3), 2)
+
+def hz_to_gigahz_int(hz):
+    return round(float(hz)/pow(10, 9), 2)
 
 def process_complex_query_output(object, output, nesting_level=4):
     if type(object) == dict:
@@ -47,3 +53,4 @@ def process_complex_query_output(object, output, nesting_level=4):
         output += OutputTemplates.catalog_simple_elem_variable_nesting.format(nesting=str(" " * nesting_level), value=object)
     
     return output
+    

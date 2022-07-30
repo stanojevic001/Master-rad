@@ -2,13 +2,85 @@ import ctypes
 from typing import Any
 from common_api import CommonAPI
 from defines import *
-from linux_rocm_smi_bindings import RSMI_MAX_NUM_FREQUENCIES, Ctypes_ROCm as crocm, rsmi_clk_type_t, rsmi_frequencies_t, rsmi_fw_block_t, rsmi_memory_type_t, rsmi_retired_page_record_t, rsmi_pcie_bandwidth_t, rsmi_version_t
+from linux_rocm_smi_bindings import Ctypes_ROCm as crocm, rsmi_clk_type_t, rsmi_frequencies_t, rsmi_fw_block_t, rsmi_memory_type_t, rsmi_retired_page_record_t, rsmi_pcie_bandwidth_t, rsmi_version_t
+from utils import bytes_to_gigabytes, hz_to_gigahz_int
 
 class Linux_ROCm_SMI_Wrapper(CommonAPI):
     rocm_clib = None
 
     def __init__(self) -> None:
         self.rocm_clib = crocm()
+
+    def convert_enum_name_to_readable_string(self, enum_name: str, enum_type: Enum) -> str:
+        result = ""
+        if type(enum_type) == rsmi_clk_type_t:
+            if "RSMI_CLK_TYPE_SYS" == enum_name:
+                result = "System"
+            elif "RSMI_CLK_TYPE_DF" == enum_name:
+                result = "Data Fabric (DF)"
+            elif "RSMI_CLK_TYPE_DCEF" == enum_name:
+                result = "Display Controller Engine (DCEF)"
+            elif "RSMI_CLK_TYPE_SOC" == enum_name:
+                result = "SoC (System-on-a-Chip)"
+            elif "RSMI_CLK_TYPE_MEM" == enum_name:
+                result = "Memory"
+            result += " clock"
+
+        elif type(enum_type) == rsmi_fw_block_t:
+            if "RSMI_FW_BLOCK_ASD" == enum_name:
+                result = "ASD"
+            elif "RSMI_FW_BLOCK_CE" == enum_name:
+                result = "CE"
+            elif "RSMI_FW_BLOCK_DMCU" == enum_name:
+                result = "DMCU"
+            elif "RSMI_FW_BLOCK_MC" == enum_name:
+                result = "MC"
+            elif "RSMI_FW_BLOCK_ME" == enum_name:
+                result = "ME"
+            elif "RSMI_FW_BLOCK_MEC" == enum_name:
+                result = "MEC"
+            elif "RSMI_FW_BLOCK_MEC2" == enum_name:
+                result = "MEC2"
+            elif "RSMI_FW_BLOCK_PFP" == enum_name:
+                result = "PFP"
+            elif "RSMI_FW_BLOCK_RLC" == enum_name:
+                result = "RLC"
+            elif "RSMI_FW_BLOCK_RLC_SRLC" == enum_name:
+                result = "SRLC"
+            elif "RSMI_FW_BLOCK_RLC_SRLG" == enum_name:
+                result = "SRLG"
+            elif "RSMI_FW_BLOCK_RLC_SRLS" == enum_name:
+                result = "SRLS"
+            elif "RSMI_FW_BLOCK_SDMA" == enum_name:
+                result = "SDMA"
+            elif "RSMI_FW_BLOCK_SDMA2" == enum_name:
+                result = "SDMA2"
+            elif "RSMI_FW_BLOCK_SMC" == enum_name:
+                result = "SMC"
+            elif "RSMI_FW_BLOCK_SOS" == enum_name:
+                result = "SOS"
+            elif "RSMI_FW_BLOCK_TA_RAS" == enum_name:
+                result = "TA_RAS"
+            elif "RSMI_FW_BLOCK_TA_XGMI" == enum_name:
+                result = "TA_XGMI"
+            elif "RSMI_FW_BLOCK_UVD" == enum_name:
+                result = "UVD"
+            elif "RSMI_FW_BLOCK_VCE" == enum_name:
+                result = "VCE"
+            elif "RSMI_FW_BLOCK_VCN" == enum_name:
+                result = "VCN"
+            result += " block"
+
+        elif type(enum_type) == rsmi_memory_type_t:
+            if "RSMI_MEM_TYPE_VRAM" == enum_name:
+                result = "Video RAM (VRAM)"
+            elif "RSMI_MEM_TYPE_VIS_VRAM" == enum_name:
+                result = "Visible video RAM (VRAM)"
+            elif "RSMI_MEM_TYPE_GTT" == enum_name:
+                result = "Graphics Translation Table (GTT)"
+            result += " memory"
+        return result
+
     def initialize(self) -> None:
         flag = ctypes.c_uint64(0)
         self.rocm_clib.functions["rocm_initialize"](flag)
@@ -38,7 +110,7 @@ class Linux_ROCm_SMI_Wrapper(CommonAPI):
             if clock_type_dict_key in ("RSMI_CLK_TYPE_FIRST", "RSMI_CLK_TYPE_LAST", "RSMI_CLK_INVALID"):
                 continue
             frequencies = rsmi_frequencies_t()
-            clock_type_name = clock_type_dict_key.replace("RSMI_CLK_TYPE_","").replace("_"," ")
+            clock_type_name = self.convert_enum_name_to_readable_string(clock_type_dict_key, clock_type_dict_enum)
             clock_frequencies_info[clock_type_name] = {}
             status = self.rocm_clib.functions["rocm_get_clock_frequencies_info"](device_index, clock_type_dict_enum, ctypes.byref(frequencies))
             num_supported_freq =  None
@@ -59,13 +131,13 @@ class Linux_ROCm_SMI_Wrapper(CommonAPI):
                 else:
                     for j in range(0, num_supported_freq):
                         if j == current_freq:
-                            current_freq_output = frequency[j]
-                        frequency_output.append(frequency[j])
+                            current_freq_output = hz_to_gigahz_int(frequency[j])
+                        frequency_output.append(hz_to_gigahz_int(frequency[j]))
                 num_supported_freq_output = num_supported_freq
                 clock_frequencies_info[clock_type_name] = {
                     "Num of supported clock frequencies": num_supported_freq_output,
-                    "Current clock frequency": current_freq_output,
-                    "Supported clock frequencies": frequency_output
+                    "Supported clock frequencies (GHz)": frequency_output,
+                    "Current clock frequency (GHz)": current_freq_output
                 }
             
         return {
@@ -88,12 +160,13 @@ class Linux_ROCm_SMI_Wrapper(CommonAPI):
         for memory_type_dict_key, memory_type_dict_enum in rsmi_memory_type_t.__members__.items():
             if memory_type_dict_key in ("RSMI_MEM_TYPE_FIRST", "RSMI_MEM_TYPE_LAST"):
                 continue
+            memory_type_name = self.convert_enum_name_to_readable_string(memory_type_dict_key, memory_type_dict_enum)
             total_mem_by_type = ctypes.c_uint64(0)
             status = self.rocm_clib.functions["rocm_get_device_memory_total"](device_index, memory_type_dict_enum, ctypes.byref(total_mem_by_type))
             if status != 0:
-                total_memories_by_type[memory_type_dict_key.replace("RSMI_MEM_TYPE_", "")] = "Not supported"
+                total_memories_by_type[memory_type_name] = "Not supported"
             else:
-                total_memories_by_type[memory_type_dict_key.replace("RSMI_MEM_TYPE_", "")] = total_mem_by_type.value
+                total_memories_by_type[memory_type_name] = bytes_to_gigabytes(total_mem_by_type.value)
 
 
         total_memory_usages_by_type = dict()
@@ -101,11 +174,12 @@ class Linux_ROCm_SMI_Wrapper(CommonAPI):
             if memory_usage_type_dict_key in ("RSMI_MEM_TYPE_FIRST", "RSMI_MEM_TYPE_LAST"):
                 continue
             total_mem_usage_by_type = ctypes.c_uint64(0)
+            memory_usage_type_name = self.convert_enum_name_to_readable_string(memory_usage_type_dict_key, memory_usage_type_dict_enum)
             status = self.rocm_clib.functions["rocm_get_device_memory_usage"](device_index, memory_usage_type_dict_enum, ctypes.byref(total_mem_usage_by_type))
             if status != 0:
-                total_memory_usages_by_type[memory_usage_type_dict_key.replace("RSMI_MEM_TYPE_", "")] = "Not supported"
+                total_memory_usages_by_type[memory_usage_type_name] = "Not supported"
             else:
-                total_memory_usages_by_type[memory_usage_type_dict_key.replace("RSMI_MEM_TYPE_", "")] = total_mem_usage_by_type.value
+                total_memory_usages_by_type[memory_usage_type_name] = bytes_to_gigabytes(total_mem_usage_by_type.value)
 
 
         busy_percent = ctypes.c_uint32(0)
@@ -137,8 +211,8 @@ class Linux_ROCm_SMI_Wrapper(CommonAPI):
 
 
         return {
-            "Total memory amount by type": total_memories_by_type,
-            "Total memory usages by type": total_memory_usages_by_type,
+            "Total memory amount by type (GBs)": total_memories_by_type,
+            "Total memory usages by type (GBs)": total_memory_usages_by_type,
             "Busy percent": busy_percent,
             "Retired pages number": num_pages,
             "Retired pages records": records_output
@@ -172,8 +246,8 @@ class Linux_ROCm_SMI_Wrapper(CommonAPI):
             else:
                 for j in range(0, pcie_bandwidth_transfer_rate_num_supported):
                     if j == pcie_bandwidth_transfer_rate_current:
-                        pcie_bandwidth_transfer_rate_output_current = pcie_bandwidth_transfer_rate_frequency[j]
-                    pcie_bandwidth_transfer_rate_output_frequency.append(pcie_bandwidth_transfer_rate_frequency[j])
+                        pcie_bandwidth_transfer_rate_output_current = hz_to_gigahz_int(pcie_bandwidth_transfer_rate_frequency[j])
+                    pcie_bandwidth_transfer_rate_output_frequency.append(hz_to_gigahz_int(pcie_bandwidth_transfer_rate_frequency[j]))
             pcie_bandwidth_transfer_rate_output_num_supported = pcie_bandwidth_transfer_rate_num_supported
             pcie_bandwidth_lanes = pcie_bandwidth.lanes
             if len(pcie_bandwidth_lanes) <= 0:
@@ -211,8 +285,8 @@ class Linux_ROCm_SMI_Wrapper(CommonAPI):
 
         return {
             "PCIe Number of supported frequencies": pcie_bandwidth_transfer_rate_output_num_supported,
-            "PCIe Supported frequencies": pcie_bandwidth_transfer_rate_output_frequency,
-            "PCIe Current frequency": pcie_bandwidth_transfer_rate_output_current,
+            "PCIe Supported frequencies (GHz)": pcie_bandwidth_transfer_rate_output_frequency,
+            "PCIe Current frequency (GHz)": pcie_bandwidth_transfer_rate_output_current,
             "PCIe Supported lanes": pcie_bandwidth_lanes_output,
             "PCIe BDF number (Bus, Device, Function)": bdfid,
             "PCIe Throughput - Sent packets": sent,
@@ -371,13 +445,14 @@ class Linux_ROCm_SMI_Wrapper(CommonAPI):
             if block_type_dict_key in ("RSMI_FW_BLOCK_FIRST", "RSMI_FW_BLOCK_LAST"):
                 continue
             fw_version = ctypes.c_uint64()
+            block_name = self.convert_enum_name_to_readable_string(block_type_dict_key, block_type_dict_enum)
             status = self.rocm_clib.functions["rocm_get_device_firmware_version"](device_index, block_type_dict_enum, ctypes.byref(fw_version))
             if status != 0:
                 fw_version = "Not supported"
-                fw_versions[block_type_dict_key.replace("RSMI_FW_BLOCK_","")] = "Not supported"
+                fw_versions[block_name] = "Not supported"
             else:
                 fw_version = fw_version.value
-                fw_versions[block_type_dict_key.replace("RSMI_FW_BLOCK_","")] = fw_version
+                fw_versions[block_name] = fw_version
 
         return {
             "ROCm SMI library version - major": rsmi_version_major,
