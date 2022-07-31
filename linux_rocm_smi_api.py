@@ -2,7 +2,7 @@ import ctypes
 from typing import Any
 from common_api import CommonAPI
 from defines import *
-from linux_rocm_smi_bindings import Ctypes_ROCm as crocm, rsmi_clk_type_t, rsmi_frequencies_t, rsmi_fw_block_t, rsmi_memory_type_t, rsmi_retired_page_record_t, rsmi_pcie_bandwidth_t, rsmi_version_t
+from linux_rocm_smi_bindings import Ctypes_ROCm as crocm, rsmi_clk_type_t, rsmi_frequencies_t, rsmi_fw_block_t, rsmi_memory_type_t, rsmi_retired_page_record_t, rsmi_pcie_bandwidth_t, rsmi_temperature_metric_t, rsmi_temperature_type_t, rsmi_version_t
 from utils import bytes_to_megabytes, hz_to_megahz_int
 
 class Linux_ROCm_SMI_Wrapper(CommonAPI):
@@ -79,6 +79,54 @@ class Linux_ROCm_SMI_Wrapper(CommonAPI):
             elif "RSMI_MEM_TYPE_GTT" == enum_name:
                 result = "Graphics Translation Table (GTT)"
             result += " memory"
+        
+        elif type(enum_type) == rsmi_temperature_type_t:
+            if "RSMI_TEMP_TYPE_EDGE" == enum_name:
+                result = "Edge GPU temperature"
+            elif "RSMI_TEMP_TYPE_JUNCTION" == enum_name:
+                result = "Junction/Hotspot temperature"
+            elif "RSMI_TEMP_TYPE_MEMORY" == enum_name:
+                result = "Video RAM (VRAM) temperature"
+            elif "RSMI_TEMP_TYPE_HBM_0" == enum_name:
+                result = "HBM temperature instance 0"
+            elif "RSMI_TEMP_TYPE_HBM_1" == enum_name:
+                result = "HBM temperature instance 1"
+            elif "RSMI_TEMP_TYPE_HBM_2" == enum_name:
+                result = "HBM temperature instance 2"
+            elif "RSMI_TEMP_TYPE_HBM_3" == enum_name:
+                result = "HBM temperature instance 3"
+            result += " (degrees Celsius)"
+
+        elif type(enum_type) == rsmi_temperature_metric_t:
+            if "RSMI_TEMP_CURRENT" == enum_name:
+                result = "Current"
+            elif "RSMI_TEMP_MAX" == enum_name:
+                result = "Max"
+            elif "RSMI_TEMP_MIN" == enum_name:
+                result = "Min"
+            elif "RSMI_TEMP_MAX_HYST" == enum_name:
+                result = "Max limit hysteresis"
+            elif "RSMI_TEMP_MIN_HYST" == enum_name:
+                result = "Min limit hysteresis"
+            elif "RSMI_TEMP_CRITICAL" == enum_name:
+                result = "Critical max"
+            elif "RSMI_TEMP_CRITICAL_HYST" == enum_name:
+                result = "Critical limit hysteresis"
+            elif "RSMI_TEMP_EMERGENCY" == enum_name:
+                result = "Emergency max"
+            elif "RSMI_TEMP_EMERGENCY_HYST" == enum_name:
+                result = "Emergency limit hysteresis"
+            elif "RSMI_TEMP_CRIT_MIN" == enum_name:
+                result = "Critical min"
+            elif "RSMI_TEMP_CRIT_MIN_HYST" == enum_name:
+                result = "Critical min limit hysteresis"
+            elif "RSMI_TEMP_OFFSET" == enum_name:
+                result = "Offset (added to the temperature reading by the chip)"
+            elif "RSMI_TEMP_LOWEST" == enum_name:
+                result = "Historical min temperature"
+            elif "RSMI_TEMP_HIGHEST" == enum_name:
+                result = "Historical max temperature"
+            result += " value"
         return result
 
     def initialize(self) -> None:
@@ -101,7 +149,36 @@ class Linux_ROCm_SMI_Wrapper(CommonAPI):
         return index
 
     def get_device_temperature_info(self, handle) -> Any:
-        return "Not supported"
+        device_index = ctypes.c_uint32(handle)
+        temperatures = {}
+        is_supported_temperature = False
+        for temp_type_dict_key, temp_type_dict_enum in rsmi_temperature_type_t.__members__.items():
+            if temp_type_dict_key in ("RSMI_TEMP_TYPE_FIRST", "RSMI_TEMP_TYPE_LAST", "RSMI_TEMP_TYPE_INVALID"):
+                continue
+            temp_type_name =self.convert_enum_name_to_readable_string(temp_type_dict_key, temp_type_dict_enum)
+            temperatures[temp_type_name] = {}
+            is_supported_temperature_type = False
+            for temp_metric_dict_key, temp_metric_dict_enum in rsmi_temperature_metric_t.__members__.items():
+                if temp_metric_dict_key in ("RSMI_TEMP_FIRST", "RSMI_TEMP_LAST"):
+                    continue
+                temp_metric_name = self.convert_enum_name_to_readable_string(temp_metric_dict_key, temp_metric_dict_enum)
+                temp = ctypes.c_int64(0)
+                status = self.rocm_clib.functions["rocm_get_device_temperature"](device_index, temp_type_dict_enum, temp_metric_dict_enum, ctypes.byref(temp))
+                if status != 0:
+                    temp = "Not supported"
+                else:
+                    temp = temp.value/1000.00
+                    is_supported_temperature = True
+                    is_supported_temperature_type = True
+                temperatures[temp_type_name][temp_metric_name] = temp
+            if not is_supported_temperature_type:
+                temperatures[temp_type_name] = "Not supported"
+        if not is_supported_temperature:
+            temperatures = "Not supported"
+
+        return {
+            "Temperature info": temperatures
+        }
     
     def get_device_clocks_info(self, handle) -> Any:
         device_index = ctypes.c_uint32(handle)

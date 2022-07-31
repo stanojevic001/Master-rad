@@ -106,6 +106,36 @@ class rsmi_od_volt_freq_data_t(ctypes.Structure):
 
     ]
 
+class rsmi_temperature_metric_t(enum.IntEnum):
+  RSMI_TEMP_CURRENT = 0x0
+  RSMI_TEMP_FIRST = RSMI_TEMP_CURRENT
+  RSMI_TEMP_MAX = 1
+  RSMI_TEMP_MIN = 2
+  RSMI_TEMP_MAX_HYST = 3
+  RSMI_TEMP_MIN_HYST = 4
+  RSMI_TEMP_CRITICAL = 5
+  RSMI_TEMP_CRITICAL_HYST = 6
+  RSMI_TEMP_EMERGENCY = 7
+  RSMI_TEMP_EMERGENCY_HYST = 8
+  RSMI_TEMP_CRIT_MIN = 9
+  RSMI_TEMP_CRIT_MIN_HYST = 10
+  RSMI_TEMP_OFFSET = 11
+  RSMI_TEMP_LOWEST = 12
+  RSMI_TEMP_HIGHEST = 13
+  RSMI_TEMP_LAST = RSMI_TEMP_HIGHEST
+
+class rsmi_temperature_type_t(enum.IntEnum):
+  RSMI_TEMP_TYPE_FIRST = 0
+  RSMI_TEMP_TYPE_EDGE = RSMI_TEMP_TYPE_FIRST
+  RSMI_TEMP_TYPE_JUNCTION = 1
+  RSMI_TEMP_TYPE_MEMORY = 2
+  RSMI_TEMP_TYPE_HBM_0 = 3
+  RSMI_TEMP_TYPE_HBM_1 = 4
+  RSMI_TEMP_TYPE_HBM_2 = 5
+  RSMI_TEMP_TYPE_HBM_3 = 6
+  RSMI_TEMP_TYPE_LAST = RSMI_TEMP_TYPE_HBM_3,
+  RSMI_TEMP_TYPE_INVALID = 0xFFFFFFFF
+
 class Ctypes_ROCm():
     rocm_lib = None
     functions = {
@@ -138,7 +168,8 @@ class Ctypes_ROCm():
         "rocm_get_device_vbios_version": None,
         "rocm_get_device_firmware_version": None,
         "rocm_get_clock_frequencies_info": None,
-        "rocm_get_device_od_volt_info": None
+        "rocm_get_device_od_volt_info": None,
+        "rocm_get_device_temperature": None
     }
     def __init__(self) -> None:
         self.rocm_lib = ctypes.CDLL("amd_package/linux/librocm_smi64.so")
@@ -267,3 +298,7 @@ class Ctypes_ROCm():
         self.rocm_lib.rsmi_dev_od_volt_info_get.argtypes = [ctypes.c_uint32, ctypes.POINTER(rsmi_od_volt_freq_data_t)]
         self.rocm_lib.rsmi_dev_od_volt_info_get.restype = ctypes.c_int
         self.functions["rocm_get_device_od_volt_info"] =self.rocm_lib.rsmi_dev_od_volt_info_get
+
+        self.rocm_lib.rsmi_dev_temp_metric_get.argtypes = [ctypes.c_uint32, ctypes.c_uint32, ctypes.c_int, ctypes.POINTER(ctypes.c_int64)]
+        self.rocm_lib.rsmi_dev_temp_metric_get.restype = ctypes.c_int
+        self.functions["rocm_get_device_temperature"] = self.rocm_lib.rsmi_dev_temp_metric_get
