@@ -33,6 +33,9 @@ def bytes_to_gigabytes(bytes):
 def hz_to_gigahz_int(hz):
     return round(float(hz)/pow(10, 9), 2)
 
+def hz_to_megahz_int(hz):
+    return round(float(hz)/pow(10, 6), 2)
+
 def process_complex_query_output(object, output, nesting_level=4):
     if type(object) == dict:
         for key in object.keys():

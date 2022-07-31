@@ -1,6 +1,7 @@
 import ctypes
+import enum
 from typing import Any
-from common_api import CommonAPI, StatusCode
+from common_api import CommonAPI
 from ctypes import *
 from windows_amd_bindings import ADL_BusType, ADLBiosInfo, ADLChipSetInfo, ADLMemoryInfo2, AdapterInfoX2, Ctypes_ADL as cadl_win, ADLVersionsInfo, DetailedAsicTypes
 from utils import bytes_to_megabytes
@@ -13,6 +14,9 @@ class WindowsAMD_API(CommonAPI):
 
     def initialize(self) -> None:
         self.adl_clib.functions["adl_initialize"]()
+
+    def convert_enum_name_to_readable_string(self, enum_name: str, enum_type: enum.Enum) -> str:
+        pass
 
     def finish(self) -> None:
         self.adl_clib.functions["adl_finish"]()
@@ -57,8 +61,7 @@ class WindowsAMD_API(CommonAPI):
         strDriverPathExt = None
         strPNPString = None
         iOSDisplayIndex = None
-        iInfoMask = None
-        iInfoValue = None
+
         if status not in (0, 1):
             iAdapterIndex = "Not supported"
             strUDID = "Not supported"
@@ -152,21 +155,21 @@ class WindowsAMD_API(CommonAPI):
                 is_active_status = "Yes"
         
         return {
-            "Display name": strDisplayName,
             "Adapter index": iAdapterIndex,
+            "Display name": strDisplayName,
             "Display index": iOSDisplayIndex,
             "Universal Unique Device Identifier (UUID)": strUDID,
             "Vendor ID": iVendorID,
+            "Valid ASIC types": asicValids,
+            "Current ASIC types": asicTypes,
             "Driver Path": strDriverPath,
             "Driver Path Ext": strDriverPathExt,
             "Plug and Play (PnP) string": strPNPString,
-            "Valid ASIC types": asicValids,
-            "Current ASIC types": asicTypes,
-            "Is adapter present": iPresent,
-            "Does adapter exist": iExist,
-            "Is adapter accessible": is_accessible_status,
-            "Is primary display adapter": primary_display_adapter_index,
-            "Is adapter active": is_active_status
+            "Does this adapter exist": iExist,
+            "Is this adapter present": iPresent,
+            "Is this adapter accessible": is_accessible_status,
+            "Is this adapter active": is_active_status,
+            "Is this adapter primary display adapter": primary_display_adapter_index
         }
     
     def get_device_memory_info(self, handle) -> Any:
@@ -209,14 +212,14 @@ class WindowsAMD_API(CommonAPI):
             dedicated_vram_usage_in_MB = dedicated_vram_usage_in_MB.value
 
         return {
-            "Memory Size (MB)": memorySize,
-            "Memory Type": strMemoryType,
-            "Memory Bandwidth (MB/s)": iMemoryBandwidth,
-            "Hyper Memory Size (MB)": iHyperMemorySize,
-            "Invisible Memory Size (MB)": iInvisibleMemorySize,
+            "GPU Memory Total Size (MB)": memorySize,
+            "GPU Memory Type": strMemoryType,
             "Visible Memory Size (MB)": iVisibleMemorySize,
+            "Invisible Memory Size (MB)": iInvisibleMemorySize,
+            "Hyper Memory Size (MB)": iHyperMemorySize,
             "Video RAM (VRAM) Usage (MB)": vram_usage_in_MB,
-            "Dedicated Video RAM (VRAM) Usage (MB)": dedicated_vram_usage_in_MB
+            "Dedicated Video RAM (VRAM) Usage (MB)": dedicated_vram_usage_in_MB,
+            "Memory Bandwidth (MB/s)": iMemoryBandwidth,
         }
 
     def get_device_clocks_info(self, handle) -> Any:
@@ -250,7 +253,7 @@ class WindowsAMD_API(CommonAPI):
             memoryClock = memoryClock.value
 
         return {
-           "Core clock (MHz)": lpCoreClock,
+           "Graphics (Core) clock (MHz)": lpCoreClock,
            "Memory clock (MHz)": lpMemoryClock,
            "Base clock (MHz)": baseClock,
            "Game clock (MHz)": gameClock,
@@ -289,7 +292,6 @@ class WindowsAMD_API(CommonAPI):
         numOfAdapters = self.get_number_of_devices()
         adapterInfoX2_object = (AdapterInfoX2 * numOfAdapters)()
         status = self.adl_clib.functions["adl_get_device_adapter_info"](adapterInfoX2_object, numOfAdapters)
-
         iBusNumber = None
         iDeviceNumber =  None
         iFunctionNumber = None

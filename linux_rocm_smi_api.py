@@ -3,7 +3,7 @@ from typing import Any
 from common_api import CommonAPI
 from defines import *
 from linux_rocm_smi_bindings import Ctypes_ROCm as crocm, rsmi_clk_type_t, rsmi_frequencies_t, rsmi_fw_block_t, rsmi_memory_type_t, rsmi_retired_page_record_t, rsmi_pcie_bandwidth_t, rsmi_version_t
-from utils import bytes_to_gigabytes, hz_to_gigahz_int
+from utils import bytes_to_megabytes, hz_to_megahz_int
 
 class Linux_ROCm_SMI_Wrapper(CommonAPI):
     rocm_clib = None
@@ -131,13 +131,13 @@ class Linux_ROCm_SMI_Wrapper(CommonAPI):
                 else:
                     for j in range(0, num_supported_freq):
                         if j == current_freq:
-                            current_freq_output = hz_to_gigahz_int(frequency[j])
-                        frequency_output.append(hz_to_gigahz_int(frequency[j]))
+                            current_freq_output = hz_to_megahz_int(frequency[j])
+                        frequency_output.append(hz_to_megahz_int(frequency[j]))
                 num_supported_freq_output = num_supported_freq
                 clock_frequencies_info[clock_type_name] = {
                     "Num of supported clock frequencies": num_supported_freq_output,
-                    "Supported clock frequencies (GHz)": frequency_output,
-                    "Current clock frequency (GHz)": current_freq_output
+                    "Supported clock frequencies (MHz)": frequency_output,
+                    "Current clock frequency (MHz)": current_freq_output
                 }
             
         return {
@@ -166,7 +166,7 @@ class Linux_ROCm_SMI_Wrapper(CommonAPI):
             if status != 0:
                 total_memories_by_type[memory_type_name] = "Not supported"
             else:
-                total_memories_by_type[memory_type_name] = bytes_to_gigabytes(total_mem_by_type.value)
+                total_memories_by_type[memory_type_name] = bytes_to_megabytes(total_mem_by_type.value)
 
 
         total_memory_usages_by_type = dict()
@@ -179,7 +179,7 @@ class Linux_ROCm_SMI_Wrapper(CommonAPI):
             if status != 0:
                 total_memory_usages_by_type[memory_usage_type_name] = "Not supported"
             else:
-                total_memory_usages_by_type[memory_usage_type_name] = bytes_to_gigabytes(total_mem_usage_by_type.value)
+                total_memory_usages_by_type[memory_usage_type_name] = bytes_to_megabytes(total_mem_usage_by_type.value)
 
 
         busy_percent = ctypes.c_uint32(0)
@@ -211,8 +211,8 @@ class Linux_ROCm_SMI_Wrapper(CommonAPI):
 
 
         return {
-            "Total memory amount by type (GBs)": total_memories_by_type,
-            "Total memory usages by type (GBs)": total_memory_usages_by_type,
+            "Total memory amount by type (MB)": total_memories_by_type,
+            "Total memory usages by type (MB)": total_memory_usages_by_type,
             "Busy percent": busy_percent,
             "Retired pages number": num_pages,
             "Retired pages records": records_output
@@ -246,8 +246,8 @@ class Linux_ROCm_SMI_Wrapper(CommonAPI):
             else:
                 for j in range(0, pcie_bandwidth_transfer_rate_num_supported):
                     if j == pcie_bandwidth_transfer_rate_current:
-                        pcie_bandwidth_transfer_rate_output_current = hz_to_gigahz_int(pcie_bandwidth_transfer_rate_frequency[j])
-                    pcie_bandwidth_transfer_rate_output_frequency.append(hz_to_gigahz_int(pcie_bandwidth_transfer_rate_frequency[j]))
+                        pcie_bandwidth_transfer_rate_output_current = hz_to_megahz_int(pcie_bandwidth_transfer_rate_frequency[j])
+                    pcie_bandwidth_transfer_rate_output_frequency.append(hz_to_megahz_int(pcie_bandwidth_transfer_rate_frequency[j]))
             pcie_bandwidth_transfer_rate_output_num_supported = pcie_bandwidth_transfer_rate_num_supported
             pcie_bandwidth_lanes = pcie_bandwidth.lanes
             if len(pcie_bandwidth_lanes) <= 0:
@@ -285,8 +285,8 @@ class Linux_ROCm_SMI_Wrapper(CommonAPI):
 
         return {
             "PCIe Number of supported frequencies": pcie_bandwidth_transfer_rate_output_num_supported,
-            "PCIe Supported frequencies (GHz)": pcie_bandwidth_transfer_rate_output_frequency,
-            "PCIe Current frequency (GHz)": pcie_bandwidth_transfer_rate_output_current,
+            "PCIe Supported frequencies (MHz)": pcie_bandwidth_transfer_rate_output_frequency,
+            "PCIe Current frequency (MHz)": pcie_bandwidth_transfer_rate_output_current,
             "PCIe Supported lanes": pcie_bandwidth_lanes_output,
             "PCIe BDF number (Bus, Device, Function)": bdfid,
             "PCIe Throughput - Sent packets": sent,
