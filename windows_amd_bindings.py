@@ -56,6 +56,34 @@ class ADLBiosInfo(ctypes.Structure):
         ('strDate', ctypes.c_char * 256)
     ]
 
+class ADLGcnInfo(ctypes.Structure):
+	_fields_= [
+        ('CuCount', ctypes.c_int),
+        ('TexCount', ctypes.c_int),
+        ('RopCount', ctypes.c_int),
+        ('ASICFamilyId', ctypes.c_int),
+        ('ASICRevisionId', ctypes.c_int)
+    ]
+
+class ADLVersionsInfoX2(ctypes.Structure):
+    _fields_ = [
+        ('strDriverVer', ctypes.c_char * 256),
+        ('strCatalystVersion', ctypes.c_char * 256),
+        ('strCrimsonVersion', ctypes.c_char * 256),
+        ('strCatalystWebLink', ctypes.c_char * 256)
+    ]
+
+class ADLMemoryInfo3(ctypes.Structure):
+    _fields_ = [
+        ('iMemorySize', ctypes.c_longlong),
+        ('strMemoryType', ctypes.c_char * 256),
+        ('iMemoryBandwidth', ctypes.c_longlong),
+        ('iHyperMemorySize', ctypes.c_longlong),
+        ('iInvisibleMemorySize', ctypes.c_longlong),
+        ('iVisibleMemorySize', ctypes.c_longlong),
+        ('iVramVendorRevId', ctypes.c_longlong)
+    ]
+
 class DetailedAsicTypes(enum.IntEnum):
     ADL_ASIC_UNDEFINED    =  0
     ADL_ASIC_DISCRETE      = (1 << 0)
@@ -95,7 +123,11 @@ class Ctypes_ADL():
         "adl_get_device_is_accessible_status": None,
         "adl_get_device_vram_usage_info": None,
         "adl_get_device_dedicated_vram_usage_info": None,
-        "adl_get_device_observed_game_clock_info": None
+        "adl_get_device_observed_game_clock_info": None,
+        "adl_get_device_gcn_asic_info": None,
+        "adl_get_device_vm_page_size_info": None,
+        "adl_get_driver_versionX3": None,
+        "adl_get_device_memory_info3": None
     }
 
     def __init__(self) -> None:
@@ -168,3 +200,15 @@ class Ctypes_ADL():
         self.adl_lib.get_device_observed_game_clock_info.argtypes = [ctypes.c_int, ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int)]
         self.adl_lib.get_device_observed_game_clock_info.restype = ctypes.c_int
         self.functions["adl_get_device_observed_game_clock_info"] = self.adl_lib.get_device_observed_game_clock_info
+
+        self.adl_lib.get_device_gcn_asic_info.argtypes = [ctypes.c_int, ctypes.POINTER(ADLGcnInfo)]
+        self.adl_lib.get_device_gcn_asic_info.restype = ctypes.c_int
+        self.functions["adl_get_device_gcn_asic_info"] = self.adl_lib.get_device_gcn_asic_info
+
+        self.adl_lib.get_driver_versionX3.argtypes = [ctypes.c_int, ctypes.POINTER(ADLVersionsInfoX2)]
+        self.adl_lib.get_driver_versionX3.restype = ctypes.c_int
+        self.functions["adl_get_driver_versionX3"] = self.adl_lib.get_driver_versionX3
+
+        self.adl_lib.get_device_memory_info3.argtypes = [ctypes.c_int, ctypes.POINTER(ADLMemoryInfo3)]
+        self.adl_lib.get_device_memory_info3.restype = ctypes.c_int
+        self.functions["adl_get_device_memory_info3"] = self.adl_lib.get_device_memory_info3

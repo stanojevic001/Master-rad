@@ -3,7 +3,7 @@ import enum
 from typing import Any
 from common_api import CommonAPI
 from ctypes import *
-from windows_amd_bindings import ADL_BusType, ADLBiosInfo, ADLChipSetInfo, ADLMemoryInfo2, AdapterInfoX2, Ctypes_ADL as cadl_win, ADLVersionsInfo, DetailedAsicTypes
+from windows_amd_bindings import ADL_BusType, ADLBiosInfo, ADLChipSetInfo, ADLGcnInfo, ADLMemoryInfo2, ADLMemoryInfo3, ADLVersionsInfoX2, AdapterInfoX2, Ctypes_ADL as cadl_win, ADLVersionsInfo, DetailedAsicTypes
 from utils import bytes_to_megabytes
 class WindowsAMD_API(CommonAPI):
 
@@ -153,13 +153,47 @@ class WindowsAMD_API(CommonAPI):
             else:
                 #True
                 is_active_status = "Yes"
-        
+
+        gcn_asic_info = ADLGcnInfo()
+        status = self.adl_clib.functions["adl_get_device_gcn_asic_info"](device_index, ctypes.byref(gcn_asic_info))
+        gcn_asic_info_cu_count = None
+        gcn_asic_info_tex_count = None
+        gcn_asic_info_rop_count = None
+        gcn_asic_info_family_id = None
+        gcn_asic_info_revision_id = None
+        if status not in (0, 1):
+            gcn_asic_info_cu_count = "Not supported"
+            gcn_asic_info_tex_count = "Not supported"
+            gcn_asic_info_rop_count = "Not supported"
+            gcn_asic_info_family_id = "Not supported"
+            gcn_asic_info_revision_id = "Not supported"
+        else:
+            gcn_asic_info_cu_count = gcn_asic_info.CuCount
+            gcn_asic_info_tex_count = gcn_asic_info.TexCount
+            gcn_asic_info_rop_count = gcn_asic_info.RopCount
+            gcn_asic_info_family_id =  gcn_asic_info.ASICFamilyId
+            gcn_asic_info_revision_id = gcn_asic_info.ASICRevisionId
+
+        memory_info3 = ADLMemoryInfo3()
+        status = self.adl_clib.functions["adl_get_device_memory_info3"](device_index, ctypes.byref(memory_info3))
+        vram_vendor_rev_id = None
+        if status not in (0, 1):
+            vram_vendor_rev_id = "Not supported"
+        else:
+            vram_vendor_rev_id = memory_info3.iVramVendorRevId
+
         return {
             "Adapter index": iAdapterIndex,
             "Display name": strDisplayName,
             "Display index": iOSDisplayIndex,
             "Universal Unique Device Identifier (UUID)": strUDID,
+            "Compute units": gcn_asic_info_cu_count,
+            "Texture mapping units": gcn_asic_info_tex_count,
+            "Render backend units": gcn_asic_info_rop_count,
+            "Family ID": gcn_asic_info_family_id,
+            "Revision ID": gcn_asic_info_revision_id,
             "Vendor ID": iVendorID,
+            "Video RAM (VRAM) vendor revision ID": vram_vendor_rev_id,
             "Valid ASIC types": asicValids,
             "Current ASIC types": asicTypes,
             "Driver Path": strDriverPath,
@@ -319,9 +353,30 @@ class WindowsAMD_API(CommonAPI):
     def get_device_versions_info(self, handle) -> Any:
         device_index = ctypes.c_int(handle)
 
-        versionsInfo = ADLVersionsInfo()
-        self.adl_clib.functions["adl_get_driver_version"](ctypes.byref(versionsInfo))
-        driver_version =  bytes(versionsInfo.strDriverVer).decode('ASCII')
+        #versionsInfo = ADLVersionsInfo()
+        #status = self.adl_clib.functions["adl_get_driver_version"](ctypes.byref(versionsInfo))
+        #driver_version = "None"
+        #if status not in (0, 1):
+        #    driver_version = "Not supported"
+        #else:
+        #    driver_version =  bytes(versionsInfo.strDriverVer).decode('ASCII')
+        
+        versionsInfo = ADLVersionsInfoX2()
+        status = self.adl_clib.functions["adl_get_driver_versionX3"](device_index, ctypes.byref(versionsInfo))
+        driver_version = None
+        catalyst_version = None
+        crimson_version = None
+        catalyst_weblink = None
+        if status not in (0, 1):
+            driver_version = "Not supported"
+            catalyst_version = "Not supported"
+            crimson_version = "Not supported"
+            catalyst_weblink = "Not supported"
+        else:
+            driver_version =  bytes(versionsInfo.strDriverVer).decode('ASCII')
+            catalyst_version = bytes(versionsInfo.strCatalystVersion).decode('ASCII')
+            crimson_version = bytes(versionsInfo.strCrimsonVersion).decode('ASCII')
+            catalyst_weblink = bytes(versionsInfo.strCatalystWebLink).decode('ASCII')
 
         vbios_info = ADLBiosInfo()
         status = self.adl_clib.functions["adl_get_device_vbios_info"](device_index, ctypes.byref(vbios_info))
@@ -339,6 +394,9 @@ class WindowsAMD_API(CommonAPI):
 
         return {
             "Driver version": driver_version,
+            "AMD Catalyst version": catalyst_version,
+            "AMD Catalyst weblink": catalyst_weblink,
+            "AMD Crimson version": crimson_version,
             "VBIOS part number": vbios_info_strPartNumber,
             "VBIOS version": vbios_info_strVersion,
             "VBIOS date": vbios_info_strDate
