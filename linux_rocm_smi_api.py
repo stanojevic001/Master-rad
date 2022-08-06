@@ -131,11 +131,12 @@ class Linux_ROCm_SMI_Wrapper(CommonAPI):
 
     def initialize(self) -> None:
         flag = ctypes.c_uint64(0)
-        self.rocm_clib.functions["rocm_initialize"](flag)
+        if self.rocm_clib.functions["rocm_initialize"] is not None:
+            self.rocm_clib.functions["rocm_initialize"](flag)
 
     def finish(self) -> None:
-        
-        self.rocm_clib.functions["rocm_finish"]()
+        if self.rocm_clib.functions["rocm_finish"] is not None:
+            self.rocm_clib.functions["rocm_finish"]()
 
     def get_number_of_devices(self) -> int:
         
@@ -377,98 +378,135 @@ class Linux_ROCm_SMI_Wrapper(CommonAPI):
         status = ctypes.c_int()
 
         device_id = ctypes.c_uint16()
-        status = self.rocm_clib.functions["rocm_get_device_id"](device_index, ctypes.byref(device_id))
-        if status != 0:
-            device_id = "Not supported"
+        if self.rocm_clib.functions["rocm_get_device_id"] is not None:
+            status = self.rocm_clib.functions["rocm_get_device_id"](device_index, ctypes.byref(device_id))
+            if status != 0:
+                device_id = "Not supported"
+            else:
+                device_id = device_id.value
         else:
-            device_id = device_id.value
+            device_id = "N/A"
 
-        #device_sku = ctypes.c_uint16()
-        #status = self.rocm_clib.functions["rocm_get_device_sku"](device_index, ctypes.byref(device_sku))
-        #if status != 0:
-        #    device_sku = "Not supported"
-        #else:
-        #    device_sku = bytes(device_sku.value).decode('ASCII')
+        device_sku = ctypes.c_uint16()
+        if self.rocm_clib.functions["rocm_get_device_sku"] is not None:
+            status = self.rocm_clib.functions["rocm_get_device_sku"](device_index, ctypes.byref(device_sku))
+            if status != 0:
+                device_sku = "Not supported"
+            else:
+                device_sku = bytes(device_sku.value).decode('ASCII')
+        else:
+            device_sku = "N/A"
 
         vendor_id = ctypes.c_uint16()
-        status = self.rocm_clib.functions["rocm_get_device_vendor_id"](device_index, ctypes.byref(vendor_id))
-        if status != 0:
-            vendor_id = "Not supported"
+        if self.rocm_clib.functions["rocm_get_device_vendor_id"] is not None:
+            status = self.rocm_clib.functions["rocm_get_device_vendor_id"](device_index, ctypes.byref(vendor_id))
+            if status != 0:
+                vendor_id = "Not supported"
+            else:
+                vendor_id = vendor_id.value
         else:
-            vendor_id = vendor_id.value
+            vendor_id = "N/A"
 
         brand_name = (ctypes.c_char * 200)()
         brand_len = ctypes.c_uint32(200)
-        status = self.rocm_clib.functions["rocm_get_device_brand"](device_index, brand_name, brand_len)
-        if status != 0:
-            brand_name = "Not supported"
+        if self.rocm_clib.functions["rocm_get_device_brand"] is not None:
+            status = self.rocm_clib.functions["rocm_get_device_brand"](device_index, brand_name, brand_len)
+            if status != 0:
+                brand_name = "Not supported"
+            else:
+                brand_name = bytes(brand_name.value).decode('ASCII')
         else:
-            brand_name = bytes(brand_name.value).decode('ASCII')
+            brand_name = "N/A"
 
         vendor_name = (ctypes.c_char * 200)()
         vendor_name_len = ctypes.c_size_t(200)
-        status = self.rocm_clib.functions["rocm_get_device_vendor_name"](device_index, vendor_name, vendor_name_len)
-        if status != 0:
-            vendor_name = "Not supported"
+        if self.rocm_clib.functions["rocm_get_device_vendor_name"] is not None:
+            status = self.rocm_clib.functions["rocm_get_device_vendor_name"](device_index, vendor_name, vendor_name_len)
+            if status != 0:
+                vendor_name = "Not supported"
+            else:
+                vendor_name = bytes(vendor_name.value).decode('ASCII')
         else:
-            vendor_name = bytes(vendor_name.value).decode('ASCII')
+            vendor_name = "N/A"
 
         vram_vendor_name = (ctypes.c_char * 200)()
         vram_vendor_len = ctypes.c_uint32(200)
-        status = self.rocm_clib.functions["rocm_get_device_vram_vendor"](device_index, vram_vendor_name, vram_vendor_len)
-        if status != 0:
-            vram_vendor_name = "Not supported"
+        if self.rocm_clib.functions["rocm_get_device_vram_vendor"] is not None:
+            status = self.rocm_clib.functions["rocm_get_device_vram_vendor"](device_index, vram_vendor_name, vram_vendor_len)
+            if status != 0:
+                vram_vendor_name = "Not supported"
+            else:
+                vram_vendor_name = bytes(vram_vendor_name.value).decode('ASCII').upper()
         else:
-            vram_vendor_name = bytes(vram_vendor_name.value).decode('ASCII').upper()
+            vram_vendor_name = "N/A"
 
         serial_number = (ctypes.c_char * 200)()
         serial_num_len = ctypes.c_uint32(200)
-        status = self.rocm_clib.functions["rocm_get_device_serial_number"](device_index, serial_number, serial_num_len)
-        if status != 0:
-            serial_number = "Not supported"
+        if self.rocm_clib.functions["rocm_get_device_serial_number"] is not None:
+            status = self.rocm_clib.functions["rocm_get_device_serial_number"](device_index, serial_number, serial_num_len)
+            if status != 0:
+                serial_number = "Not supported"
+            else:
+                serial_number = bytes(serial_number.value).decode('ASCII')
         else:
-            serial_number = bytes(serial_number.value).decode('ASCII')
+            serial_number = "N/A"
 
         device_subsystem_id = ctypes.c_uint16()
-        status = self.rocm_clib.functions["rocm_get_device_subsystem_id"](device_index, ctypes.byref(device_subsystem_id))
-        if status != 0:
-            device_subsystem_id = "Not supported"
+        if self.rocm_clib.functions["rocm_get_device_subsystem_id"] is not None:
+            status = self.rocm_clib.functions["rocm_get_device_subsystem_id"](device_index, ctypes.byref(device_subsystem_id))
+            if status != 0:
+                device_subsystem_id = "Not supported"
+            else:
+                device_subsystem_id = device_subsystem_id.value
         else:
-            device_subsystem_id = device_subsystem_id.value
+            device_subsystem_id = "N/A"
 
         device_subsystem_name = (ctypes.c_char * 200)()
         device_subsystem_name_len = ctypes.c_size_t(200)
-        status = self.rocm_clib.functions["rocm_get_device_subsystem_name"](device_index, device_subsystem_name, device_subsystem_name_len)
-        if status != 0:
-            device_subsystem_name = "Not supported"
+        if self.rocm_clib.functions["rocm_get_device_subsystem_name"] is not None:
+            status = self.rocm_clib.functions["rocm_get_device_subsystem_name"](device_index, device_subsystem_name, device_subsystem_name_len)
+            if status != 0:
+                device_subsystem_name = "Not supported"
+            else:
+                device_subsystem_name = bytes(device_subsystem_name.value).decode('ASCII')
         else:
-            device_subsystem_name = bytes(device_subsystem_name.value).decode('ASCII')
+            device_subsystem_name = "N/A"
 
         minor_number = ctypes.c_uint32()
-        status = self.rocm_clib.functions["rocm_get_device_drm_render_minor"](device_index, ctypes.byref(minor_number))
-        if status != 0:
-            minor_number = "Not supported"
+        if self.rocm_clib.functions["rocm_get_device_drm_render_minor"] is not None:
+            status = self.rocm_clib.functions["rocm_get_device_drm_render_minor"](device_index, ctypes.byref(minor_number))
+            if status != 0:
+                minor_number = "Not supported"
+            else:
+                minor_number = minor_number.value
         else:
-            minor_number = minor_number.value
+            minor_number = "N/A"
 
         subsystem_vendor_id = ctypes.c_uint16()
-        status = self.rocm_clib.functions["rocm_get_device_subsystem_vendor_id"](device_index, ctypes.byref(subsystem_vendor_id))
-        if status != 0:
-            subsystem_vendor_id = "Not supported"
+        if self.rocm_clib.functions["rocm_get_device_subsystem_vendor_id"] is not None:
+            status = self.rocm_clib.functions["rocm_get_device_subsystem_vendor_id"](device_index, ctypes.byref(subsystem_vendor_id))
+            if status != 0:
+                subsystem_vendor_id = "Not supported"
+            else:
+                subsystem_vendor_id = subsystem_vendor_id.value
         else:
-            subsystem_vendor_id = subsystem_vendor_id.value
+            subsystem_vendor_id = "N/A"
 
         unique_id = ctypes.c_uint64()
-        status = self.rocm_clib.functions["rocm_get_device_unique_id"](device_index, ctypes.byref(unique_id))
-        if status != 0:
-            unique_id = "Not supported"
+        if self.rocm_clib.functions["rocm_get_device_unique_id"] is not None:
+            status = self.rocm_clib.functions["rocm_get_device_unique_id"](device_index, ctypes.byref(unique_id))
+            if status != 0:
+                unique_id = "Not supported"
+            else:
+                unique_id = unique_id.value
         else:
-            unique_id = unique_id.value
+            unique_id = "N/A"
         
 
         return {
             "Device ID": device_id,
             "Brand name": brand_name,
+            "Device SKU (Stock Keeping Unit)": device_sku,
             "Vendor ID": vendor_id,
             "Vendor name": vendor_name,
             "Video RAM (VRAM) vendor name": vram_vendor_name,
