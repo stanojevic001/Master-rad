@@ -766,3 +766,17 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
             "Architecture": str(device_architecture),
             "Interrupt request (IRQ) number": device_irq_num
         }
+
+    def get_device_ecc_info(self, handle) -> Any:
+        #ecc_mode_pending = None 
+        #ecc_mode_current = None
+        #try:
+        #    [ecc_mode_current, ecc_mode_pending] = self.pynvml_lib.nvmlDeviceGetEccMode(handle)
+        #except self.pynvml_lib.NVMLError as e:
+        #    ecc_mode_pending = ecc_mode_current = "Not supported"
+        # 
+        #return {
+        #    "Current ECC mode": ecc_mode_current,
+        #    "Pending (up next) ECC mode": ecc_mode_pending
+        #}
+        return "Not supported"

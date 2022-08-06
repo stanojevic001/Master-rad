@@ -3,7 +3,7 @@ import enum
 from typing import Any
 from common_api import CommonAPI
 from ctypes import *
-from windows_amd_bindings import ADL_BusType, ADLBiosInfo, ADLChipSetInfo, ADLGcnInfo, ADLMemoryInfo2, ADLMemoryInfo3, ADLVersionsInfoX2, AdapterInfoX2, Ctypes_ADL as cadl_win, ADLVersionsInfo, DetailedAsicTypes
+from windows_amd_bindings import ADL_BusType, ADLBiosInfo, ADLChipSetInfo, ADLGcnInfo, ADLMemoryInfo2, ADLMemoryInfo3, ADLTemperature, ADLVersionsInfoX2, AdapterInfoX2, Ctypes_ADL as cadl_win, ADLVersionsInfo, DetailedAsicTypes
 from utils import bytes_to_megabytes
 class WindowsAMD_API(CommonAPI):
 
@@ -43,7 +43,17 @@ class WindowsAMD_API(CommonAPI):
         return strAdapterName
 
     def get_device_temperature_info(self, handle) -> Any:
-        return "Not supported"
+        device_index = ctypes.c_int(handle)
+        temperature_info = ADLTemperature()
+        status = self.adl_clib.functions["adl_get_device_overdrive5_temperature"](device_index, 0, ctypes.byref(temperature_info))
+        if status not in (0, 1):
+            temperature_info = "Not supported"
+        else:
+            temperature_info = temperature_info.iTemperature/1000.00
+
+        return {
+            "Current GPU temperature (degrees Celsius)": temperature_info
+        }
     
     def get_device_catalog_info(self, handle) -> Any:
         device_index = ctypes.c_int(handle)
@@ -401,3 +411,6 @@ class WindowsAMD_API(CommonAPI):
             "VBIOS version": vbios_info_strVersion,
             "VBIOS date": vbios_info_strDate
         }
+
+    def get_device_ecc_info(self, handle) -> Any:
+        return super().get_device_ecc_info(handle)

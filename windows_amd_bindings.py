@@ -84,6 +84,12 @@ class ADLMemoryInfo3(ctypes.Structure):
         ('iVramVendorRevId', ctypes.c_longlong)
     ]
 
+class ADLTemperature(ctypes.Structure):
+  _fields_ = [
+    ('iSize', ctypes.c_int),
+    ('iTemperature', ctypes.c_int)
+  ]
+
 class DetailedAsicTypes(enum.IntEnum):
     ADL_ASIC_UNDEFINED    =  0
     ADL_ASIC_DISCRETE      = (1 << 0)
@@ -127,7 +133,9 @@ class Ctypes_ADL():
         "adl_get_device_gcn_asic_info": None,
         "adl_get_device_vm_page_size_info": None,
         "adl_get_driver_versionX3": None,
-        "adl_get_device_memory_info3": None
+        "adl_get_device_memory_info3": None,
+        "adl_get_device_overdrive5_temperature": None,
+        "adl_get_device_aspects": None
     }
 
     def __init__(self) -> None:
@@ -212,3 +220,11 @@ class Ctypes_ADL():
         self.adl_lib.get_device_memory_info3.argtypes = [ctypes.c_int, ctypes.POINTER(ADLMemoryInfo3)]
         self.adl_lib.get_device_memory_info3.restype = ctypes.c_int
         self.functions["adl_get_device_memory_info3"] = self.adl_lib.get_device_memory_info3
+
+        self.adl_lib.get_device_overdrive5_temperature.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.POINTER(ADLTemperature)]
+        self.adl_lib.get_device_overdrive5_temperature.restype = ctypes.c_int
+        self.functions["adl_get_device_overdrive5_temperature"] = self.adl_lib.get_device_overdrive5_temperature
+
+        self.adl_lib.get_device_aspects.argtypes = [ctypes.c_int, ctypes.POINTER(ctypes.c_char), ctypes.c_int]
+        self.adl_lib.get_device_aspects.restype = ctypes.c_int
+        self.functions["adl_get_device_aspects"] = self.adl_lib.get_device_aspects

@@ -11,6 +11,7 @@ class CommandObject():
     current_os = CURRENT_OS
     current_GPUs = get_current_GPU_names()
     called_command_name = ""
+    called_gpu_index = None
     calling_args = []
     apiObject = CommonAPI()
 
@@ -22,6 +23,23 @@ class CommandObject():
             self.called_command_name = self.calling_args[1]
         else:
             self.called_command_name = "help"
+        return StatusCode.SUCCESS
+
+    def process_gpu_index(self) -> StatusCode:
+        if len(self.calling_args) > 2:
+            if self.calling_args[2][0:5] != "-gpu=":
+                print("Invalid gpu index parameter input form '{}'. Try again with form: -gpu=<gpu_index>, and replace <gpu_index> with a number.".format(self.calling_args[2]))
+                return StatusCode.INVALID_REQUEST
+            else:
+                try:
+                    self.called_gpu_index = int(self.calling_args[2][5:])
+                    return StatusCode.SUCCESS
+                except Exception as e:
+                    print("Invalid gpu index '{}' provided. Try again!".format(str(self.calling_args[2][5:])))
+                    return StatusCode.INVALID_REQUEST
+        else:
+            self.called_gpu_index = "All devices"
+            return StatusCode.SUCCESS
     
     def prepare_command_object(self) -> StatusCode:
 
@@ -67,7 +85,14 @@ class CommandObject():
                 self.apiObject = Linux_ROCm_SMI_Wrapper()
 
         try:
-            self.process_command_name()
+            status = self.process_command_name()
+            if status != StatusCode.SUCCESS:
+                return status
+
+            status = self.process_gpu_index()
+            if status != StatusCode.SUCCESS:
+                return status
+
             return StatusCode.SUCCESS
         except Exception as e:
             print(e)

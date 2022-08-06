@@ -46,3 +46,7 @@ class CommonAPI():
     def get_device_catalog_info(self, handle) -> Any:
         ''' Get catalog info for a given GPU device '''
         pass
+
+    def get_device_ecc_info(self, handle) -> Any:
+        ''' Get ECC (Error Correction Code) memory info for a given GPU device '''
+        pass

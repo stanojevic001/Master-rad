@@ -540,3 +540,6 @@ class Linux_ROCm_SMI_Wrapper(CommonAPI):
             "VBIOS version": vbios_version,
             "Firmware versions": fw_versions
         }
+
+    def get_device_ecc_info(self, handle) -> Any:
+        return super().get_device_ecc_info(handle)
