@@ -141,90 +141,179 @@ class Ctypes_ADL():
     def __init__(self) -> None:
         self.adl_lib: ctypes.WinDLL = ctypes.windll.LoadLibrary("amd_package\\windows\\windows_adl.dll")
 
-        self.adl_lib.initialize.argtypes = []
-        self.adl_lib.initialize.restype = ctypes.c_int
-        self.functions["adl_initialize"] = self.adl_lib.initialize
+        try:
+            getattr(self.rocm_lib, "initialize")
+            self.adl_lib.initialize.argtypes = []
+            self.adl_lib.initialize.restype = ctypes.c_int
+            self.functions["adl_initialize"] = self.adl_lib.initialize
+        except Exception as e:
+            self.functions["adl_initialize"] = None
 
-        self.adl_lib.finish.argtypes = []
-        self.adl_lib.finish.restype = ctypes.c_int
-        self.functions["adl_finish"] = self.adl_lib.finish
-        
-        self.adl_lib.get_driver_version.argtypes = [ctypes.POINTER(ADLVersionsInfo)]
-        self.adl_lib.get_driver_version.restype = ctypes.c_int
-        self.functions["adl_get_driver_version"] = self.adl_lib.get_driver_version
+        try:
+            getattr(self.rocm_lib, "finish")
+            self.adl_lib.finish.argtypes = []
+            self.adl_lib.finish.restype = ctypes.c_int
+            self.functions["adl_finish"] = self.adl_lib.finish
+        except Exception as e:
+            self.functions["adl_finish"] = None
 
-        self.adl_lib.get_number_of_devices.argtypes = [ctypes.POINTER(ctypes.c_int)]
-        self.adl_lib.get_number_of_devices.restype = ctypes.c_int
-        self.functions["adl_get_number_of_devices"] = self.adl_lib.get_number_of_devices
+        try:
+            getattr(self.rocm_lib, "get_driver_version")
+            self.adl_lib.get_driver_version.argtypes = [ctypes.POINTER(ADLVersionsInfo)]
+            self.adl_lib.get_driver_version.restype = ctypes.c_int
+            self.functions["adl_get_driver_version"] = self.adl_lib.get_driver_version
+        except Exception as e:
+            self.functions["adl_get_driver_version"] = None
 
-        self.adl_lib.get_device_adapter_info.argtypes = [ctypes.POINTER(AdapterInfoX2), ctypes.c_int]
-        self.adl_lib.get_device_adapter_info.restype = ctypes.c_int
-        self.functions["adl_get_device_adapter_info"] = self.adl_lib.get_device_adapter_info
+        try:
+            getattr(self.rocm_lib, "get_number_of_devices")
+            self.adl_lib.get_number_of_devices.argtypes = [ctypes.POINTER(ctypes.c_int)]
+            self.adl_lib.get_number_of_devices.restype = ctypes.c_int
+            self.functions["adl_get_number_of_devices"] = self.adl_lib.get_number_of_devices
+        except Exception as e:
+            self.functions["adl_get_number_of_devices"] = None
 
-        self.adl_lib.get_device_asic_family_type.argtypes = [ctypes.c_int, ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int)]
-        self.adl_lib.get_device_asic_family_type.restype = ctypes.c_int
-        self.functions["adl_get_device_asic_family_type"] = self.adl_lib.get_device_asic_family_type
+        try:
+            getattr(self.rocm_lib, "get_device_adapter_info")
+            self.adl_lib.get_device_adapter_info.argtypes = [ctypes.POINTER(AdapterInfoX2), ctypes.c_int]
+            self.adl_lib.get_device_adapter_info.restype = ctypes.c_int
+            self.functions["adl_get_device_adapter_info"] = self.adl_lib.get_device_adapter_info
+        except Exception as e:
+            self.functions["adl_get_device_adapter_info"] = None
 
-        self.adl_lib.get_device_chipset_info.argtypes = [ctypes.c_int, ctypes.POINTER(ADLChipSetInfo)]
-        self.adl_lib.get_device_chipset_info.restype = ctypes.c_int
-        self.functions["adl_get_device_chipset_info"] = self.adl_lib.get_device_chipset_info
+        try:
+            getattr(self.rocm_lib, "get_device_asic_family_type")
+            self.adl_lib.get_device_asic_family_type.argtypes = [ctypes.c_int, ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int)]
+            self.adl_lib.get_device_asic_family_type.restype = ctypes.c_int
+            self.functions["adl_get_device_asic_family_type"] = self.adl_lib.get_device_asic_family_type
+        except Exception as e:
+            self.functions["adl_get_device_asic_family_type"] = None
 
-        self.adl_lib.get_device_id.argtypes = [ctypes.c_int, ctypes.POINTER(ctypes.c_int)]
-        self.adl_lib.get_device_id.restype = ctypes.c_int
-        self.functions["adl_get_device_id"] = self.adl_lib.get_device_id
 
-        self.adl_lib.get_device_memory_info2.argtypes = [ctypes.c_int, ctypes.POINTER(ADLMemoryInfo2)]
-        self.adl_lib.get_device_memory_info2.restype = ctypes.c_int
-        self.functions["adl_get_device_memory_info2"] = self.adl_lib.get_device_memory_info2
+        try:
+            getattr(self.rocm_lib, "get_device_chipset_info")
+            self.adl_lib.get_device_chipset_info.argtypes = [ctypes.c_int, ctypes.POINTER(ADLChipSetInfo)]
+            self.adl_lib.get_device_chipset_info.restype = ctypes.c_int
+            self.functions["adl_get_device_chipset_info"] = self.adl_lib.get_device_chipset_info
+        except Exception as e:
+            self.functions["adl_get_device_chipset_info"] = None
 
-        self.adl_lib.get_device_vbios_info.argtypes = [ctypes.c_int, ctypes.POINTER(ADLBiosInfo)]
-        self.adl_lib.get_device_vbios_info.restype = ctypes.c_int
-        self.functions["adl_get_device_vbios_info"] = self.adl_lib.get_device_vbios_info
+        try:
+            getattr(self.rocm_lib, "get_device_id")
+            self.adl_lib.get_device_id.argtypes = [ctypes.c_int, ctypes.POINTER(ctypes.c_int)]
+            self.adl_lib.get_device_id.restype = ctypes.c_int
+            self.functions["adl_get_device_id"] = self.adl_lib.get_device_id
+        except Exception as e:
+            self.functions["adl_get_device_id"] = None
 
-        self.adl_lib.get_device_observed_clock_info.argtypes = [ctypes.c_int, ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int)]
-        self.adl_lib.get_device_observed_clock_info.restype = ctypes.c_int
-        self.functions["adl_get_device_observed_clock_info"] = self.adl_lib.get_device_observed_clock_info
+        try:
+            getattr(self.rocm_lib, "get_device_memory_info2")
+            self.adl_lib.get_device_memory_info2.argtypes = [ctypes.c_int, ctypes.POINTER(ADLMemoryInfo2)]
+            self.adl_lib.get_device_memory_info2.restype = ctypes.c_int
+            self.functions["adl_get_device_memory_info2"] = self.adl_lib.get_device_memory_info2
+        except Exception as e:
+            self.functions["adl_get_device_memory_info2"] = None
 
-        self.adl_lib.get_primary_display_adapter_index.argtypes = [ctypes.POINTER(ctypes.c_int)]
-        self.adl_lib.get_primary_display_adapter_index.restype = ctypes.c_int
-        self.functions["adl_get_primary_display_adapter_index"] = self.adl_lib.get_primary_display_adapter_index
+        try:
+            getattr(self.rocm_lib, "get_device_vbios_info")
+            self.adl_lib.get_device_vbios_info.argtypes = [ctypes.c_int, ctypes.POINTER(ADLBiosInfo)]
+            self.adl_lib.get_device_vbios_info.restype = ctypes.c_int
+            self.functions["adl_get_device_vbios_info"] = self.adl_lib.get_device_vbios_info
+        except Exception as e:
+            self.functions["adl_get_device_vbios_info"] = None
 
-        self.adl_lib.get_device_is_active_status.argtypes = [ctypes.c_int, ctypes.POINTER(ctypes.c_int)]
-        self.adl_lib.get_device_is_active_status.restype = ctypes.c_int
-        self.functions["adl_get_device_is_active_status"] = self.adl_lib.get_device_is_active_status
+        try:
+            getattr(self.rocm_lib, "get_device_observed_clock_info")
+            self.adl_lib.get_device_observed_clock_info.argtypes = [ctypes.c_int, ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int)]
+            self.adl_lib.get_device_observed_clock_info.restype = ctypes.c_int
+            self.functions["adl_get_device_observed_clock_info"] = self.adl_lib.get_device_observed_clock_info
+        except Exception as e:
+            self.functions["adl_get_device_observed_clock_info"] = None
 
-        self.adl_lib.get_device_is_accessible_status.argtypes = [ctypes.c_int, ctypes.POINTER(ctypes.c_int)]
-        self.adl_lib.get_device_is_accessible_status.restype = ctypes.c_int
-        self.functions["adl_get_device_is_accessible_status"] = self.adl_lib.get_device_is_accessible_status
+        try:
+            getattr(self.rocm_lib, "get_primary_display_adapter_index")
+            self.adl_lib.get_primary_display_adapter_index.argtypes = [ctypes.POINTER(ctypes.c_int)]
+            self.adl_lib.get_primary_display_adapter_index.restype = ctypes.c_int
+            self.functions["adl_get_primary_display_adapter_index"] = self.adl_lib.get_primary_display_adapter_index
+        except Exception as e:
+            self.functions["adl_get_primary_display_adapter_index"] = None
 
-        self.adl_lib.get_device_vram_usage_info.argtypes = [ctypes.c_int, ctypes.POINTER(ctypes.c_int)]
-        self.adl_lib.get_device_vram_usage_info.restype = ctypes.c_int
-        self.functions["adl_get_device_vram_usage_info"] = self.adl_lib.get_device_vram_usage_info
+        try:
+            getattr(self.rocm_lib, "get_device_is_active_status")
+            self.adl_lib.get_device_is_active_status.argtypes = [ctypes.c_int, ctypes.POINTER(ctypes.c_int)]
+            self.adl_lib.get_device_is_active_status.restype = ctypes.c_int
+            self.functions["adl_get_device_is_active_status"] = self.adl_lib.get_device_is_active_status
+        except Exception as e:
+            self.functions["adl_get_device_is_active_status"] = None
 
-        self.adl_lib.get_device_dedicated_vram_usage_info.argtypes = [ctypes.c_int, ctypes.POINTER(ctypes.c_int)]
-        self.adl_lib.get_device_dedicated_vram_usage_info.restype = ctypes.c_int
-        self.functions["adl_get_device_dedicated_vram_usage_info"] = self.adl_lib.get_device_dedicated_vram_usage_info
+        try:
+            getattr(self.rocm_lib, "get_device_is_accessible_status")
+            self.adl_lib.get_device_is_accessible_status.argtypes = [ctypes.c_int, ctypes.POINTER(ctypes.c_int)]
+            self.adl_lib.get_device_is_accessible_status.restype = ctypes.c_int
+            self.functions["adl_get_device_is_accessible_status"] = self.adl_lib.get_device_is_accessible_status
+        except Exception as e:
+            self.functions["adl_get_device_is_accessible_status"] = None
 
-        self.adl_lib.get_device_observed_game_clock_info.argtypes = [ctypes.c_int, ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int)]
-        self.adl_lib.get_device_observed_game_clock_info.restype = ctypes.c_int
-        self.functions["adl_get_device_observed_game_clock_info"] = self.adl_lib.get_device_observed_game_clock_info
+        try:
+            getattr(self.rocm_lib, "get_device_vram_usage_info")
+            self.adl_lib.get_device_vram_usage_info.argtypes = [ctypes.c_int, ctypes.POINTER(ctypes.c_int)]
+            self.adl_lib.get_device_vram_usage_info.restype = ctypes.c_int
+            self.functions["adl_get_device_vram_usage_info"] = self.adl_lib.get_device_vram_usage_info
+        except Exception as e:
+            self.functions["adl_get_device_vram_usage_info"] = None
 
-        self.adl_lib.get_device_gcn_asic_info.argtypes = [ctypes.c_int, ctypes.POINTER(ADLGcnInfo)]
-        self.adl_lib.get_device_gcn_asic_info.restype = ctypes.c_int
-        self.functions["adl_get_device_gcn_asic_info"] = self.adl_lib.get_device_gcn_asic_info
+        try:
+            getattr(self.rocm_lib, "get_device_dedicated_vram_usage_info")
+            self.adl_lib.get_device_dedicated_vram_usage_info.argtypes = [ctypes.c_int, ctypes.POINTER(ctypes.c_int)]
+            self.adl_lib.get_device_dedicated_vram_usage_info.restype = ctypes.c_int
+            self.functions["adl_get_device_dedicated_vram_usage_info"] = self.adl_lib.get_device_dedicated_vram_usage_info
+        except Exception as e:
+            self.functions["adl_get_device_dedicated_vram_usage_info"] = None
 
-        self.adl_lib.get_driver_versionX3.argtypes = [ctypes.c_int, ctypes.POINTER(ADLVersionsInfoX2)]
-        self.adl_lib.get_driver_versionX3.restype = ctypes.c_int
-        self.functions["adl_get_driver_versionX3"] = self.adl_lib.get_driver_versionX3
+        try:
+            getattr(self.rocm_lib, "get_device_observed_game_clock_info")
+            self.adl_lib.get_device_observed_game_clock_info.argtypes = [ctypes.c_int, ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int)]
+            self.adl_lib.get_device_observed_game_clock_info.restype = ctypes.c_int
+            self.functions["adl_get_device_observed_game_clock_info"] = self.adl_lib.get_device_observed_game_clock_info
+        except Exception as e:
+            self.functions["adl_get_device_observed_game_clock_info"] = None
 
-        self.adl_lib.get_device_memory_info3.argtypes = [ctypes.c_int, ctypes.POINTER(ADLMemoryInfo3)]
-        self.adl_lib.get_device_memory_info3.restype = ctypes.c_int
-        self.functions["adl_get_device_memory_info3"] = self.adl_lib.get_device_memory_info3
+        try:
+            getattr(self.rocm_lib, "get_device_gcn_asic_info")
+            self.adl_lib.get_device_gcn_asic_info.argtypes = [ctypes.c_int, ctypes.POINTER(ADLGcnInfo)]
+            self.adl_lib.get_device_gcn_asic_info.restype = ctypes.c_int
+            self.functions["adl_get_device_gcn_asic_info"] = self.adl_lib.get_device_gcn_asic_info
+        except Exception as e:
+            self.functions["adl_get_device_gcn_asic_info"] = None
 
-        self.adl_lib.get_device_overdrive5_temperature.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.POINTER(ADLTemperature)]
-        self.adl_lib.get_device_overdrive5_temperature.restype = ctypes.c_int
-        self.functions["adl_get_device_overdrive5_temperature"] = self.adl_lib.get_device_overdrive5_temperature
+        try:
+            getattr(self.rocm_lib, "get_driver_versionX3")
+            self.adl_lib.get_driver_versionX3.argtypes = [ctypes.c_int, ctypes.POINTER(ADLVersionsInfoX2)]
+            self.adl_lib.get_driver_versionX3.restype = ctypes.c_int
+            self.functions["adl_get_driver_versionX3"] = self.adl_lib.get_driver_versionX3
+        except Exception as e:
+            self.functions["adl_get_driver_versionX3"] = None
 
-        self.adl_lib.get_device_aspects.argtypes = [ctypes.c_int, ctypes.POINTER(ctypes.c_char), ctypes.c_int]
-        self.adl_lib.get_device_aspects.restype = ctypes.c_int
-        self.functions["adl_get_device_aspects"] = self.adl_lib.get_device_aspects
+        try:
+            getattr(self.rocm_lib, "get_device_memory_info3")
+            self.adl_lib.get_device_memory_info3.argtypes = [ctypes.c_int, ctypes.POINTER(ADLMemoryInfo3)]
+            self.adl_lib.get_device_memory_info3.restype = ctypes.c_int
+            self.functions["adl_get_device_memory_info3"] = self.adl_lib.get_device_memory_info3
+        except Exception as e:
+            self.functions["adl_get_device_memory_info3"] = None
+
+        try:
+            getattr(self.rocm_lib, "get_device_overdrive5_temperature")
+            self.adl_lib.get_device_overdrive5_temperature.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.POINTER(ADLTemperature)]
+            self.adl_lib.get_device_overdrive5_temperature.restype = ctypes.c_int
+            self.functions["adl_get_device_overdrive5_temperature"] = self.adl_lib.get_device_overdrive5_temperature
+        except Exception as e:
+            self.functions["adl_get_device_overdrive5_temperature"] = None
+
+        try:
+            getattr(self.rocm_lib, "get_device_aspects")
+            self.adl_lib.get_device_aspects.argtypes = [ctypes.c_int, ctypes.POINTER(ctypes.c_char), ctypes.c_int]
+            self.adl_lib.get_device_aspects.restype = ctypes.c_int
+            self.functions["adl_get_device_aspects"] = self.adl_lib.get_device_aspects
+        except Exception as e:
+            self.functions["adl_get_device_aspects"] = None
