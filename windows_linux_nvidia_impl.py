@@ -694,8 +694,8 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
             curr_pcie_link_width = "N/A"
 
         all_not_supported = 0
-        result_final_output = { # sredi za jedno polje ako nije supported da ne bude cela struktura!
-            "PCI bus id tuple (domain:bus:device.function)": pci_info.busId.decode('ASCII') if not((type(pci_info) == str) and (pci_info in ("Not supported", "N/A"))) else pci_info, # change to check if not supported
+        result_final_output = { # sredi za jedno polje ako nije supported da ne bude cela struktura! (ako vrati not supported cela funk, kako da znam koje polje moze?)
+            "PCI bus id tuple (domain:bus:device.function)": pci_info.busId.decode('ASCII') if not((type(pci_info) == str) and (pci_info in ("Not supported", "N/A"))) else pci_info, # change to check if not supported (ako vrati not supported cela funk, kako da znam koje polje moze?)
             "PCI bus id legacy tuple (domain:bus:device.function)": pci_info.busIdLegacy.decode('ASCII') if not((type(pci_info) == str) and (pci_info in ("Not supported", "N/A"))) else pci_info,
             "PCI domain number": "{0:#0{1}x}".format(pci_info.domain, 10) if not((type(pci_info) == str) and (pci_info in ("Not supported", "N/A"))) else pci_info,
             "PCI bus number": "{0:#0{1}x}".format(pci_info.bus, 4) if not((type(pci_info) == str) and (pci_info in ("Not supported", "N/A"))) else pci_info,
@@ -907,7 +907,8 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
                 device_irq_num = "Not supported"
         else:
             device_irq_num = "N/A"
-        # sredi za jedno polje ako je not supported, da ne bude cela struktura
+
+        # sredi za jedno polje ako je not supported, da ne bude cela struktura? (ako vrati not supported cela funk, kako da znam koje polje moze?)
         all_not_supported = 0
         result_final_output = {
             "Serial Number": serial_number,
