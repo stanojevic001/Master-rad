@@ -49,12 +49,7 @@ def process_complex_query_output(object, output, nesting_level=4):
                 output += OutputTemplates.catalog_simple_elem_variable_nesting.format(nesting=str(" " * nesting_level), value=object)
         else:
             for i in range(0, len(object)):
-                #output += OutputTemplates.catalog_elem_output.format(nesting = str(" " * nesting_level), name = str("No. ") + str(i) , value = "")
                 output = process_complex_query_output(object[i], output, nesting_level+2)
-        '''
-        for i in range(0, len(object)):
-            output = process_complex_query_output(object[i], output, nesting_level)
-        '''
     else:
         output += OutputTemplates.catalog_simple_elem_variable_nesting.format(nesting=str(" " * nesting_level), value=object)
     

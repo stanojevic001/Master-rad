@@ -151,58 +151,60 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
         return result
 
     def initialize(self) -> None:
-        self.pynvml_lib.nvmlInit()
+        if hasattr(self.pynvml_lib, "nvmlInit") and callable(self.pynvml_lib.nvmlInit):
+            try:
+                self.pynvml_lib.nvmlInit()
+            except Exception as e:
+                raise Exception("Calling lib init function failed! Library initialization failed.")
+        else:
+            raise Exception("Can't find lib init function! Library initialization failed.")
 
     def finish(self) -> None:
-        self.pynvml_lib.nvmlShutdown()
+        if hasattr(self.pynvml_lib, "nvmlShutdown") and callable(self.pynvml_lib.nvmlShutdown):
+            try:
+                self.pynvml_lib.nvmlShutdown()
+            except Exception as e:
+                 raise Exception("Calling lib shut down function failed! Library cleanup failed.")
+        else:
+            raise Exception("Can't find lib shut down function! Library cleanup failed.")
 
     def get_number_of_devices(self) -> int:
-        num_devices = self.pynvml_lib.nvmlDeviceGetCount()
+        num_devices =  0
+        if hasattr(self.pynvml_lib, "nvmlDeviceGetCount") and callable(self.pynvml_lib.nvmlDeviceGetCount):
+            try:
+                num_devices = self.pynvml_lib.nvmlDeviceGetCount()
+            except Exception as e:
+                num_devices = 0
+        else:
+            num_devices = 0
         return num_devices
     
     def get_device_handle_by_index(self, index) -> Any:
-        handle = self.pynvml_lib.nvmlDeviceGetHandleByIndex(index)
+        handle = None
+        if hasattr(self.pynvml_lib, "nvmlDeviceGetHandleByIndex") and callable(self.pynvml_lib.nvmlDeviceGetHandleByIndex):
+            try:
+                handle = self.pynvml_lib.nvmlDeviceGetHandleByIndex(index)
+            except Exception as e:
+                handle = None
+                raise Exception("Can't find device handle with a give index {i}!".format(i = str(index)))
+        else:
+            handle = None
+            raise Exception("Can't find nvmlDeviceGetHandleByIndex function in pynvml module!")
         return handle
    
     def get_device_name_by_handle(self, handle) -> Any:
-        try:
-            result = self.pynvml_lib.nvmlDeviceGetName(handle)
-            return result.decode('ASCII')
-        except self.pynvml_lib.NVMLError as e:
-            error_code = e.args[0]
-            if error_code == self.pynvml_lib.NVML_ERROR_NOT_SUPPORTED:
-                return e
-            else:
-                raise self.pynvml_lib.NVMLError(e)
+        result = ""
+        if hasattr(self.pynvml_lib, "nvmlDeviceGetName") and callable(self.pynvml_lib.nvmlDeviceGetName):
+            try:
+                result = self.pynvml_lib.nvmlDeviceGetName(handle)
+                return result.decode('ASCII')
+            except self.pynvml_lib.NVMLError as e:
+                result = "" # vidi jel treba ipak da se baca exception?
+        else:
+            result = ""
     
     def get_device_temperature_info(self, handle) -> Any:
         try:
-            '''
-            temp_readings_count = self.pynvml_lib.NVML_TEMPERATURE_COUNT
-            temp_thresholds_count = self.pynvml_lib.NVML_TEMPERATURE_THRESHOLD_COUNT
-            temp_readings = []
-            temp_thresholds = []
-            
-            for i in range(0,temp_readings_count):
-                try:
-                    reading = self.pynvml_lib.nvmlDeviceGetTemperature(handle, i)
-                    temp_readings.append(reading)
-                except self.pynvml_lib.NVMLError as e:
-                    error_code = e.args[0]
-                    if error_code in (self.pynvml_lib.NVML_ERROR_NOT_SUPPORTED, self.pynvml_lib.NVML_ERROR_INVALID_ARGUMENT):
-                        temp_readings.append("Not supported")
-                        continue
-            
-            for j in range(0, temp_thresholds_count):
-                try:
-                    threshold = self.pynvml_lib.nvmlDeviceGetTemperatureThreshold(handle, j)
-                    temp_thresholds.append(threshold)
-                except self.pynvml_lib.NVMLError as e:
-                    error_code = e.args[0]
-                    if error_code in (self.pynvml_lib.NVML_ERROR_NOT_SUPPORTED, self.pynvml_lib.NVML_ERROR_INVALID_ARGUMENT):
-                        temp_thresholds.append("Not supported")
-                        continue
-            '''
             temp_readings_sensors = list()
             for temp_readings_sensor_type_key, temp_readings_sensor_type_enum in nvmlTemperatureSensors_t.__members__.items():
                 if temp_readings_sensor_type_key == "NVML_TEMPERATURE_COUNT":
