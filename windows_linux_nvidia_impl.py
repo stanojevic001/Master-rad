@@ -198,14 +198,16 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
             try:
                 result = self.pynvml_lib.nvmlDeviceGetName(handle)
                 return result.decode('ASCII')
-            except self.pynvml_lib.NVMLError as e:
-                result = "" # vidi jel treba ipak da se baca exception?
+            except Exception as e:
+                result = "Not supported" # vidi jel treba ipak da se baca exception?
         else:
-            result = ""
+            result = "N/A"
+        
+        return result
     
     def get_device_temperature_info(self, handle) -> Any:
-        try:
-            temp_readings_sensors = list()
+        temp_readings_sensors = list()
+        if hasattr(self.pynvml_lib, "nvmlDeviceGetTemperature") and callable(self.pynvml_lib.nvmlDeviceGetTemperature):
             for temp_readings_sensor_type_key, temp_readings_sensor_type_enum in nvmlTemperatureSensors_t.__members__.items():
                 if temp_readings_sensor_type_key == "NVML_TEMPERATURE_COUNT":
                     continue
@@ -221,8 +223,11 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
                     temp_readings_sensors.append({
                         temp_sensor_type_name: temp_reading_value
                     })
+        else:
+            temp_readings_sensors = "N/A"
 
-            temp_readings_thresholds = list()
+        temp_readings_thresholds = list()
+        if hasattr(self.pynvml_lib, "nvmlDeviceGetTemperatureThreshold") and callable(self.pynvml_lib.nvmlDeviceGetTemperatureThreshold):
             for temp_readings_threshold_type_key, temp_readings_threshold_type_enum in nvmlTemperatureThresholds_t.__members__.items():
                 if temp_readings_threshold_type_key == "NVML_TEMPERATURE_THRESHOLD_COUNT":
                     continue
@@ -238,21 +243,26 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
                     temp_readings_thresholds.append({
                         temp_threshold_type_name: temp_reading_threshold_value
                     })
+        else:
+            temp_readings_thresholds = "N/A"
 
-            return {
-                "Temperature readings from sensors (Celsius)": temp_readings_sensors,
-                "Temperature thresholds by type (Celsius)": temp_readings_thresholds
-            }
-        except self.pynvml_lib.NVMLError as e:
-            error_code = e.args[0]
-            if error_code == self.pynvml_lib.NVML_ERROR_NOT_SUPPORTED:
-                return e
-            else:
-                raise self.pynvml_lib.NVMLError(e)
+        all_not_supported = 0
+        result_final_output = {
+            "Temperature readings from sensors (Celsius)": temp_readings_sensors,
+            "Temperature thresholds by type (Celsius)": temp_readings_thresholds
+        }
+        for key in result_final_output.keys():
+            if (type(result_final_output[key]) == str) and result_final_output[key] in ("Not supported", "N/A"):
+                all_not_supported += 1
         
+        if all_not_supported >= len(result_final_output.keys()):
+            result_final_output = "Not supported"
+
+        return result_final_output
+    
     def get_device_clocks_info(self, handle) -> Any:
-        try:
             #Unsupported functions throw NOT SUPPORTED exception, they don't return error code!
+        if hasattr(self.pynvml_lib, "nvmlDeviceGetAdaptiveClockInfoStatus") and callable(self.pynvml_lib.nvmlDeviceGetAdaptiveClockInfoStatus):
             try:
                 adaptive_clock_info_status = self.pynvml_lib.nvmlDeviceGetAdaptiveClockInfoStatus(handle)
                 if adaptive_clock_info_status == 0:
@@ -263,9 +273,12 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
                     adaptive_clock_info_status = "UNKNOWN"
             except Exception as e:
                 adaptive_clock_info_status = "Not supported"
+        else:
+            adaptive_clock_info_status = "N/A"
 
-            application_clocks = list()
-            is_supported_application_clocks = False
+        application_clocks = list()
+        is_supported_application_clocks = False
+        if hasattr(self.pynvml_lib, "nvmlDeviceGetApplicationsClock") and callable(self.pynvml_lib.nvmlDeviceGetApplicationsClock):
             for app_clock_type_dict_key, app_clock_type_dict_enum in nvmlClockType_t.__members__.items():
                 if app_clock_type_dict_key in ("NVML_CLOCK_COUNT"):
                     continue
@@ -283,20 +296,26 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
                         })
             if not is_supported_application_clocks:
                 application_clocks = "Not supported"
+        else:
+            application_clocks = "N/A"
 
-            auto_boosted_clocks = {
-                "is_enabled": None,
-                "default_is_enabled": None
-            }
+        auto_boosted_clocks = {
+            "is_enabled": None,
+            "default_is_enabled": None
+        }
+        if hasattr(self.pynvml_lib, "nvmlDeviceGetAutoBoostedClocksEnabled") and callable(self.pynvml_lib.nvmlDeviceGetAutoBoostedClocksEnabled):
             try:
                 (isEnabled, defaultIsEnabled) = self.pynvml_lib.nvmlDeviceGetAutoBoostedClocksEnabled(handle)
+                auto_boosted_clocks["is_enabled"] = "ENABLED" if isEnabled == 1 else "DISABLED"
+                auto_boosted_clocks["default_is_enabled"] = "ENABLED" if defaultIsEnabled == 1 else "DISABLED"
             except Exception as e:
-                (isEnabled, defaultIsEnabled) = ("Not supported", "Not supported")
-            auto_boosted_clocks["is_enabled"] = "ENABLED" if isEnabled == 1 else "DISABLED"
-            auto_boosted_clocks["default_is_enabled"] = "ENABLED" if defaultIsEnabled == 1 else "DISABLED"
-            
-            clocks_mhz = dict()
-            is_supported_clocks_type_id = False
+                (auto_boosted_clocks["is_enabled"], auto_boosted_clocks["default_is_enabled"]) = ("Not supported", "Not supported")
+        else:
+            (auto_boosted_clocks["is_enabled"], auto_boosted_clocks["default_is_enabled"]) = ("N/A", "N/A")
+        
+        clocks_mhz = dict()
+        is_supported_clocks_type_id = False
+        if hasattr(self.pynvml_lib, "nvmlDeviceGetClock") and callable(self.pynvml_lib.nvmlDeviceGetClock):
             for clock_type_dict_key, clock_type_dict_enum in nvmlClockType_t.__members__.items():
                 if clock_type_dict_key in ("NVML_CLOCK_COUNT"):
                     continue
@@ -319,9 +338,12 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
                         })
             if not is_supported_clocks_type_id:
                 clocks_mhz = "Not supported"
+        else:
+            clocks_mhz = "N/A"
 
-            clocks_info = list()
-            is_supported_clocks_info = False
+        clocks_info = list()
+        is_supported_clocks_info = False
+        if hasattr(self.pynvml_lib, "nvmlDeviceGetClockInfo") and callable(self.pynvml_lib.nvmlDeviceGetClockInfo):
             for clock_info_type_dict_key, clock_info_type_dict_enum in nvmlClockType_t.__members__.items():
                 if clock_info_type_dict_key in ("NVML_CLOCK_COUNT"):
                     continue
@@ -339,7 +361,11 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
                     })
             if not is_supported_clocks_info:
                 clocks_info = "Not supported"
+        else:
+            clocks_info = "N/A"
 
+        result_throttle_reasons = {}
+        if hasattr(self.pynvml_lib, "nvmlDeviceGetCurrentClocksThrottleReasons") and callable(self.pynvml_lib.nvmlDeviceGetCurrentClocksThrottleReasons):
             try:
                 current_clocks_throttle_reasons = self.pynvml_lib.nvmlDeviceGetCurrentClocksThrottleReasons(handle)
                 throttle_reasons_bitmasks = {
@@ -355,9 +381,7 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
                     "No throttling": self.pynvml_lib.nvmlClocksThrottleReasonNone,
                     "All throttling reasons": self.pynvml_lib.nvmlClocksThrottleReasonAll 
                 }
-                result_throttle_reasons = {
-                    "Reasons": list()
-                }
+                result_throttle_reasons["Reasons"] = list()
                 if (current_clocks_throttle_reasons & throttle_reasons_bitmasks["All throttling reasons"]) > 0:
                     found_throttle_reason = False
                     
@@ -373,26 +397,36 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
                     result_throttle_reasons["Reasons"].append("No throttling")
 
             except Exception as e:
-                result_throttle_reasons["Reasons"].append("Not supported")
+                result_throttle_reasons = "Not supported"
+        else:
+            result_throttle_reasons = "N/A"
 
-            default_application_clocks = list()
-            is_supported_default_app_clock = False
+        default_application_clocks = list()
+        is_supported_default_app_clock = False
+        if hasattr(self.pynvml_lib, "nvmlDeviceGetDefaultApplicationsClock") and callable(self.pynvml_lib.nvmlDeviceGetDefaultApplicationsClock):
             for default_app_clock_type_dict_key, default_app_clock_type_dict_enum in nvmlClockType_t.__members__.items():
                 if default_app_clock_type_dict_key in ("NVML_CLOCK_COUNT"):
                     continue
                 default_app_clock_type_name = self.convert_enum_name_to_readable_string(default_app_clock_type_dict_key, default_app_clock_type_dict_enum)
                 try:
                     default_application_clock = self.pynvml_lib.nvmlDeviceGetDefaultApplicationsClock(handle, default_app_clock_type_dict_enum)
-                    default_application_clocks.append(default_application_clock)
+                    default_application_clocks.append({
+                        default_app_clock_type_name: default_application_clock
+                    })
                     is_supported_default_app_clock = True
                 except Exception as e:
                     default_application_clock = "Not supported"
-                    default_application_clocks.append(default_application_clock)
+                    default_application_clocks.append({
+                        default_app_clock_type_name: default_application_clock
+                    })
             if not is_supported_default_app_clock:
                 default_application_clocks = "Not supported"
+        else:
+            default_application_clocks = "N/A"
 
-            max_clocks_info = list()
-            is_supported_max_clock = False
+        max_clocks_info = list()
+        is_supported_max_clock = False
+        if hasattr(self.pynvml_lib, "nvmlDeviceGetMaxClockInfo") and callable(self.pynvml_lib.nvmlDeviceGetMaxClockInfo):
             for max_clock_type_dict_key, max_clock_type_dict_enum in nvmlClockType_t.__members__.items():
                 if max_clock_type_dict_key in ("NVML_CLOCK_COUNT"):
                     continue
@@ -410,9 +444,12 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
                     })
             if not is_supported_max_clock:
                 max_clocks_info = "Not supported"
+        else:
+            max_clocks_info = "N/A"
 
-            max_customer_boost_clocks = list()
-            is_supported_max_customer_boost_clock = False
+        max_customer_boost_clocks = list()
+        is_supported_max_customer_boost_clock = False
+        if hasattr(self.pynvml_lib, "nvmlDeviceGetMaxCustomerBoostClock") and callable(self.pynvml_lib.nvmlDeviceGetMaxCustomerBoostClock):
             for max_customer_boost_clock_type_dict_key, max_customer_boost_clock_type_dict_enum in nvmlClockType_t.__members__.items():
                 if max_customer_boost_clock_type_dict_key in ("NVML_CLOCK_COUNT"):
                     continue
@@ -430,11 +467,14 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
                     })
             if not is_supported_max_customer_boost_clock:
                 max_customer_boost_clocks = "Not supported"
+        else:
+            max_customer_boost_clocks = "N/A"
 
+        if hasattr(self.pynvml_lib, "nvmlDeviceGetSupportedClocksThrottleReasons") and callable(self.pynvml_lib.nvmlDeviceGetSupportedClocksThrottleReasons):
             try:
                 supported_clocks_throttle_reasons = self.pynvml_lib.nvmlDeviceGetSupportedClocksThrottleReasons(handle)
                 throttle_reasons_bitmasks = {
-                    "GPU Idle": self.pynvml_lib.nvmlClocksThrottleReasonGpuIdle,
+                    "GPU Idle": self.pynvml_lib.nvmlClocksThrottleReasonGpuIdle, # vidi isto za proveru da li postoji!
                     "Applications Clocks Setting": self.pynvml_lib.nvmlClocksThrottleReasonApplicationsClocksSetting, 
                     "Sw Power Cap": self.pynvml_lib.nvmlClocksThrottleReasonSwPowerCap,
                     "Hw Slowdown": self.pynvml_lib.nvmlClocksThrottleReasonHwSlowdown,
@@ -462,14 +502,20 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
                     result_supported_throttle_reasons.append("No throttling")
             except Exception as e:
                 supported_clocks_throttle_reasons = "Not supported"
-            
-            supported_memory_clocks = None
+        else:
+            supported_clocks_throttle_reasons = "N/A"
+
+        supported_memory_clocks = None
+        if hasattr(self.pynvml_lib, "nvmlDeviceGetSupportedMemoryClocks") and callable(self.pynvml_lib.nvmlDeviceGetSupportedMemoryClocks):
             try:
                 supported_memory_clocks = self.pynvml_lib.nvmlDeviceGetSupportedMemoryClocks(handle)
             except Exception as e:
                 supported_memory_clocks = "Not supported"
+        else:
+            supported_memory_clocks = "N/A"
 
-            supported_graphics_clocks = None
+        supported_graphics_clocks = None
+        if hasattr(self.pynvml_lib, "nvmlDeviceGetSupportedGraphicsClocks") and callable(self.pynvml_lib.nvmlDeviceGetSupportedGraphicsClocks):
             try:
                 if (supported_memory_clocks is None) or (supported_memory_clocks == "Not supported"):
                     supported_graphics_clocks = "Not supported"
@@ -481,8 +527,11 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
                         supported_graphics_clocks[str(supported_memory_clock)].append(supported_graphics_clocks_for_mem_clk)
             except Exception as e:
                 supported_graphics_clocks = "Not supported"
+        else:
+            supported_graphics_clocks = "N/A"
 
-            violation_statuses = dict()
+        violation_statuses = dict()
+        if hasattr(self.pynvml_lib, "nvmlDeviceGetViolationStatus") and callable(self.pynvml_lib.nvmlDeviceGetViolationStatus):
             possible_violation_statuses = {
                 "Power induced": self.pynvml_lib.NVML_PERF_POLICY_POWER,
                 "Thermal induced": self.pynvml_lib.NVML_PERF_POLICY_THERMAL,
@@ -504,188 +553,254 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
                     else:
                         violation_statuses["Base clocks violations"] = {"Reference time": violation_status.referenceTime, "Violation time": violation_time}
                 except Exception as e:
-                    violation_statuses[policyType] = "Not supported" 
+                    violation_statuses[policyType] = "Not supported" #ubaci proveru ako su svi not supported!
+        else:
+            violation_statuses = "N/A"
 
-            return {
-                "Adaptive clocking status": adaptive_clock_info_status,
-                "Current auto boost clocks status": auto_boosted_clocks["is_enabled"],
-                "Default auto boost clocks status": auto_boosted_clocks["default_is_enabled"],
-                "Clocks by type and id (MHz)": clocks_mhz,
-                "Clocks by type (MHz)": clocks_info,
-                "Default application clocks": default_application_clock,
-                "Max clock info (MHz)": max_clocks_info,
-                "Supported memory clocks (Mhz)": supported_memory_clocks,
-                "Supported pairs of memory and graphics clocks (Memory clock: Graphics clocks) (MHz)": supported_graphics_clocks,
-                "Application clocks (MHz)": application_clocks,
-                "Max customer boost clock (MHz)": max_customer_boost_clocks,
-                "Current clocks throttle reasons": result_throttle_reasons,
-                "Supported clocks throttle reasons": result_supported_throttle_reasons,
-                "Violation status": violation_statuses
-            }
-        except self.pynvml_lib.NVMLError as e:
-            error_code = e.args[0]
-            if error_code == self.pynvml_lib.NVML_ERROR_NOT_SUPPORTED:
-                return e
-            else:
-                raise self.pynvml_lib.NVMLError(e)
+        all_not_supported = 0
+        result_final_output = {
+            "Adaptive clocking status": adaptive_clock_info_status,
+            "Current auto boost clocks status": auto_boosted_clocks["is_enabled"],
+            "Default auto boost clocks status": auto_boosted_clocks["default_is_enabled"],
+            "Clocks by type and id (MHz)": clocks_mhz,
+            "Clocks by type (MHz)": clocks_info,
+            "Default application clocks": default_application_clock,
+            "Max clock info (MHz)": max_clocks_info,
+            "Supported memory clocks (Mhz)": supported_memory_clocks,
+            "Supported pairs of memory and graphics clocks (Memory clock: Graphics clocks) (MHz)": supported_graphics_clocks,
+            "Application clocks (MHz)": application_clocks,
+            "Max customer boost clock (MHz)": max_customer_boost_clocks,
+            "Current clocks throttle reasons": result_throttle_reasons,
+            "Supported clocks throttle reasons": result_supported_throttle_reasons,
+            "Violation status": violation_statuses
+        }
+        for key in result_final_output.keys():
+            if (type(result_final_output[key]) == str) and result_final_output[key] in ("Not supported", "N/A"):
+                all_not_supported += 1
+        
+        if all_not_supported >= len(result_final_output.keys()):
+            result_final_output = "Not supported"
+
+        return result_final_output
 
     def get_device_memory_info(self, handle) -> Any:
-        try:
+        if hasattr(self.pynvml_lib, "nvmlDeviceGetBAR1MemoryInfo") and callable(self.pynvml_lib.nvmlDeviceGetBAR1MemoryInfo):
             try:
                 bar1_memory_info = self.pynvml_lib.nvmlDeviceGetBAR1MemoryInfo(handle)
             except Exception as e:
                 bar1_memory_info = "Not supported"
-            
+        else:
+            bar1_memory_info = "N/A"
+
+        if hasattr(self.pynvml_lib, "nvmlDeviceGetMemoryInfo") and callable(self.pynvml_lib.nvmlDeviceGetMemoryInfo):
             try:
                 memory_info = self.pynvml_lib.nvmlDeviceGetMemoryInfo(handle)
             except Exception as e:
                 memory_info = "Not supported"
-            
+        else:
+            memory_info = "N/A"
+
+        if hasattr(self.pynvml_lib, "nvmlDeviceGetInforomConfigurationChecksum") and callable(self.pynvml_lib.nvmlDeviceGetInforomConfigurationChecksum):
             try:
                 inforom_checksum = self.pynvml_lib.nvmlDeviceGetInforomConfigurationChecksum(handle) 
             except Exception as e:
                 inforom_checksum = "Not supported"
-            
-            return {
-                "GPU Total Memory (MB)": bytes_to_megabytes(memory_info.total),
-                "GPU Used Memory (MB)": bytes_to_megabytes(memory_info.used),
-                "GPU Free Memory (MB)": bytes_to_megabytes(memory_info.free),
-                "BAR1 Total Memory (MB)": bytes_to_megabytes(bar1_memory_info.bar1Total),
-                "BAR1 Used Memory (MB)": bytes_to_megabytes(bar1_memory_info.bar1Used),
-                "BAR1 Free Memory (MB)": bytes_to_megabytes(bar1_memory_info.bar1Free),
-                "InfoROM Checksum": inforom_checksum,
-            }
-        except self.pynvml_lib.NVMLError as e:
-            error_code = e.args[0]
-            if error_code == self.pynvml_lib.NVML_ERROR_NOT_SUPPORTED:
-                return e
-            else:
-                raise self.pynvml_lib.NVMLError(e)
+        else:
+            inforom_checksum = "N/A"
+
+        all_not_supported = 0
+        result_final_output = {
+            "GPU Total Memory (MB)": bytes_to_megabytes(memory_info.total) if not((type(memory_info) == str) and (memory_info in ("Not supported", "N/A"))) else memory_info,
+            "GPU Used Memory (MB)": bytes_to_megabytes(memory_info.used) if not((type(memory_info) == str) and (memory_info in ("Not supported", "N/A"))) else memory_info,
+            "GPU Free Memory (MB)": bytes_to_megabytes(memory_info.free) if not((type(memory_info) == str) and (memory_info in ("Not supported", "N/A"))) else memory_info,
+            "BAR1 Total Memory (MB)": bytes_to_megabytes(bar1_memory_info.bar1Total) if not((type(bar1_memory_info) == str) and (bar1_memory_info in ("Not supported", "N/A"))) else bar1_memory_info,
+            "BAR1 Used Memory (MB)": bytes_to_megabytes(bar1_memory_info.bar1Used) if not((type(bar1_memory_info) == str) and (bar1_memory_info in ("Not supported", "N/A"))) else bar1_memory_info,
+            "BAR1 Free Memory (MB)": bytes_to_megabytes(bar1_memory_info.bar1Free) if not((type(bar1_memory_info) == str) and (bar1_memory_info in ("Not supported", "N/A"))) else bar1_memory_info,
+            "InfoROM Checksum": inforom_checksum,
+        }
+        for key in result_final_output.keys():
+            if (type(result_final_output[key]) == str) and result_final_output[key] in ("Not supported", "N/A"):
+                all_not_supported += 1
+        
+        if all_not_supported >= len(result_final_output.keys()):
+            result_final_output = "Not supported"
+
+        return result_final_output
     
     def get_device_bus_info(self, handle) -> Any:
-        try:
+        if hasattr(self.pynvml_lib, "nvmlDeviceGetCurrPcieLinkGeneration") and callable(self.pynvml_lib.nvmlDeviceGetCurrPcieLinkGeneration):
             try:
                 curr_pcie_link_gen = self.pynvml_lib.nvmlDeviceGetCurrPcieLinkGeneration(handle)
             except Exception as e:
                 curr_pcie_link_gen = "Not supported"
-            
+        else:
+            curr_pcie_link_gen = "N/A"
+        
+        if hasattr(self.pynvml_lib, "nvmlDeviceGetCurrPcieLinkWidth") and callable(self.pynvml_lib.nvmlDeviceGetCurrPcieLinkWidth):
             try:
                 curr_pcie_link_width = self.pynvml_lib.nvmlDeviceGetCurrPcieLinkWidth(handle)
             except Exception as e:
                 curr_pcie_link_width = "Not supported"
-            
+        else:
+            curr_pcie_link_width = "N/A"
+
+        if hasattr(self.pynvml_lib, "nvmlDeviceGetMaxPcieLinkGeneration") and callable(self.pynvml_lib.nvmlDeviceGetMaxPcieLinkGeneration):        
             try:
                 max_pcie_link_gen = self.pynvml_lib.nvmlDeviceGetMaxPcieLinkGeneration(handle)
             except Exception as e:
                 max_pcie_link_gen = "Not supported"
+        else:
+            max_pcie_link_gen = "N/A"
 
+        if hasattr(self.pynvml_lib, "nvmlDeviceGetMaxPcieLinkWidth") and callable(self.pynvml_lib.nvmlDeviceGetMaxPcieLinkWidth):
             try:
                 max_pcie_link_width = self.pynvml_lib.nvmlDeviceGetMaxPcieLinkWidth(handle)
             except Exception as e:
                 max_pcie_link_width = "Not supported"
-               
+        else:
+            max_pcie_link_width = "N/A"
+
+        if hasattr(self.pynvml_lib, "nvmlDeviceGetMemoryBusWidth") and callable(self.pynvml_lib.nvmlDeviceGetMemoryBusWidth):            
             try:
                 memory_bus_width = self.pynvml_lib.nvmlDeviceGetMemoryBusWidth(handle)
             except Exception as e:
                 memory_bus_width = "Not supported"
-              
+        else:
+            memory_bus_width = "N/A"
+
+        if hasattr(self.pynvml_lib, "nvmlDeviceGetPciInfo_v3") and callable(self.pynvml_lib.nvmlDeviceGetPciInfo_v3):
             try:
                 pci_info = self.pynvml_lib.nvmlDeviceGetPciInfo_v3(handle)
             except Exception as e:
                 pci_info = "Not supported"
+        else:
+            pci_info = "N/A"
 
+        if hasattr(self.pynvml_lib, "nvmlDeviceGetPcieLinkMaxSpeed") and callable(self.pynvml_lib.nvmlDeviceGetPcieLinkMaxSpeed):
             try:
                 pcie_link_max_speed = self.pynvml_lib.nvmlDeviceGetPcieLinkMaxSpeed(handle)
                 pcie_link_max_speed = nvmlPcieLinkMaxSpeed_t(pcie_link_max_speed).name.replace("NVML_PCIE_LINK_MAX_SPEED_", "").replace("MBPS","")
             except Exception as e:
                 pcie_link_max_speed = "Not supported"
-                
+        else:
+            pcie_link_max_speed = "N/A"
+
+        if hasattr(self.pynvml_lib, "nvmlDeviceGetPcieReplayCounter") and callable(self.pynvml_lib.nvmlDeviceGetPcieReplayCounter):            
             try:
                 pcie_replay_counter = self.pynvml_lib.nvmlDeviceGetPcieReplayCounter(handle)
             except Exception as e:
                 curr_pcie_link_width = "Not supported"
+        else:
+            curr_pcie_link_width = "N/A"
 
-            result = {
-                "PCI bus id tuple (domain:bus:device.function)": pci_info.busId.decode('ASCII'),
-                "PCI bus id legacy tuple (domain:bus:device.function)": pci_info.busIdLegacy.decode('ASCII'),
-                "PCI domain number": "{0:#0{1}x}".format(pci_info.domain, 10),
-                "PCI bus number": "{0:#0{1}x}".format(pci_info.bus, 4),
-                "PCI device number": "{0:#0{1}x}".format(pci_info.device, 4),
-                "Maximum PCIe link generation": max_pcie_link_gen,
-                "Current PCIe link generation": curr_pcie_link_gen,
-                "Maximum PCIe link width (lanes)": max_pcie_link_width,
-                "Current PCIe link width (lanes)": curr_pcie_link_width,
-                "Maximum PCIe link speed (MB/s)": pcie_link_max_speed,
-                "Memory bus width (bits)": memory_bus_width,
-                "PCIe replay counter": pcie_replay_counter,
-            }
-            return result
-        except self.pynvml_lib.NVMLError as e:
-            error_code = e.args[0]
-            if error_code == self.pynvml_lib.NVML_ERROR_NOT_SUPPORTED:
-                return e
-            else:
-                raise self.pynvml_lib.NVMLError(e)
+        all_not_supported = 0
+        result_final_output = { # sredi za jedno polje ako nije supported da ne bude cela struktura!
+            "PCI bus id tuple (domain:bus:device.function)": pci_info.busId.decode('ASCII') if not((type(pci_info) == str) and (pci_info in ("Not supported", "N/A"))) else pci_info, # change to check if not supported
+            "PCI bus id legacy tuple (domain:bus:device.function)": pci_info.busIdLegacy.decode('ASCII') if not((type(pci_info) == str) and (pci_info in ("Not supported", "N/A"))) else pci_info,
+            "PCI domain number": "{0:#0{1}x}".format(pci_info.domain, 10) if not((type(pci_info) == str) and (pci_info in ("Not supported", "N/A"))) else pci_info,
+            "PCI bus number": "{0:#0{1}x}".format(pci_info.bus, 4) if not((type(pci_info) == str) and (pci_info in ("Not supported", "N/A"))) else pci_info,
+            "PCI device number": "{0:#0{1}x}".format(pci_info.device, 4) if not((type(pci_info) == str) and (pci_info in ("Not supported", "N/A"))) else pci_info,
+            "Maximum PCIe link generation": max_pcie_link_gen,
+            "Current PCIe link generation": curr_pcie_link_gen,
+            "Maximum PCIe link width (lanes)": max_pcie_link_width,
+            "Current PCIe link width (lanes)": curr_pcie_link_width,
+            "Maximum PCIe link speed (MB/s)": pcie_link_max_speed,
+            "Memory bus width (bits)": memory_bus_width,
+            "PCIe replay counter": pcie_replay_counter,
+        }
+        for key in result_final_output.keys():
+            if (type(result_final_output[key]) == str) and result_final_output[key] in ("Not supported", "N/A"):
+                all_not_supported += 1
+        
+        if all_not_supported >= len(result_final_output.keys()):
+            result_final_output = "Not supported"
+
+        return result_final_output
 
     def get_device_versions_info(self, handle) -> Any:
-        try:
-            cuda_driver_version = self.pynvml_lib.nvmlSystemGetCudaDriverVersion()
-        except Exception as e:
-            cuda_driver_version = "Not supported"
+        if hasattr(self.pynvml_lib, "nvmlSystemGetCudaDriverVersion") and callable(self.pynvml_lib.nvmlSystemGetCudaDriverVersion):
+            try:
+                cuda_driver_version = self.pynvml_lib.nvmlSystemGetCudaDriverVersion()
+            except Exception as e:
+                cuda_driver_version = "Not supported"
+        else:
+            cuda_driver_version = "N/A"
 
-        try:
-            cuda_driver_version_v2 = self.pynvml_lib.nvmlSystemGetCudaDriverVersion_v2()
-        except Exception as e:
-            cuda_driver_version_v2 = "Not supported"
+        if hasattr(self.pynvml_lib, "nvmlSystemGetCudaDriverVersion_v2") and callable(self.pynvml_lib.nvmlSystemGetCudaDriverVersion_v2):
+            try:
+                cuda_driver_version_v2 = self.pynvml_lib.nvmlSystemGetCudaDriverVersion_v2()
+            except Exception as e:
+                cuda_driver_version_v2 = "Not supported"
+        else:
+            cuda_driver_version_v2 = "N/A"
 
-        try:
-            driver_version = self.pynvml_lib.nvmlSystemGetDriverVersion().decode('ASCII')
-        except Exception as e:
-            driver_version = "Not supported"
+        if hasattr(self.pynvml_lib, "nvmlSystemGetDriverVersion") and callable(self.pynvml_lib.nvmlSystemGetDriverVersion):
+            try:
+                driver_version = self.pynvml_lib.nvmlSystemGetDriverVersion().decode('ASCII')
+            except Exception as e:
+                driver_version = "Not supported"
+        else:
+            driver_version = "N/A"
 
-        try:
-            nvml_version = self.pynvml_lib.nvmlSystemGetNVMLVersion().decode('ASCII')
-        except Exception as e:
-            nvml_version = "Not supported"
+        if hasattr(self.pynvml_lib, "nvmlSystemGetNVMLVersion") and callable(self.pynvml_lib.nvmlSystemGetNVMLVersion):
+            try:
+                nvml_version = self.pynvml_lib.nvmlSystemGetNVMLVersion().decode('ASCII')
+            except Exception as e:
+                nvml_version = "Not supported"
+        else:
+            nvml_version = "N/A"
 
-        try:
-            driver_model = self.pynvml_lib.nvmlDeviceGetDriverModel(handle)
-            if len(driver_model) > 0:
-                current_driver_model = "WDDM" if driver_model[0] == 0 else "WDM"
-            if len(driver_model) > 1:
-                pending_driver_model = "WDDM" if driver_model[1] == 0 else "WDM"
-        except Exception as e:
-            driver_model = "Not supported"
-            current_driver_model = pending_driver_model = driver_model
+        if hasattr(self.pynvml_lib, "nvmlDeviceGetDriverModel") and callable(self.pynvml_lib.nvmlDeviceGetDriverModel):
+            try:
+                driver_model = self.pynvml_lib.nvmlDeviceGetDriverModel(handle)
+                if len(driver_model) > 0:
+                    current_driver_model = "WDDM" if driver_model[0] == 0 else "WDM"
+                if len(driver_model) > 1:
+                    pending_driver_model = "WDDM" if driver_model[1] == 0 else "WDM"
+            except Exception as e:
+                driver_model = "Not supported"
+                current_driver_model = pending_driver_model = driver_model
+        else:
+            current_driver_model = pending_driver_model = "N/A"
 
-        try:
-            inforom_image_version = self.pynvml_lib.nvmlDeviceGetInforomImageVersion(handle).decode('ASCII')
-        except Exception as e:
-            inforom_image_version = "Not supported"
+        if hasattr(self.pynvml_lib, "nvmlDeviceGetInforomImageVersion") and callable(self.pynvml_lib.nvmlDeviceGetInforomImageVersion):
+            try:
+                inforom_image_version = self.pynvml_lib.nvmlDeviceGetInforomImageVersion(handle).decode('ASCII')
+            except Exception as e:
+                inforom_image_version = "Not supported"
+        else:
+            inforom_image_version = "N/A"
 
         inforom_versions = list()
-        for inforom_obj_type_dict_key, inforom_obj_dict_enum in nvmlInforomObject_t.__members__.items():
-            if inforom_obj_type_dict_key == "NVML_INFOROM_COUNT":
-                continue
-            inforom_obj_type_name = self.convert_enum_name_to_readable_string(inforom_obj_type_dict_key, inforom_obj_dict_enum)
-            inforom_obj_type = inforom_obj_dict_enum
+        if hasattr(self.pynvml_lib, "nvmlDeviceGetInforomVersion") and callable(self.pynvml_lib.nvmlDeviceGetInforomVersion):
+            for inforom_obj_type_dict_key, inforom_obj_dict_enum in nvmlInforomObject_t.__members__.items():
+                if inforom_obj_type_dict_key == "NVML_INFOROM_COUNT":
+                    continue
+                inforom_obj_type_name = self.convert_enum_name_to_readable_string(inforom_obj_type_dict_key, inforom_obj_dict_enum)
+                inforom_obj_type = inforom_obj_dict_enum
+                try:
+                    inforom_version = self.pynvml_lib.nvmlDeviceGetInforomVersion(handle, inforom_obj_type).decode('ASCII')
+                    inforom_versions.append({
+                        inforom_obj_type_name: inforom_version
+                    })
+                except Exception as e:
+                    inforom_version = "Not supported"
+                    inforom_versions.append({
+                        inforom_obj_type_name: inforom_version
+                    })
+        else:
+            inforom_versions = "N/A"
+
+        if hasattr(self.pynvml_lib, "nvmlDeviceGetVbiosVersion") and callable(self.pynvml_lib.nvmlDeviceGetVbiosVersion):
             try:
-                inforom_version = self.pynvml_lib.nvmlDeviceGetInforomVersion(handle, inforom_obj_type).decode('ASCII')
-                inforom_versions.append({
-                    inforom_obj_type_name: inforom_version
-                })
+                vbios_version = self.pynvml_lib.nvmlDeviceGetVbiosVersion(handle).decode('ASCII')
             except Exception as e:
-                inforom_version = "Not supported"
-                inforom_versions.append({
-                    inforom_obj_type_name: inforom_version
-                })
+                vbios_version = "Not supported"
+        else:
+            vbios_version = "N/A"
 
-        try:
-            vbios_version = self.pynvml_lib.nvmlDeviceGetVbiosVersion(handle).decode('ASCII')
-        except Exception as e:
-            vbios_version = "Not supported"
-
-        return {
+        all_not_supported = 0
+        result_final_output = {
             "CUDA Driver Version": cuda_driver_version_v2,
             "Driver Version": driver_version,
             "NVML Version": nvml_version,
@@ -695,72 +810,112 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
             "InfoROM Version": inforom_versions,
             "VBIOS Version": vbios_version
         }
+        for key in result_final_output.keys():
+            if (type(result_final_output[key]) == str) and result_final_output[key] in ("Not supported", "N/A"):
+                all_not_supported += 1
+        
+        if all_not_supported >= len(result_final_output.keys()):
+            result_final_output = "Not supported"
+
+        return result_final_output
     
     def get_device_catalog_info(self, handle) -> Any:
-        try:
-            serial_number = self.pynvml_lib.nvmlDeviceGetSerial(handle)
-        except self.pynvml_lib.NVMLError as e:
-            serial_number = "Not supported"
+        if hasattr(self.pynvml_lib, "nvmlDeviceGetSerial") and callable(self.pynvml_lib.nvmlDeviceGetSerial):
+            try:
+                serial_number = self.pynvml_lib.nvmlDeviceGetSerial(handle)
+            except self.pynvml_lib.NVMLError as e:
+                serial_number = "Not supported"
+        else:
+            serial_number = "N/A"
 
-        try:
-            uuid = self.pynvml_lib.nvmlDeviceGetUUID(handle).decode('ASCII')
-        except:
-            uuid = "Not supported"
+        if hasattr(self.pynvml_lib, "nvmlDeviceGetUUID") and callable(self.pynvml_lib.nvmlDeviceGetUUID):
+            try:
+                uuid = self.pynvml_lib.nvmlDeviceGetUUID(handle).decode('ASCII')
+            except:
+                uuid = "Not supported"
+        else:
+            uuid = "N/A"
 
-        try:
-            board_id = self.pynvml_lib.nvmlDeviceGetBoardId(handle)
-        except self.pynvml_lib.NVMLError as e:
-            board_id = "Not supported"
+        if hasattr(self.pynvml_lib, "nvmlDeviceGetBoardId") and callable(self.pynvml_lib.nvmlDeviceGetBoardId):
+            try:
+                board_id = self.pynvml_lib.nvmlDeviceGetBoardId(handle)
+            except self.pynvml_lib.NVMLError as e:
+                board_id = "Not supported"
+        else:
+            board_id = "N/A"
 
-        try:
-            brand_name = nvmlBrandType_t(self.pynvml_lib.nvmlDeviceGetBrand(handle))
-            if brand_name.value in (nvmlBrandType_t.NVML_BRAND_COUNT, nvmlBrandType_t.NVML_BRAND_UNKNOWN):
-                brand_name = "Unknown"
-            else:
-                brand_name = str(brand_name.name).replace("NVML_BRAND_","").replace("_"," ")
-        except self.pynvml_lib.NVMLError as e:
-            brand_name = "Not supported"
+        if hasattr(self.pynvml_lib, "nvmlDeviceGetBrand") and callable(self.pynvml_lib.nvmlDeviceGetBrand):
+            try:
+                brand_name = nvmlBrandType_t(self.pynvml_lib.nvmlDeviceGetBrand(handle))
+                if brand_name.value in (nvmlBrandType_t.NVML_BRAND_COUNT, nvmlBrandType_t.NVML_BRAND_UNKNOWN):
+                    brand_name = "Unknown"
+                else:
+                    brand_name = str(brand_name.name).replace("NVML_BRAND_","").replace("_"," ")
+            except self.pynvml_lib.NVMLError as e:
+                brand_name = "Not supported"
+        else:
+            brand_name = "N/A"
 
-        try:
-            minor_number = self.pynvml_lib.nvmlDeviceGetMinorNumber(handle)
-        except self.pynvml_lib.NVMLError as e:
-            minor_number = "Not supported"
-        try:
-            if (CURRENT_OS not in (SupportedOS.WINDOWS, SupportedOS.LINUX)):
-                num_of_gpu_cores = self.pynvml_lib.nvmlDeviceGetNumGpuCores(handle)
-            else:
+        if hasattr(self.pynvml_lib, "nvmlDeviceGetMinorNumber") and callable(self.pynvml_lib.nvmlDeviceGetMinorNumber):
+            try:
+                minor_number = self.pynvml_lib.nvmlDeviceGetMinorNumber(handle)
+            except self.pynvml_lib.NVMLError as e:
+                minor_number = "Not supported"
+        else:
+            minor_number = "N/A"
+
+        if hasattr(self.pynvml_lib, "nvmlDeviceGetNumGpuCores") and callable(self.pynvml_lib.nvmlDeviceGetNumGpuCores):
+            try:
+                if (CURRENT_OS not in (SupportedOS.WINDOWS, SupportedOS.LINUX)):
+                    num_of_gpu_cores = self.pynvml_lib.nvmlDeviceGetNumGpuCores(handle)
+                else:
+                    num_of_gpu_cores = "Not supported"
+            except self.pynvml_lib.NVMLError as e:
                 num_of_gpu_cores = "Not supported"
-        except self.pynvml_lib.NVMLError as e:
-            num_of_gpu_cores = "Not supported"  
-        
-        try:
-            device_architecture = self.pynvml_lib.nvmlDeviceGetArchitecture(handle)
-            device_architecture = nvmlDeviceArchitecture_t(device_architecture).name.replace("NVML_DEVICE_ARCH_", "")
-        except self.pynvml_lib.NVMLError as e:
-            device_architecture = "Not supported"
-        
-        try:
-            device_attributes = self.pynvml_lib.nvmlDeviceGetAttributes_v2(handle)
-        except self.pynvml_lib.NVMLError as e:
-            device_attributes = "Not supported"
-        
-        try:
-            pci_info = self.pynvml_lib.nvmlDeviceGetPciInfo_v3(handle)
-        except Exception as e:
-                pci_info = "Not supported"
+        else:
+            num_of_gpu_cores = "N/A"
 
-        try:
-            device_irq_num = self.pynvml_lib.nvmlDeviceGetIrqNum(handle).value
-        except Exception as e:
-            device_irq_num = "Not supported"
+        if hasattr(self.pynvml_lib, "nvmlDeviceGetArchitecture") and callable(self.pynvml_lib.nvmlDeviceGetArchitecture):
+            try:
+                device_architecture = self.pynvml_lib.nvmlDeviceGetArchitecture(handle)
+                device_architecture = nvmlDeviceArchitecture_t(device_architecture).name.replace("NVML_DEVICE_ARCH_", "")
+            except self.pynvml_lib.NVMLError as e:
+                device_architecture = "Not supported"
+        else:
+            device_architecture = "N/A"
 
-        return {
+        if hasattr(self.pynvml_lib, "nvmlDeviceGetAttributes_v2") and callable(self.pynvml_lib.nvmlDeviceGetAttributes_v2):
+            try:
+                device_attributes = self.pynvml_lib.nvmlDeviceGetAttributes_v2(handle)
+            except self.pynvml_lib.NVMLError as e:
+                device_attributes = "Not supported"
+        else:
+            device_attributes = "N/A"
+
+        if hasattr(self.pynvml_lib, "nvmlDeviceGetPciInfo_v3") and callable(self.pynvml_lib.nvmlDeviceGetPciInfo_v3):       
+            try:
+                pci_info = self.pynvml_lib.nvmlDeviceGetPciInfo_v3(handle)
+            except Exception as e:
+                    pci_info = "Not supported"
+        else:
+            pci_info = "Not supported"
+
+        if hasattr(self.pynvml_lib, "nvmlDeviceGetIrqNum") and callable(self.pynvml_lib.nvmlDeviceGetIrqNum):
+            try:
+                device_irq_num = self.pynvml_lib.nvmlDeviceGetIrqNum(handle).value
+            except Exception as e:
+                device_irq_num = "Not supported"
+        else:
+            device_irq_num = "N/A"
+        # sredi za jedno polje ako je not supported, da ne bude cela struktura
+        all_not_supported = 0
+        result_final_output = {
             "Serial Number": serial_number,
             "Universally Unique Identifier(UUID)": uuid,
-            "PCI Device id": "{0:#0{1}x}".format(pci_info.pciDeviceId, 10),
-            "Device Id": "{0:#0{1}x}".format(pci_info.pciDeviceId, 10)[0:6],
-            "Vendor Id": "0x" + "{0:#0{1}x}".format(pci_info.pciDeviceId, 10)[6:],
-            "Subsystem Id": "{0:#0{1}x}".format(pci_info.pciSubSystemId, 10),
+            "PCI Device id": "{0:#0{1}x}".format(pci_info.pciDeviceId, 10) if not((type(pci_info) == str) and (pci_info in ("Not supported", "N/A"))) else pci_info, 
+            "Device Id": "{0:#0{1}x}".format(pci_info.pciDeviceId, 10)[0:6] if not((type(pci_info) == str) and (pci_info in ("Not supported", "N/A"))) else pci_info,
+            "Vendor Id": "0x" + "{0:#0{1}x}".format(pci_info.pciDeviceId, 10)[6:] if not((type(pci_info) == str) and (pci_info in ("Not supported", "N/A"))) else pci_info,
+            "Subsystem Id": "{0:#0{1}x}".format(pci_info.pciSubSystemId, 10) if not((type(pci_info) == str) and (pci_info in ("Not supported", "N/A"))) else pci_info,
             "Board ID": board_id,
             "Brand": brand_name,
             "Minor number": str(minor_number),
@@ -768,6 +923,14 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
             "Architecture": str(device_architecture),
             "Interrupt request (IRQ) number": device_irq_num
         }
+        for key in result_final_output.keys():
+            if (type(result_final_output[key]) == str) and result_final_output[key] in ("Not supported", "N/A"):
+                all_not_supported += 1
+        
+        if all_not_supported >= len(result_final_output.keys()):
+            result_final_output = "Not supported"
+
+        return result_final_output
 
     def get_device_ecc_info(self, handle) -> Any:
         #ecc_mode_pending = None 
