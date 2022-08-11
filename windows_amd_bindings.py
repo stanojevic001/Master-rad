@@ -142,7 +142,7 @@ class Ctypes_ADL():
         self.adl_lib: ctypes.WinDLL = ctypes.windll.LoadLibrary("amd_package\\windows\\windows_adl.dll")
 
         try:
-            getattr(self.rocm_lib, "initialize")
+            getattr(self.adl_lib, "initialize")
             self.adl_lib.initialize.argtypes = []
             self.adl_lib.initialize.restype = ctypes.c_int
             self.functions["adl_initialize"] = self.adl_lib.initialize
@@ -150,7 +150,7 @@ class Ctypes_ADL():
             self.functions["adl_initialize"] = None
 
         try:
-            getattr(self.rocm_lib, "finish")
+            getattr(self.adl_lib, "finish")
             self.adl_lib.finish.argtypes = []
             self.adl_lib.finish.restype = ctypes.c_int
             self.functions["adl_finish"] = self.adl_lib.finish
@@ -158,7 +158,7 @@ class Ctypes_ADL():
             self.functions["adl_finish"] = None
 
         try:
-            getattr(self.rocm_lib, "get_driver_version")
+            getattr(self.adl_lib, "get_driver_version")
             self.adl_lib.get_driver_version.argtypes = [ctypes.POINTER(ADLVersionsInfo)]
             self.adl_lib.get_driver_version.restype = ctypes.c_int
             self.functions["adl_get_driver_version"] = self.adl_lib.get_driver_version
@@ -166,7 +166,7 @@ class Ctypes_ADL():
             self.functions["adl_get_driver_version"] = None
 
         try:
-            getattr(self.rocm_lib, "get_number_of_devices")
+            getattr(self.adl_lib, "get_number_of_devices")
             self.adl_lib.get_number_of_devices.argtypes = [ctypes.POINTER(ctypes.c_int)]
             self.adl_lib.get_number_of_devices.restype = ctypes.c_int
             self.functions["adl_get_number_of_devices"] = self.adl_lib.get_number_of_devices
@@ -174,7 +174,7 @@ class Ctypes_ADL():
             self.functions["adl_get_number_of_devices"] = None
 
         try:
-            getattr(self.rocm_lib, "get_device_adapter_info")
+            getattr(self.adl_lib, "get_device_adapter_info")
             self.adl_lib.get_device_adapter_info.argtypes = [ctypes.POINTER(AdapterInfoX2), ctypes.c_int]
             self.adl_lib.get_device_adapter_info.restype = ctypes.c_int
             self.functions["adl_get_device_adapter_info"] = self.adl_lib.get_device_adapter_info
@@ -182,7 +182,7 @@ class Ctypes_ADL():
             self.functions["adl_get_device_adapter_info"] = None
 
         try:
-            getattr(self.rocm_lib, "get_device_asic_family_type")
+            getattr(self.adl_lib, "get_device_asic_family_type")
             self.adl_lib.get_device_asic_family_type.argtypes = [ctypes.c_int, ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int)]
             self.adl_lib.get_device_asic_family_type.restype = ctypes.c_int
             self.functions["adl_get_device_asic_family_type"] = self.adl_lib.get_device_asic_family_type
@@ -191,7 +191,7 @@ class Ctypes_ADL():
 
 
         try:
-            getattr(self.rocm_lib, "get_device_chipset_info")
+            getattr(self.adl_lib, "get_device_chipset_info")
             self.adl_lib.get_device_chipset_info.argtypes = [ctypes.c_int, ctypes.POINTER(ADLChipSetInfo)]
             self.adl_lib.get_device_chipset_info.restype = ctypes.c_int
             self.functions["adl_get_device_chipset_info"] = self.adl_lib.get_device_chipset_info
@@ -199,7 +199,7 @@ class Ctypes_ADL():
             self.functions["adl_get_device_chipset_info"] = None
 
         try:
-            getattr(self.rocm_lib, "get_device_id")
+            getattr(self.adl_lib, "get_device_id")
             self.adl_lib.get_device_id.argtypes = [ctypes.c_int, ctypes.POINTER(ctypes.c_int)]
             self.adl_lib.get_device_id.restype = ctypes.c_int
             self.functions["adl_get_device_id"] = self.adl_lib.get_device_id
@@ -207,7 +207,7 @@ class Ctypes_ADL():
             self.functions["adl_get_device_id"] = None
 
         try:
-            getattr(self.rocm_lib, "get_device_memory_info2")
+            getattr(self.adl_lib, "get_device_memory_info2")
             self.adl_lib.get_device_memory_info2.argtypes = [ctypes.c_int, ctypes.POINTER(ADLMemoryInfo2)]
             self.adl_lib.get_device_memory_info2.restype = ctypes.c_int
             self.functions["adl_get_device_memory_info2"] = self.adl_lib.get_device_memory_info2
@@ -215,7 +215,7 @@ class Ctypes_ADL():
             self.functions["adl_get_device_memory_info2"] = None
 
         try:
-            getattr(self.rocm_lib, "get_device_vbios_info")
+            getattr(self.adl_lib, "get_device_vbios_info")
             self.adl_lib.get_device_vbios_info.argtypes = [ctypes.c_int, ctypes.POINTER(ADLBiosInfo)]
             self.adl_lib.get_device_vbios_info.restype = ctypes.c_int
             self.functions["adl_get_device_vbios_info"] = self.adl_lib.get_device_vbios_info
@@ -223,7 +223,7 @@ class Ctypes_ADL():
             self.functions["adl_get_device_vbios_info"] = None
 
         try:
-            getattr(self.rocm_lib, "get_device_observed_clock_info")
+            getattr(self.adl_lib, "get_device_observed_clock_info")
             self.adl_lib.get_device_observed_clock_info.argtypes = [ctypes.c_int, ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int)]
             self.adl_lib.get_device_observed_clock_info.restype = ctypes.c_int
             self.functions["adl_get_device_observed_clock_info"] = self.adl_lib.get_device_observed_clock_info
@@ -231,7 +231,7 @@ class Ctypes_ADL():
             self.functions["adl_get_device_observed_clock_info"] = None
 
         try:
-            getattr(self.rocm_lib, "get_primary_display_adapter_index")
+            getattr(self.adl_lib, "get_primary_display_adapter_index")
             self.adl_lib.get_primary_display_adapter_index.argtypes = [ctypes.POINTER(ctypes.c_int)]
             self.adl_lib.get_primary_display_adapter_index.restype = ctypes.c_int
             self.functions["adl_get_primary_display_adapter_index"] = self.adl_lib.get_primary_display_adapter_index
@@ -239,7 +239,7 @@ class Ctypes_ADL():
             self.functions["adl_get_primary_display_adapter_index"] = None
 
         try:
-            getattr(self.rocm_lib, "get_device_is_active_status")
+            getattr(self.adl_lib, "get_device_is_active_status")
             self.adl_lib.get_device_is_active_status.argtypes = [ctypes.c_int, ctypes.POINTER(ctypes.c_int)]
             self.adl_lib.get_device_is_active_status.restype = ctypes.c_int
             self.functions["adl_get_device_is_active_status"] = self.adl_lib.get_device_is_active_status
@@ -247,7 +247,7 @@ class Ctypes_ADL():
             self.functions["adl_get_device_is_active_status"] = None
 
         try:
-            getattr(self.rocm_lib, "get_device_is_accessible_status")
+            getattr(self.adl_lib, "get_device_is_accessible_status")
             self.adl_lib.get_device_is_accessible_status.argtypes = [ctypes.c_int, ctypes.POINTER(ctypes.c_int)]
             self.adl_lib.get_device_is_accessible_status.restype = ctypes.c_int
             self.functions["adl_get_device_is_accessible_status"] = self.adl_lib.get_device_is_accessible_status
@@ -255,7 +255,7 @@ class Ctypes_ADL():
             self.functions["adl_get_device_is_accessible_status"] = None
 
         try:
-            getattr(self.rocm_lib, "get_device_vram_usage_info")
+            getattr(self.adl_lib, "get_device_vram_usage_info")
             self.adl_lib.get_device_vram_usage_info.argtypes = [ctypes.c_int, ctypes.POINTER(ctypes.c_int)]
             self.adl_lib.get_device_vram_usage_info.restype = ctypes.c_int
             self.functions["adl_get_device_vram_usage_info"] = self.adl_lib.get_device_vram_usage_info
@@ -263,7 +263,7 @@ class Ctypes_ADL():
             self.functions["adl_get_device_vram_usage_info"] = None
 
         try:
-            getattr(self.rocm_lib, "get_device_dedicated_vram_usage_info")
+            getattr(self.adl_lib, "get_device_dedicated_vram_usage_info")
             self.adl_lib.get_device_dedicated_vram_usage_info.argtypes = [ctypes.c_int, ctypes.POINTER(ctypes.c_int)]
             self.adl_lib.get_device_dedicated_vram_usage_info.restype = ctypes.c_int
             self.functions["adl_get_device_dedicated_vram_usage_info"] = self.adl_lib.get_device_dedicated_vram_usage_info
@@ -271,7 +271,7 @@ class Ctypes_ADL():
             self.functions["adl_get_device_dedicated_vram_usage_info"] = None
 
         try:
-            getattr(self.rocm_lib, "get_device_observed_game_clock_info")
+            getattr(self.adl_lib, "get_device_observed_game_clock_info")
             self.adl_lib.get_device_observed_game_clock_info.argtypes = [ctypes.c_int, ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_int)]
             self.adl_lib.get_device_observed_game_clock_info.restype = ctypes.c_int
             self.functions["adl_get_device_observed_game_clock_info"] = self.adl_lib.get_device_observed_game_clock_info
@@ -279,7 +279,7 @@ class Ctypes_ADL():
             self.functions["adl_get_device_observed_game_clock_info"] = None
 
         try:
-            getattr(self.rocm_lib, "get_device_gcn_asic_info")
+            getattr(self.adl_lib, "get_device_gcn_asic_info")
             self.adl_lib.get_device_gcn_asic_info.argtypes = [ctypes.c_int, ctypes.POINTER(ADLGcnInfo)]
             self.adl_lib.get_device_gcn_asic_info.restype = ctypes.c_int
             self.functions["adl_get_device_gcn_asic_info"] = self.adl_lib.get_device_gcn_asic_info
@@ -287,7 +287,7 @@ class Ctypes_ADL():
             self.functions["adl_get_device_gcn_asic_info"] = None
 
         try:
-            getattr(self.rocm_lib, "get_driver_versionX3")
+            getattr(self.adl_lib, "get_driver_versionX3")
             self.adl_lib.get_driver_versionX3.argtypes = [ctypes.c_int, ctypes.POINTER(ADLVersionsInfoX2)]
             self.adl_lib.get_driver_versionX3.restype = ctypes.c_int
             self.functions["adl_get_driver_versionX3"] = self.adl_lib.get_driver_versionX3
@@ -295,7 +295,7 @@ class Ctypes_ADL():
             self.functions["adl_get_driver_versionX3"] = None
 
         try:
-            getattr(self.rocm_lib, "get_device_memory_info3")
+            getattr(self.adl_lib, "get_device_memory_info3")
             self.adl_lib.get_device_memory_info3.argtypes = [ctypes.c_int, ctypes.POINTER(ADLMemoryInfo3)]
             self.adl_lib.get_device_memory_info3.restype = ctypes.c_int
             self.functions["adl_get_device_memory_info3"] = self.adl_lib.get_device_memory_info3
@@ -303,7 +303,7 @@ class Ctypes_ADL():
             self.functions["adl_get_device_memory_info3"] = None
 
         try:
-            getattr(self.rocm_lib, "get_device_overdrive5_temperature")
+            getattr(self.adl_lib, "get_device_overdrive5_temperature")
             self.adl_lib.get_device_overdrive5_temperature.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.POINTER(ADLTemperature)]
             self.adl_lib.get_device_overdrive5_temperature.restype = ctypes.c_int
             self.functions["adl_get_device_overdrive5_temperature"] = self.adl_lib.get_device_overdrive5_temperature
@@ -311,7 +311,7 @@ class Ctypes_ADL():
             self.functions["adl_get_device_overdrive5_temperature"] = None
 
         try:
-            getattr(self.rocm_lib, "get_device_aspects")
+            getattr(self.adl_lib, "get_device_aspects")
             self.adl_lib.get_device_aspects.argtypes = [ctypes.c_int, ctypes.POINTER(ctypes.c_char), ctypes.c_int]
             self.adl_lib.get_device_aspects.restype = ctypes.c_int
             self.functions["adl_get_device_aspects"] = self.adl_lib.get_device_aspects

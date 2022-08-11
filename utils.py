@@ -8,16 +8,20 @@ from datetime import datetime
 def get_current_GPU_names():
     try:
         current_GPUs = list()
+        result = None
         if CURRENT_OS == SupportedOS.WINDOWS:
             result = subprocess.getoutput(WINDOWS_GET_GPU_INFO)
         elif CURRENT_OS == SupportedOS.LINUX:
-            result = subprocess.getoutput(LINUX_GET_GPU_INFO)
+            result = subprocess.getoutput(LINUX_GET_GPU_INFO) # vidi za run da izmenis zbog kompatibilnosti!
         else:
-            raise Exception("Error: Only NVIDIA and AMD are currently supported GPUs for the tool!")
-        if result.find("AMD") != -1:
-            current_GPUs.append(SupportedGPU.AMD)
-        elif result.find("NVIDIA") != -1:
-            current_GPUs.append(SupportedGPU.NVIDIA)
+            raise Exception("Error: Only Windows and Linux are currently supported operating systems for the tool!")
+        if result is not None:
+            if (result.lower().find("amd") != -1) or (result.lower().find("advanced micro devices") != -1):
+                current_GPUs.append(SupportedGPU.AMD)
+            if result.lower().find("nvidia") != -1:
+                current_GPUs.append(SupportedGPU.NVIDIA)
+        else:
+            raise Exception("Error occured when getting information about gpu!!")
 
         return current_GPUs
 
