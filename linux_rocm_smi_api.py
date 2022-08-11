@@ -193,10 +193,18 @@ class Linux_ROCm_SMI_Wrapper(CommonAPI):
         else:
             temperatures = "N/A"
         
-
-        return {
+        all_not_supported = 0
+        result_final_output = {
             "Temperature info": temperatures
         }
+        for key in result_final_output.keys():
+            if (type(result_final_output[key]) == str) and result_final_output[key] in ("Not supported", "N/A"):
+                all_not_supported += 1
+        
+        if all_not_supported >= len(result_final_output.keys()):
+            result_final_output = "Not supported"
+
+        return result_final_output
     
     def get_device_clocks_info(self, handle) -> Any:
         device_index = ctypes.c_uint32(handle)
@@ -237,10 +245,19 @@ class Linux_ROCm_SMI_Wrapper(CommonAPI):
                     }
         else:
             clock_frequencies_info = "N/A"
-                
-        return {
+        
+        all_not_supported = 0
+        result_final_output = {
             "Clock frequencies info": clock_frequencies_info
         }
+        for key in result_final_output.keys():
+            if (type(result_final_output[key]) == str) and result_final_output[key] in ("Not supported", "N/A"):
+                all_not_supported += 1
+        
+        if all_not_supported >= len(result_final_output.keys()):
+            result_final_output = "Not supported"
+                
+        return result_final_output
 
     def get_device_name_by_handle(self, handle) -> Any:
         
@@ -329,14 +346,22 @@ class Linux_ROCm_SMI_Wrapper(CommonAPI):
             num_pages = "N/A"
             records_output = "N/A"
 
-
-        return {
+        all_not_supported = 0
+        result_final_output = {
             "Total memory amount by type (MB)": total_memories_by_type,
             "Total memory usages by type (MB)": total_memory_usages_by_type,
             "Busy percent": busy_percent,
             "Retired pages number": num_pages,
             "Retired pages records": records_output
         }
+        for key in result_final_output.keys():
+            if (type(result_final_output[key]) == str) and result_final_output[key] in ("Not supported", "N/A"):
+                all_not_supported += 1
+        
+        if all_not_supported >= len(result_final_output.keys()):
+            result_final_output = "Not supported"
+
+        return result_final_output
 
     def get_device_bus_info(self, handle) -> Any:
         device_index = ctypes.c_uint32(handle)
@@ -420,7 +445,8 @@ class Linux_ROCm_SMI_Wrapper(CommonAPI):
         else:
             counter = "N/A"
 
-        return {
+        all_not_supported = 0
+        result_final_output = {
             "PCIe Number of supported frequencies": pcie_bandwidth_transfer_rate_output_num_supported,
             "PCIe Supported frequencies (MHz)": pcie_bandwidth_transfer_rate_output_frequency,
             "PCIe Current frequency (MHz)": pcie_bandwidth_transfer_rate_output_current,
@@ -431,6 +457,14 @@ class Linux_ROCm_SMI_Wrapper(CommonAPI):
             "PCIe Throughput - Max packet size": max_pkt_sz,
             "PCIe Replay Counter": counter
         }
+        for key in result_final_output.keys():
+            if (type(result_final_output[key]) == str) and result_final_output[key] in ("Not supported", "N/A"):
+                all_not_supported += 1
+        
+        if all_not_supported >= len(result_final_output.keys()):
+            result_final_output = "Not supported"
+
+        return result_final_output
     
     def get_device_catalog_info(self, handle) -> Any:
         device_index = ctypes.c_uint32(handle)
@@ -561,8 +595,8 @@ class Linux_ROCm_SMI_Wrapper(CommonAPI):
         else:
             unique_id = "N/A"
         
-
-        return {
+        all_not_supported = 0
+        result_final_output = {
             "Device ID": device_id,
             "Brand name": brand_name,
             "Device SKU (Stock Keeping Unit)": device_sku,
@@ -574,8 +608,16 @@ class Linux_ROCm_SMI_Wrapper(CommonAPI):
             "Subsystem name": device_subsystem_name,
             "Subsystem vendor ID": subsystem_vendor_id,
             "Minor number": minor_number,
-            "Unique ID": unique_id,
+            "Unique ID": unique_id
         }
+        for key in result_final_output.keys():
+            if (type(result_final_output[key]) == str) and result_final_output[key] in ("Not supported", "N/A"):
+                all_not_supported += 1
+        
+        if all_not_supported >= len(result_final_output.keys()):
+            result_final_output = "Not supported"
+
+        return result_final_output
     
     def get_device_versions_info(self, handle) -> Any:
         device_index = ctypes.c_uint32(handle)
@@ -643,7 +685,8 @@ class Linux_ROCm_SMI_Wrapper(CommonAPI):
         else:
             fw_versions = "N/A"
 
-        return {
+        all_not_supported = 0
+        result_final_output = {
             "ROCm SMI library version - major": rsmi_version_major,
             "ROCm SMI library version - minor": rsmi_version_minor,
             "ROCm SMI library version - patch": rsmi_version_patch,
@@ -652,6 +695,14 @@ class Linux_ROCm_SMI_Wrapper(CommonAPI):
             "VBIOS version": vbios_version,
             "Firmware versions": fw_versions
         }
+        for key in result_final_output.keys():
+            if (type(result_final_output[key]) == str) and result_final_output[key] in ("Not supported", "N/A"):
+                all_not_supported += 1
+        
+        if all_not_supported >= len(result_final_output.keys()):
+            result_final_output = "Not supported"
+
+        return result_final_output
 
     def get_device_ecc_info(self, handle) -> Any:
         return super().get_device_ecc_info(handle)

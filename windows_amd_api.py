@@ -76,9 +76,18 @@ class WindowsAMD_API(CommonAPI):
         else:
             temperature_info = "N/A"
 
-        return {
+        all_not_supported = 0
+        result_final_output = {
             "Current GPU temperature (degrees Celsius)": temperature_info
         }
+        for key in result_final_output.keys():
+            if (type(result_final_output[key]) == str) and result_final_output[key] in ("Not supported", "N/A"):
+                all_not_supported += 1
+        
+        if all_not_supported >= len(result_final_output.keys()):
+            result_final_output = "Not supported"
+
+        return result_final_output
     
     def get_device_catalog_info(self, handle) -> Any:
         device_index = ctypes.c_int(handle)
@@ -253,7 +262,8 @@ class WindowsAMD_API(CommonAPI):
         else:
             vram_vendor_rev_id = "N/A"
 
-        return {
+        all_not_supported = 0
+        result_final_output = {
             "Adapter index": iAdapterIndex,
             "Display name": strDisplayName,
             "Display index": iOSDisplayIndex,
@@ -276,6 +286,14 @@ class WindowsAMD_API(CommonAPI):
             "Is this adapter active": is_active_status,
             "Is this adapter primary display adapter": primary_display_adapter_index
         }
+        for key in result_final_output.keys():
+            if (type(result_final_output[key]) == str) and result_final_output[key] in ("Not supported", "N/A"):
+                all_not_supported += 1
+        
+        if all_not_supported >= len(result_final_output.keys()):
+            result_final_output = "Not supported"
+
+        return result_final_output
     
     def get_device_memory_info(self, handle) -> Any:
         device_index = ctypes.c_int(handle)
@@ -330,7 +348,8 @@ class WindowsAMD_API(CommonAPI):
         else:
             dedicated_vram_usage_in_MB = "N/A"
 
-        return {
+        all_not_supported = 0
+        result_final_output = {
             "GPU Memory Total Size (MB)": memorySize,
             "GPU Memory Type": strMemoryType,
             "Visible Memory Size (MB)": iVisibleMemorySize,
@@ -340,6 +359,14 @@ class WindowsAMD_API(CommonAPI):
             "Dedicated Video RAM (VRAM) Usage (MB)": dedicated_vram_usage_in_MB,
             "Memory Bandwidth (MB/s)": iMemoryBandwidth,
         }
+        for key in result_final_output.keys():
+            if (type(result_final_output[key]) == str) and result_final_output[key] in ("Not supported", "N/A"):
+                all_not_supported += 1
+        
+        if all_not_supported >= len(result_final_output.keys()):
+            result_final_output = "Not supported"
+
+        return result_final_output
 
     def get_device_clocks_info(self, handle) -> Any:
         device_index = ctypes.c_int(handle)
@@ -380,13 +407,22 @@ class WindowsAMD_API(CommonAPI):
             boostClock = "N/A"
             memoryClock = "N/A"
 
-        return {
+        all_not_supported = 0
+        result_final_output = {
            "Graphics (Core) clock (MHz)": lpCoreClock,
            "Memory clock (MHz)": lpMemoryClock,
            "Base clock (MHz)": baseClock,
            "Game clock (MHz)": gameClock,
            "Boost clock (MHz)": boostClock
         }
+        for key in result_final_output.keys():
+            if (type(result_final_output[key]) == str) and result_final_output[key] in ("Not supported", "N/A"):
+                all_not_supported += 1
+        
+        if all_not_supported >= len(result_final_output.keys()):
+            result_final_output = "Not supported"
+
+        return result_final_output
     
     def get_device_bus_info(self, handle) -> Any:
         device_index = ctypes.c_int(handle)
@@ -445,10 +481,11 @@ class WindowsAMD_API(CommonAPI):
             iDeviceNumber =  "N/A"
             iFunctionNumber = "N/A"
 
-        return {
-            "Bus Number": "{0:#0{1}x}".format(iBusNumber, 4),
-            "Device Number": "{0:#0{1}x}".format(iDeviceNumber, 4),
-            "Function Number": "{0:#0{1}x}".format(iFunctionNumber, 3),
+        all_not_supported = 0
+        result_final_output = {
+            "Bus Number": "{0:#0{1}x}".format(iBusNumber, 4) if not((type(iBusNumber) == str) and (iBusNumber in ("Not supported", "N/A"))) else iBusNumber,
+            "Device Number": "{0:#0{1}x}".format(iDeviceNumber, 4) if not((type(iDeviceNumber) == str) and (iDeviceNumber in ("Not supported", "N/A"))) else iDeviceNumber,
+            "Function Number": "{0:#0{1}x}".format(iFunctionNumber, 3) if not((type(iFunctionNumber) == str) and (iFunctionNumber in ("Not supported", "N/A"))) else iFunctionNumber,
             "Bus type": lpChipSetInfo_busType,
             "Max bus speed type": lpChipSetInfo_BusSpeedType,
             "Max PCIe Lane Width (Lanes)": lpChipSetInfo_MaxPCIELaneWidth,
@@ -456,6 +493,14 @@ class WindowsAMD_API(CommonAPI):
             "Supported AGP speeds": lpChipSetInfo_iSupportedAGPSpeeds,
             "Current AGP Speed": lpChipSetInfo_CurrentAGPSpeed
         }
+        for key in result_final_output.keys():
+            if (type(result_final_output[key]) == str) and result_final_output[key] in ("Not supported", "N/A"):
+                all_not_supported += 1
+        
+        if all_not_supported >= len(result_final_output.keys()):
+            result_final_output = "Not supported"
+
+        return result_final_output
     
     def get_device_versions_info(self, handle) -> Any:
         device_index = ctypes.c_int(handle)
@@ -515,7 +560,8 @@ class WindowsAMD_API(CommonAPI):
             vbios_info_strVersion = "N/A"
             vbios_info_strDate = "N/A"
 
-        return {
+        all_not_supported = 0
+        result_final_output = {
             "Driver version": driver_version,
             "AMD Catalyst version": catalyst_version,
             "AMD Catalyst weblink": catalyst_weblink,
@@ -524,6 +570,14 @@ class WindowsAMD_API(CommonAPI):
             "VBIOS version": vbios_info_strVersion,
             "VBIOS date": vbios_info_strDate
         }
+        for key in result_final_output.keys():
+            if (type(result_final_output[key]) == str) and result_final_output[key] in ("Not supported", "N/A"):
+                all_not_supported += 1
+        
+        if all_not_supported >= len(result_final_output.keys()):
+            result_final_output = "Not supported"
+
+        return result_final_output
 
     def get_device_ecc_info(self, handle) -> Any:
         return super().get_device_ecc_info(handle)
