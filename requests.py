@@ -524,6 +524,7 @@ class Request():
 
             return StatusCode.SUCCESS
         except Exception as e:
+            print(e)
             return StatusCode.API_FAILED
         finally:
             self.commandObj.apiObject.finish()
