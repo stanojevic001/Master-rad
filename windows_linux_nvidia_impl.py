@@ -839,6 +839,7 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
         if hasattr(self.pynvml_lib, "nvmlDeviceGetBoardId") and callable(self.pynvml_lib.nvmlDeviceGetBoardId):
             try:
                 board_id = self.pynvml_lib.nvmlDeviceGetBoardId(handle)
+                board_id = hex(board_id) if board_id is not None else "Not supported"
             except self.pynvml_lib.NVMLError as e:
                 board_id = "Not supported"
         else:
@@ -866,10 +867,7 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
 
         if hasattr(self.pynvml_lib, "nvmlDeviceGetNumGpuCores") and callable(self.pynvml_lib.nvmlDeviceGetNumGpuCores):
             try:
-                if (CURRENT_OS not in (SupportedOS.WINDOWS, SupportedOS.LINUX)):
-                    num_of_gpu_cores = self.pynvml_lib.nvmlDeviceGetNumGpuCores(handle)
-                else:
-                    num_of_gpu_cores = "Not supported"
+                num_of_gpu_cores = self.pynvml_lib.nvmlDeviceGetNumGpuCores(handle)
             except self.pynvml_lib.NVMLError as e:
                 num_of_gpu_cores = "Not supported"
         else:

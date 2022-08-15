@@ -111,11 +111,11 @@ class Linux_ROCm_SMI_Wrapper(CommonAPI):
             elif "RSMI_TEMP_CRITICAL" == enum_name:
                 result = "Critical max"
             elif "RSMI_TEMP_CRITICAL_HYST" == enum_name:
-                result = "Critical limit hysteresis"
+                result = "Critical max limit hysteresis"
             elif "RSMI_TEMP_EMERGENCY" == enum_name:
                 result = "Emergency max"
             elif "RSMI_TEMP_EMERGENCY_HYST" == enum_name:
-                result = "Emergency limit hysteresis"
+                result = "Emergency max limit hysteresis"
             elif "RSMI_TEMP_CRIT_MIN" == enum_name:
                 result = "Critical min"
             elif "RSMI_TEMP_CRIT_MIN_HYST" == enum_name:
@@ -368,7 +368,8 @@ class Linux_ROCm_SMI_Wrapper(CommonAPI):
         
         pcie_bandwidth = rsmi_pcie_bandwidth_t()
         pcie_bandwidth_transfer_rate_output_num_supported = None
-        pcie_bandwidth_transfer_rate_output_current = None
+        pcie_bandwidth_transfer_rate_output_current = ""
+        pcie_bandwidth_lanes_output_current = ""
         pcie_bandwidth_transfer_rate_output_frequency = []
         pcie_bandwidth_lanes_output = []
         if self.rocm_clib.functions["rocm_get_device_pci_bandwidth"] is not None:
@@ -379,13 +380,18 @@ class Linux_ROCm_SMI_Wrapper(CommonAPI):
             pcie_bandwidth_transfer_rate_frequency = []
             pcie_bandwidth_lanes = None
             if status != 0:
-                pcie_bandwidth_transfer_rate = "Not supported"
-                pcie_bandwidth_lanes = "Not supported"
+                pcie_bandwidth_transfer_rate_output_num_supported = "Not supported"
+                pcie_bandwidth_transfer_rate_output_current = "Not supported"
+                pcie_bandwidth_lanes_output_current = "Not supported"
+                pcie_bandwidth_transfer_rate_output_frequency = "Not supported"
+                pcie_bandwidth_lanes_output = "Not supported"
             else:
                 pcie_bandwidth_transfer_rate = pcie_bandwidth.transfer_rate
                 pcie_bandwidth_transfer_rate_num_supported = pcie_bandwidth_transfer_rate.num_supported
                 pcie_bandwidth_transfer_rate_current = pcie_bandwidth_transfer_rate.current
                 pcie_bandwidth_transfer_rate_frequency = pcie_bandwidth_transfer_rate.frequency
+                pcie_bandwidth_transfer_rate_output_num_supported = pcie_bandwidth_transfer_rate_num_supported
+                pcie_bandwidth_lanes = pcie_bandwidth.lanes
                 if len(pcie_bandwidth_transfer_rate_frequency) <= 0:
                     pcie_bandwidth_transfer_rate_output_frequency = ""
                     pcie_bandwidth_transfer_rate_output_current = ""
@@ -394,16 +400,18 @@ class Linux_ROCm_SMI_Wrapper(CommonAPI):
                         if j == pcie_bandwidth_transfer_rate_current:
                             pcie_bandwidth_transfer_rate_output_current = hz_to_megahz_int(pcie_bandwidth_transfer_rate_frequency[j])
                         pcie_bandwidth_transfer_rate_output_frequency.append(hz_to_megahz_int(pcie_bandwidth_transfer_rate_frequency[j]))
-                pcie_bandwidth_transfer_rate_output_num_supported = pcie_bandwidth_transfer_rate_num_supported
-                pcie_bandwidth_lanes = pcie_bandwidth.lanes
+
                 if len(pcie_bandwidth_lanes) <= 0:
                     pcie_bandwidth_lanes_output = ""
                 else:
                     for i in range(0, pcie_bandwidth_transfer_rate_num_supported):
+                        if j == pcie_bandwidth_transfer_rate_current:
+                            pcie_bandwidth_lanes_output_current = pcie_bandwidth_lanes[j]
                         pcie_bandwidth_lanes_output.append(pcie_bandwidth_lanes[i])
         else:
             pcie_bandwidth_transfer_rate_output_num_supported = "N/A"
             pcie_bandwidth_transfer_rate_output_current = "N/A"
+            pcie_bandwidth_lanes_output_current = "N/A"
             pcie_bandwidth_transfer_rate_output_frequency = "N/A"
             pcie_bandwidth_lanes_output = "N/A"
         
@@ -414,6 +422,13 @@ class Linux_ROCm_SMI_Wrapper(CommonAPI):
                 bdfid = "Not supported"
             else:
                 bdfid = bdfid.value
+                bdfid = '{0:064b}'.format(bdfid)
+                domain_bdf = '{0:08x}'.format(int(bdfid[0:32], base=2))
+                bus_bdf = '{0:02x}'.format(int(bdfid[48:56], base=2))
+                device_bdf = '{0:02x}'.format(int(bdfid[56:61], base=2))
+                function_bdf = '{0:01x}'.format(int(bdfid[61:63], base=2))
+                bdfid = domain_bdf + ":" + bus_bdf + ":" + device_bdf + "." + function_bdf
+                
         else:
             bdfid = "N/A"
         
@@ -450,7 +465,8 @@ class Linux_ROCm_SMI_Wrapper(CommonAPI):
             "PCIe Number of supported frequencies": pcie_bandwidth_transfer_rate_output_num_supported,
             "PCIe Supported frequencies (MHz)": pcie_bandwidth_transfer_rate_output_frequency,
             "PCIe Current frequency (MHz)": pcie_bandwidth_transfer_rate_output_current,
-            "PCIe Supported lanes": pcie_bandwidth_lanes_output,
+            "PCIe Supported lane numbers": pcie_bandwidth_lanes_output,
+            "PCIe Current lane number": pcie_bandwidth_lanes_output_current,
             "PCIe BDF number (Bus, Device, Function)": bdfid,
             "PCIe Throughput - Sent packets": sent,
             "PCIe Throughput - Received packets": received,
@@ -476,7 +492,7 @@ class Linux_ROCm_SMI_Wrapper(CommonAPI):
             if status != 0:
                 device_id = "Not supported"
             else:
-                device_id = device_id.value
+                device_id = hex(device_id.value)
         else:
             device_id = "N/A"
 
@@ -496,7 +512,7 @@ class Linux_ROCm_SMI_Wrapper(CommonAPI):
             if status != 0:
                 vendor_id = "Not supported"
             else:
-                vendor_id = vendor_id.value
+                vendor_id = hex(vendor_id.value)
         else:
             vendor_id = "N/A"
 
@@ -550,7 +566,7 @@ class Linux_ROCm_SMI_Wrapper(CommonAPI):
             if status != 0:
                 device_subsystem_id = "Not supported"
             else:
-                device_subsystem_id = device_subsystem_id.value
+                device_subsystem_id = hex(device_subsystem_id.value)
         else:
             device_subsystem_id = "N/A"
 
@@ -581,7 +597,7 @@ class Linux_ROCm_SMI_Wrapper(CommonAPI):
             if status != 0:
                 subsystem_vendor_id = "Not supported"
             else:
-                subsystem_vendor_id = subsystem_vendor_id.value
+                subsystem_vendor_id = hex(subsystem_vendor_id.value)
         else:
             subsystem_vendor_id = "N/A"
 
