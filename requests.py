@@ -164,7 +164,8 @@ class Request():
         else:
             ind = specific_device_index
             if (ind < 0) or (ind >= device_count):
-                print("Invalid gpu index {gpu} sent. Range for valid gpu indexes are from [0, number of devices - 1] (number of devices = {count}).".format(gpu=ind, count=device_count))
+                print("Invalid gpu index {gpu} sent. Range for valid gpu indexes are from [0, number of devices - 1] \
+                                                    (number of devices = {count}).".format(gpu=ind, count=device_count))
                 return ""
             handle = self.commandObj.apiObject.get_device_handle_by_index(ind)
             output += OutputTemplates.catalog_console_device.format(index = ind)
