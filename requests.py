@@ -488,7 +488,6 @@ class Request():
 
     def process_request(self) -> StatusCode:
         try:
-            #IDEJA: da moze vise stvari da se zajedno stampaju!!!
             called_device_index = None
             self.commandObj.apiObject.initialize()
             if (self.commandObj.called_gpu_index is not None) and \
@@ -510,14 +509,6 @@ class Request():
                 print(self.process_command_memory(called_device_index))
             elif self.commandObj.called_command_name == "bus":
                 print(self.process_command_bus(called_device_index))
-            elif self.commandObj.called_command_name == "ecc":
-                print(self.process_command_ecc(called_device_index))
-            elif self.commandObj.called_command_name == "performance":
-                print(self.process_command_performance(called_device_index))
-            elif self.commandObj.called_command_name == "modes":
-                print(self.process_command_modes(called_device_index))
-            elif self.commandObj.called_command_name == "processes":
-                print(self.process_command_processes(called_device_index))
             else:
                 print("Invalid command '{}' invoked. Try command 'help' for futher information.".format(self.commandObj.called_command_name))
                 return StatusCode.INVALID_REQUEST
