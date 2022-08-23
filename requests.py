@@ -20,37 +20,36 @@ class Request():
                 if name is not None:
                     output += OutputTemplates.console_elem_output.format(name="Name", value=name, nesting=str(" "*2))
 
-                #Add catalog header
                 result = self.add_catalog_info_output(handle, output)
                 if result == "Not supported":
                     pass
                 else:
                     output = result
-                #Add versions header
+
                 result = self.add_versions_info_output(handle, output)
                 if result == "Not supported":
                     pass
                 else:
                     output = result
-                #Add bus header
+
                 result = self.add_bus_info_output(handle, output)
                 if result == "Not supported":
                     pass
                 else:
                     output = result
-                #Add memory header
+
                 result = self.add_memory_info_output(handle, output)
                 if result == "Not supported":
                     pass
                 else:
                     output = result
-                #Add clocks header
+
                 result = self.add_clocks_info_output(handle, output)
                 if result == "Not supported":
                     pass
                 else:
                     output = result
-                #Add temperature header
+
                 result = self.add_temperature_info_output(handle, output)
                 if result == "Not supported":
                     pass
@@ -59,7 +58,8 @@ class Request():
         else:
             ind = specific_device_index
             if (ind < 0) or (ind >= device_count):
-                print("Invalid gpu index {gpu} sent. Range for valid gpu indexes are from [0, number of devices - 1] (number of devices = {count}).".format(gpu=ind, count=device_count))
+                print("Invalid gpu index {gpu} sent. Range for valid gpu indexes are from [0, number of devices - 1] \
+                                                    (number of devices = {count}).".format(gpu=ind, count=device_count))
                 return ""
             handle = self.commandObj.apiObject.get_device_handle_by_index(ind)
             output += OutputTemplates.console_device.format(index=ind)
@@ -68,42 +68,42 @@ class Request():
             if name is not None:
                 output += OutputTemplates.console_elem_output.format(name="Name", value=name, nesting=str(" "*2))
 
-            #Add catalog header
             result = self.add_catalog_info_output(handle, output)
             if result == "Not supported":
                 pass
             else:
                 output = result
-            #Add versions header
+
             result = self.add_versions_info_output(handle, output)
             if result == "Not supported":
                 pass
             else:
                 output = result
-            #Add bus header
+
             result = self.add_bus_info_output(handle, output)
             if result == "Not supported":
                 pass
             else:
                 output = result
-            #Add memory header
+
             result = self.add_memory_info_output(handle, output)
             if result == "Not supported":
                 pass
             else:
                 output = result
-            #Add clocks header
+
             result = self.add_clocks_info_output(handle, output)
             if result == "Not supported":
                 pass
             else:
                 output = result
-            #Add temperature header
+
             result = self.add_temperature_info_output(handle, output)
             if result == "Not supported":
                 pass
             else:
                 output = result
+
         return output
 
     def process_command_versions(self, specific_device_index=None) -> str:
@@ -127,7 +127,8 @@ class Request():
         else:
             ind = specific_device_index
             if (ind < 0) or (ind >= device_count):
-                print("Invalid gpu index {gpu} sent. Range for valid gpu indexes are from [0, number of devices - 1] (number of devices = {count}).".format(gpu=ind, count=device_count))
+                print("Invalid gpu index {gpu} sent. Range for valid gpu indexes are from [0, number of devices - 1] \
+                                                    (number of devices = {count}).".format(gpu=ind, count=device_count))
                 return ""
             handle = self.commandObj.apiObject.get_device_handle_by_index(ind)
             output += OutputTemplates.console_device.format(index = ind)
