@@ -10,15 +10,15 @@ class Request():
     def process_command_full(self, specific_device_index=None) -> str:
         output = ""
         device_count = self.commandObj.apiObject.get_number_of_devices()
-        output += OutputTemplates.catalog_console_device_num.format(device_num=device_count)
+        output += OutputTemplates.console_device_num.format(device_num=device_count)
         if specific_device_index is None:
             for i in range(0, device_count):
                 handle = self.commandObj.apiObject.get_device_handle_by_index(i)
-                output += OutputTemplates.catalog_console_device.format(index=i)
+                output += OutputTemplates.console_device.format(index=i)
 
                 name = self.commandObj.apiObject.get_device_name_by_handle(handle)
                 if name is not None:
-                    output += OutputTemplates.catalog_elem_output.format(name="Name", value=name, nesting=str(" "*2))
+                    output += OutputTemplates.console_elem_output.format(name="Name", value=name, nesting=str(" "*2))
 
                 #Add catalog header
                 result = self.add_catalog_info_output(handle, output)
@@ -62,11 +62,11 @@ class Request():
                 print("Invalid gpu index {gpu} sent. Range for valid gpu indexes are from [0, number of devices - 1] (number of devices = {count}).".format(gpu=ind, count=device_count))
                 return ""
             handle = self.commandObj.apiObject.get_device_handle_by_index(ind)
-            output += OutputTemplates.catalog_console_device.format(index=ind)
+            output += OutputTemplates.console_device.format(index=ind)
 
             name = self.commandObj.apiObject.get_device_name_by_handle(handle)
             if name is not None:
-                output += OutputTemplates.catalog_elem_output.format(name="Name", value=name, nesting=str(" "*2))
+                output += OutputTemplates.console_elem_output.format(name="Name", value=name, nesting=str(" "*2))
 
             #Add catalog header
             result = self.add_catalog_info_output(handle, output)
@@ -109,19 +109,19 @@ class Request():
     def process_command_versions(self, specific_device_index=None) -> str:
         output = ""
         device_count = self.commandObj.apiObject.get_number_of_devices()
-        output += OutputTemplates.catalog_console_device_num.format(device_num=device_count)
+        output += OutputTemplates.console_device_num.format(device_num=device_count)
         if specific_device_index is None:
             for i in range(0, device_count):
                 handle = self.commandObj.apiObject.get_device_handle_by_index(i)
-                output += OutputTemplates.catalog_console_device.format(index=i)
+                output += OutputTemplates.console_device.format(index=i)
 
                 name = self.commandObj.apiObject.get_device_name_by_handle(handle)
                 if name is not None:
-                    output += OutputTemplates.catalog_elem_output.format(name="Name", value=name, nesting=str(" "*2))        
+                    output += OutputTemplates.console_elem_output.format(name="Name", value=name, nesting=str(" "*2))        
                 
                 result = self.add_versions_info_output(handle, output)
                 if result == "Not supported":
-                    output += OutputTemplates.catalog_elem_output.format(name="Versions info", value="Not supported", nesting=str(" "*2))
+                    output += OutputTemplates.console_elem_output.format(name="Versions info", value="Not supported", nesting=str(" "*2))
                 else:
                     output = result
         else:
@@ -130,15 +130,15 @@ class Request():
                 print("Invalid gpu index {gpu} sent. Range for valid gpu indexes are from [0, number of devices - 1] (number of devices = {count}).".format(gpu=ind, count=device_count))
                 return ""
             handle = self.commandObj.apiObject.get_device_handle_by_index(ind)
-            output += OutputTemplates.catalog_console_device.format(index = ind)
+            output += OutputTemplates.console_device.format(index = ind)
 
             name = self.commandObj.apiObject.get_device_name_by_handle(handle)
             if name is not None:
-                output += OutputTemplates.catalog_elem_output.format(name="Name", value=name, nesting=str(" "*2)) 
+                output += OutputTemplates.console_elem_output.format(name="Name", value=name, nesting=str(" "*2)) 
 
             result = self.add_versions_info_output(handle, output)
             if result == "Not supported":
-                output += OutputTemplates.catalog_elem_output.format(name="Versions info", value="Not supported", nesting=str(" "*2))
+                output += OutputTemplates.console_elem_output.format(name="Versions info", value="Not supported", nesting=str(" "*2))
             else:
                 output = result
         return output
@@ -146,19 +146,19 @@ class Request():
     def process_command_catalog(self, specific_device_index=None) -> str:
         output = ""
         device_count = self.commandObj.apiObject.get_number_of_devices()
-        output += OutputTemplates.catalog_console_device_num.format(device_num=device_count)
+        output += OutputTemplates.console_device_num.format(device_num=device_count)
         if specific_device_index is None:
             for i in range(0, device_count):
                 handle = self.commandObj.apiObject.get_device_handle_by_index(i)
-                output += OutputTemplates.catalog_console_device.format(index=i)
+                output += OutputTemplates.console_device.format(index=i)
 
                 name = self.commandObj.apiObject.get_device_name_by_handle(handle)
                 if name is not None:
-                    output += OutputTemplates.catalog_elem_output.format(name="Name", value=name, nesting=str(" "*2))        
+                    output += OutputTemplates.console_elem_output.format(name="Name", value=name, nesting=str(" "*2))        
                 
                 result = self.add_catalog_info_output(handle, output)
                 if result == "Not supported":
-                    output += OutputTemplates.catalog_elem_output.format(name="Catalog info", value="Not supported", nesting=str(" "*2))
+                    output += OutputTemplates.console_elem_output.format(name="Catalog info", value="Not supported", nesting=str(" "*2))
                 else:
                     output = result
         else:
@@ -168,15 +168,15 @@ class Request():
                                                     (number of devices = {count}).".format(gpu=ind, count=device_count))
                 return ""
             handle = self.commandObj.apiObject.get_device_handle_by_index(ind)
-            output += OutputTemplates.catalog_console_device.format(index = ind)
+            output += OutputTemplates.console_device.format(index = ind)
 
             name = self.commandObj.apiObject.get_device_name_by_handle(handle)
             if name is not None:
-                output += OutputTemplates.catalog_elem_output.format(name="Name", value=name, nesting=str(" "*2)) 
+                output += OutputTemplates.console_elem_output.format(name="Name", value=name, nesting=str(" "*2)) 
 
             result = self.add_catalog_info_output(handle, output)
             if result == "Not supported":
-                output += OutputTemplates.catalog_elem_output.format(name="Catalog info", value="Not supported", nesting=str(" "*2))
+                output += OutputTemplates.console_elem_output.format(name="Catalog info", value="Not supported", nesting=str(" "*2))
             else:
                 output = result
         return output
@@ -184,19 +184,19 @@ class Request():
     def process_command_temperature(self, specific_device_index=None) -> str:
         output = ""
         device_count = self.commandObj.apiObject.get_number_of_devices()
-        output += OutputTemplates.catalog_console_device_num.format(device_num=device_count)
+        output += OutputTemplates.console_device_num.format(device_num=device_count)
         if specific_device_index is None:
             for i in range(0, device_count):
                 handle = self.commandObj.apiObject.get_device_handle_by_index(i)
-                output += OutputTemplates.catalog_console_device.format(index=i)
+                output += OutputTemplates.console_device.format(index=i)
 
                 name = self.commandObj.apiObject.get_device_name_by_handle(handle)
                 if name is not None:
-                    output += OutputTemplates.catalog_elem_output.format(name="Name", value=name, nesting=str(" "*2))
+                    output += OutputTemplates.console_elem_output.format(name="Name", value=name, nesting=str(" "*2))
 
                 result = self.add_temperature_info_output(handle, output) 
                 if result == "Not supported":
-                    output += OutputTemplates.catalog_elem_output.format(name="Temperature info", value="Not supported", nesting=str(" "*2))
+                    output += OutputTemplates.console_elem_output.format(name="Temperature info", value="Not supported", nesting=str(" "*2))
                 else:
                     output = result
         else:
@@ -205,15 +205,15 @@ class Request():
                 print("Invalid gpu index {gpu} sent. Range for valid gpu indexes are from [0, number of devices - 1] (number of devices = {count}).".format(gpu=ind, count=device_count))
                 return ""
             handle = self.commandObj.apiObject.get_device_handle_by_index(ind)
-            output += OutputTemplates.catalog_console_device.format(index = ind)
+            output += OutputTemplates.console_device.format(index = ind)
 
             name = self.commandObj.apiObject.get_device_name_by_handle(handle)
             if name is not None:
-                output += OutputTemplates.catalog_elem_output.format(name="Name", value=name, nesting=str(" "*2)) 
+                output += OutputTemplates.console_elem_output.format(name="Name", value=name, nesting=str(" "*2)) 
 
             result = self.add_temperature_info_output(handle, output)
             if result == "Not supported":
-                output += OutputTemplates.catalog_elem_output.format(name="Temperature info", value="Not supported", nesting=str(" "*2))
+                output += OutputTemplates.console_elem_output.format(name="Temperature info", value="Not supported", nesting=str(" "*2))
             else:
                 output = result
         return output
@@ -221,19 +221,19 @@ class Request():
     def process_command_clocks(self, specific_device_index=None) -> str:
         output = ""
         device_count = self.commandObj.apiObject.get_number_of_devices()
-        output += OutputTemplates.catalog_console_device_num.format(device_num=device_count)
+        output += OutputTemplates.console_device_num.format(device_num=device_count)
         if specific_device_index is None:
             for i in range(0, device_count):
                 handle = self.commandObj.apiObject.get_device_handle_by_index(i)
-                output += OutputTemplates.catalog_console_device.format(index=i)
+                output += OutputTemplates.console_device.format(index=i)
 
                 name = self.commandObj.apiObject.get_device_name_by_handle(handle)
                 if name is not None:
-                    output += OutputTemplates.catalog_elem_output.format(name="Name", value=name, nesting=str(" "*2))        
+                    output += OutputTemplates.console_elem_output.format(name="Name", value=name, nesting=str(" "*2))        
                 
                 result = self.add_clocks_info_output(handle, output)
                 if result == "Not supported":
-                    output += OutputTemplates.catalog_elem_output.format(name="Clocks info", value="Not supported", nesting=str(" "*2))
+                    output += OutputTemplates.console_elem_output.format(name="Clocks info", value="Not supported", nesting=str(" "*2))
                 else:
                     output = result
         else:
@@ -242,15 +242,15 @@ class Request():
                 print("Invalid gpu index {gpu} sent. Range for valid gpu indexes are from [0, number of devices - 1] (number of devices = {count}).".format(gpu=ind, count=device_count))
                 return ""
             handle = self.commandObj.apiObject.get_device_handle_by_index(ind)
-            output += OutputTemplates.catalog_console_device.format(index = ind)
+            output += OutputTemplates.console_device.format(index = ind)
 
             name = self.commandObj.apiObject.get_device_name_by_handle(handle)
             if name is not None:
-                output += OutputTemplates.catalog_elem_output.format(name="Name", value=name, nesting=str(" "*2)) 
+                output += OutputTemplates.console_elem_output.format(name="Name", value=name, nesting=str(" "*2)) 
 
             result = self.add_clocks_info_output(handle, output)
             if result == "Not supported":
-                output += OutputTemplates.catalog_elem_output.format(name="Clocks info", value="Not supported", nesting=str(" "*2))
+                output += OutputTemplates.console_elem_output.format(name="Clocks info", value="Not supported", nesting=str(" "*2))
             else:
                 output = result
         return output
@@ -258,19 +258,19 @@ class Request():
     def process_command_memory(self, specific_device_index=None) -> str:
         output = ""
         device_count = self.commandObj.apiObject.get_number_of_devices()
-        output += OutputTemplates.catalog_console_device_num.format(device_num=device_count)
+        output += OutputTemplates.console_device_num.format(device_num=device_count)
         if specific_device_index is None:
             for i in range(0, device_count):
                 handle = self.commandObj.apiObject.get_device_handle_by_index(i)
-                output += OutputTemplates.catalog_console_device.format(index=i)
+                output += OutputTemplates.console_device.format(index=i)
 
                 name = self.commandObj.apiObject.get_device_name_by_handle(handle)
                 if name is not None:
-                    output += OutputTemplates.catalog_elem_output.format(name="Name", value=name, nesting=str(" "*2))        
+                    output += OutputTemplates.console_elem_output.format(name="Name", value=name, nesting=str(" "*2))        
 
                 result = self.add_memory_info_output(handle, output)
                 if result == "Not supported":
-                    output += OutputTemplates.catalog_elem_output.format(name="Memory info", value="Not supported", nesting=str(" "*2))
+                    output += OutputTemplates.console_elem_output.format(name="Memory info", value="Not supported", nesting=str(" "*2))
                 else:
                     output = result
         else:
@@ -279,15 +279,15 @@ class Request():
                 print("Invalid gpu index {gpu} sent. Range for valid gpu indexes are from [0, number of devices - 1] (number of devices = {count}).".format(gpu=ind, count=device_count))
                 return ""
             handle = self.commandObj.apiObject.get_device_handle_by_index(ind)
-            output += OutputTemplates.catalog_console_device.format(index = ind)
+            output += OutputTemplates.console_device.format(index = ind)
 
             name = self.commandObj.apiObject.get_device_name_by_handle(handle)
             if name is not None:
-                output += OutputTemplates.catalog_elem_output.format(name="Name", value=name, nesting=str(" "*2)) 
+                output += OutputTemplates.console_elem_output.format(name="Name", value=name, nesting=str(" "*2)) 
 
             result = self.add_memory_info_output(handle, output)
             if result == "Not supported":
-                output += OutputTemplates.catalog_elem_output.format(name="Memory info", value="Not supported", nesting=str(" "*2))
+                output += OutputTemplates.console_elem_output.format(name="Memory info", value="Not supported", nesting=str(" "*2))
             else:
                 output = result
         return output
@@ -295,19 +295,19 @@ class Request():
     def process_command_bus(self, specific_device_index=None) -> str:
         output = ""
         device_count = self.commandObj.apiObject.get_number_of_devices()
-        output += OutputTemplates.catalog_console_device_num.format(device_num=device_count)
+        output += OutputTemplates.console_device_num.format(device_num=device_count)
         if specific_device_index is None:
             for i in range(0, device_count):
                 handle = self.commandObj.apiObject.get_device_handle_by_index(i)
-                output += OutputTemplates.catalog_console_device.format(index=i)
+                output += OutputTemplates.console_device.format(index=i)
 
                 name = self.commandObj.apiObject.get_device_name_by_handle(handle)
                 if name is not None:
-                    output += OutputTemplates.catalog_elem_output.format(name="Name", value=name, nesting=str(" "*2)) 
+                    output += OutputTemplates.console_elem_output.format(name="Name", value=name, nesting=str(" "*2)) 
     
                 result = self.add_bus_info_output(handle, output)
                 if result == "Not supported":
-                    output += OutputTemplates.catalog_elem_output.format(name="Bus info", value="Not supported", nesting=str(" "*2))
+                    output += OutputTemplates.console_elem_output.format(name="Bus info", value="Not supported", nesting=str(" "*2))
                 else:
                     output = result
         else:
@@ -316,15 +316,15 @@ class Request():
                 print("Invalid gpu index {gpu} sent. Range for valid gpu indexes are from [0, number of devices - 1] (number of devices = {count}).".format(gpu=ind, count=device_count))
                 return ""
             handle = self.commandObj.apiObject.get_device_handle_by_index(ind)
-            output += OutputTemplates.catalog_console_device.format(index = ind)
+            output += OutputTemplates.console_device.format(index = ind)
 
             name = self.commandObj.apiObject.get_device_name_by_handle(handle)
             if name is not None:
-                output += OutputTemplates.catalog_elem_output.format(name="Name", value=name, nesting=str(" "*2)) 
+                output += OutputTemplates.console_elem_output.format(name="Name", value=name, nesting=str(" "*2)) 
 
             result = self.add_bus_info_output(handle, output)
             if result == "Not supported":
-                output += OutputTemplates.catalog_elem_output.format(name="Bus info", value="Not supported", nesting=str(" "*2))
+                output += OutputTemplates.console_elem_output.format(name="Bus info", value="Not supported", nesting=str(" "*2))
             else:
                 output = result
 
@@ -333,20 +333,20 @@ class Request():
     def process_command_ecc(self, specific_device_index=None) -> str:
         '''output = ""
         device_count = self.commandObj.apiObject.get_number_of_devices()
-        output += OutputTemplates.catalog_console_device_num.format(device_num=device_count)
+        output += OutputTemplates.console_device_num.format(device_num=device_count)
         i = 0
         if specific_device_index is None:
             for i in range(0, device_count):
                 handle = self.commandObj.apiObject.get_device_handle_by_index(i)
-                output += OutputTemplates.catalog_console_device.format(index=i)
+                output += OutputTemplates.console_device.format(index=i)
 
                 name = self.commandObj.apiObject.get_device_name_by_handle(handle)
                 if name is not None:
-                    output += OutputTemplates.catalog_elem_output.format(name="Name", value=name, nesting=str(" "*2))        
+                    output += OutputTemplates.console_elem_output.format(name="Name", value=name, nesting=str(" "*2))        
                 
                 result = self.add_ecc_info_output(handle, output)
                 if result == "Not supported":
-                    output += OutputTemplates.catalog_elem_output.format(name="ECC (Error Correction Code) info", value="Not supported", nesting=str(" "*2))
+                    output += OutputTemplates.console_elem_output.format(name="ECC (Error Correction Code) info", value="Not supported", nesting=str(" "*2))
                 else:
                     output = result
 
@@ -361,7 +361,7 @@ class Request():
     
     def process_command_help(self, specific_device_index=None) -> str:
         output = ""
-        output += OutputTemplates.help_console_output
+        output += OutputTemplates.console_help_command_output
         return output
     
     def process_command_processes(self, specific_device_index=None) -> str:
@@ -372,16 +372,16 @@ class Request():
         versions_info: dict = self.commandObj.apiObject.get_device_versions_info(handle)
         if versions_info == "Not supported":
             return "Not supported"
-        output += OutputTemplates.catalog_elem_output.format(name="Versions info", value="", nesting=str(" "*2))
+        output += OutputTemplates.console_elem_output.format(name="Versions info", value="", nesting=str(" "*2))
         for key in versions_info.keys():
             if type(versions_info[key]) == list:
-                output += OutputTemplates.catalog_elem_output.format(name=str(key), value="", nesting=str(" "*4))
+                output += OutputTemplates.console_elem_output.format(name=str(key), value="", nesting=str(" "*4))
                 output = process_complex_query_output(versions_info[key], output, nesting_level=6)
             elif type(versions_info[key]) == dict:
-                output += OutputTemplates.catalog_elem_output.format(name=str(key), value="", nesting=str(" "*4))
+                output += OutputTemplates.console_elem_output.format(name=str(key), value="", nesting=str(" "*4))
                 output = process_complex_query_output(versions_info[key], output, nesting_level=6)
             else:
-                output += OutputTemplates.catalog_elem_output.format(name=str(key), value=versions_info[key], nesting=str(" "*4))
+                output += OutputTemplates.console_elem_output.format(name=str(key), value=versions_info[key], nesting=str(" "*4))
         output += "\n"
         return output
 
@@ -389,16 +389,16 @@ class Request():
         catalog_info: dict = self.commandObj.apiObject.get_device_catalog_info(handle)
         if catalog_info == "Not supported":
             return "Not supported"
-        output += OutputTemplates.catalog_elem_output.format(name="Catalog info", value="", nesting=str(" "*2))
+        output += OutputTemplates.console_elem_output.format(name="Catalog info", value="", nesting=str(" "*2))
         for key in catalog_info.keys():
             if type(catalog_info[key]) == list:
-                output += OutputTemplates.catalog_elem_output.format(name=str(key), value="", nesting=str(" "*4))
+                output += OutputTemplates.console_elem_output.format(name=str(key), value="", nesting=str(" "*4))
                 output = process_complex_query_output(catalog_info[key], output, nesting_level=6)
             elif type(catalog_info[key]) == dict:
-                output += OutputTemplates.catalog_elem_output.format(name=str(key), value="", nesting=str(" "*4))
+                output += OutputTemplates.console_elem_output.format(name=str(key), value="", nesting=str(" "*4))
                 output = process_complex_query_output(catalog_info[key], output, nesting_level=6)
             else:
-                output += OutputTemplates.catalog_elem_output.format(name=str(key), value=catalog_info[key], nesting=str(" "*4))
+                output += OutputTemplates.console_elem_output.format(name=str(key), value=catalog_info[key], nesting=str(" "*4))
         output += "\n"
         return output
 
@@ -406,16 +406,16 @@ class Request():
         temperature_info = self.commandObj.apiObject.get_device_temperature_info(handle)
         if temperature_info == "Not supported":
             return "Not supported"
-        output += OutputTemplates.catalog_elem_output.format(name="Temperature info", value="", nesting=str(" "*2))
+        output += OutputTemplates.console_elem_output.format(name="Temperature info", value="", nesting=str(" "*2))
         for key in temperature_info.keys():
             if type(temperature_info[key]) == list:
-                output += OutputTemplates.catalog_elem_output.format(name=str(key), value="", nesting=str(" "*4))
+                output += OutputTemplates.console_elem_output.format(name=str(key), value="", nesting=str(" "*4))
                 output = process_complex_query_output(temperature_info[key], output, nesting_level=6)
             elif type(temperature_info[key]) == dict:
-                output += OutputTemplates.catalog_elem_output.format(name=str(key), value="", nesting=str(" "*4))
+                output += OutputTemplates.console_elem_output.format(name=str(key), value="", nesting=str(" "*4))
                 output = process_complex_query_output(temperature_info[key], output, nesting_level=6)
             else:
-                output += OutputTemplates.catalog_elem_output.format(name=str(key), value=temperature_info[key], nesting=str(" "*4))
+                output += OutputTemplates.console_elem_output.format(name=str(key), value=temperature_info[key], nesting=str(" "*4))
         output += "\n"
         return output
 
@@ -423,16 +423,16 @@ class Request():
         clocks_info: dict = self.commandObj.apiObject.get_device_clocks_info(handle)
         if clocks_info == "Not supported":
             return "Not supported"
-        output += OutputTemplates.catalog_elem_output.format(name="Clocks info", value="", nesting=str(" "*2))
+        output += OutputTemplates.console_elem_output.format(name="Clocks info", value="", nesting=str(" "*2))
         for key in clocks_info.keys():
             if type(clocks_info[key]) == list:
-                output += OutputTemplates.catalog_elem_output.format(name=str(key), value="", nesting=str(" "*4))
+                output += OutputTemplates.console_elem_output.format(name=str(key), value="", nesting=str(" "*4))
                 output = process_complex_query_output(clocks_info[key], output, nesting_level=6)
             elif type(clocks_info[key]) == dict:
-                output += OutputTemplates.catalog_elem_output.format(name=str(key), value="", nesting=str(" "*4))
+                output += OutputTemplates.console_elem_output.format(name=str(key), value="", nesting=str(" "*4))
                 output = process_complex_query_output(clocks_info[key], output, nesting_level=6)
             else:
-                output += OutputTemplates.catalog_elem_output.format(name=str(key), value=clocks_info[key], nesting=str(" "*4))
+                output += OutputTemplates.console_elem_output.format(name=str(key), value=clocks_info[key], nesting=str(" "*4))
         output += "\n"
         return output
 
@@ -440,16 +440,16 @@ class Request():
         memory_info: dict = self.commandObj.apiObject.get_device_memory_info(handle)
         if memory_info == "Not supported":
             return "Not supported"
-        output += OutputTemplates.catalog_elem_output.format(name="Memory info", value="", nesting=str(" "*2))
+        output += OutputTemplates.console_elem_output.format(name="Memory info", value="", nesting=str(" "*2))
         for key in memory_info.keys():
             if type(memory_info[key]) == list:
-                output += OutputTemplates.catalog_elem_output.format(name=str(key), value="", nesting=str(" "*4))
+                output += OutputTemplates.console_elem_output.format(name=str(key), value="", nesting=str(" "*4))
                 output = process_complex_query_output(memory_info[key], output, nesting_level=6)
             elif type(memory_info[key]) == dict:
-                output += OutputTemplates.catalog_elem_output.format(name=str(key), value="", nesting=str(" "*4))
+                output += OutputTemplates.console_elem_output.format(name=str(key), value="", nesting=str(" "*4))
                 output = process_complex_query_output(memory_info[key], output, nesting_level=6)
             else:
-                output += OutputTemplates.catalog_elem_output.format(name=str(key), value=memory_info[key], nesting=str(" "*4))
+                output += OutputTemplates.console_elem_output.format(name=str(key), value=memory_info[key], nesting=str(" "*4))
         output += "\n"
         return output
 
@@ -457,16 +457,16 @@ class Request():
         bus_info: dict = self.commandObj.apiObject.get_device_bus_info(handle)
         if bus_info == "Not supported":
             return "Not supported"
-        output += OutputTemplates.catalog_elem_output.format(name="Bus info", value="", nesting=str(" "*2))
+        output += OutputTemplates.console_elem_output.format(name="Bus info", value="", nesting=str(" "*2))
         for key in bus_info.keys():
             if type(bus_info[key]) == list:
-                output += OutputTemplates.catalog_elem_output.format(name=str(key), value="", nesting=str(" "*4))
+                output += OutputTemplates.console_elem_output.format(name=str(key), value="", nesting=str(" "*4))
                 output = process_complex_query_output(bus_info[key], output, nesting_level=6)
             elif type(bus_info[key]) == dict:
-                output += OutputTemplates.catalog_elem_output.format(name=str(key), value="", nesting=str(" "*4))
+                output += OutputTemplates.console_elem_output.format(name=str(key), value="", nesting=str(" "*4))
                 output = process_complex_query_output(bus_info[key], output, nesting_level=6)
             else:
-                output += OutputTemplates.catalog_elem_output.format(name=str(key), value=bus_info[key], nesting=str(" "*4))
+                output += OutputTemplates.console_elem_output.format(name=str(key), value=bus_info[key], nesting=str(" "*4))
         output += "\n"
         return output
     
@@ -474,16 +474,16 @@ class Request():
         ecc_info: dict = self.commandObj.apiObject.get_device_ecc_info(handle)
         if ecc_info == "Not supported":
             return "Not supported"
-        output += OutputTemplates.catalog_elem_output.format(name="ECC (Error Correction Code) info", value="", nesting=str(" "*2))
+        output += OutputTemplates.console_elem_output.format(name="ECC (Error Correction Code) info", value="", nesting=str(" "*2))
         for key in ecc_info.keys():
             if type(ecc_info[key]) == list:
-                output += OutputTemplates.catalog_elem_output.format(name=str(key), value="", nesting=str(" "*4))
+                output += OutputTemplates.console_elem_output.format(name=str(key), value="", nesting=str(" "*4))
                 output = process_complex_query_output(ecc_info[key], output, nesting_level=6)
             elif type(ecc_info[key]) == dict:
-                output += OutputTemplates.catalog_elem_output.format(name=str(key), value="", nesting=str(" "*4))
+                output += OutputTemplates.console_elem_output.format(name=str(key), value="", nesting=str(" "*4))
                 output = process_complex_query_output(ecc_info[key], output, nesting_level=6)
             else:
-                output += OutputTemplates.catalog_elem_output.format(name=str(key), value=ecc_info[key], nesting=str(" "*4))
+                output += OutputTemplates.console_elem_output.format(name=str(key), value=ecc_info[key], nesting=str(" "*4))
         output += "\n"
         return output
 

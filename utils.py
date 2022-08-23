@@ -1,7 +1,6 @@
 from defines import *
 from os import system as runCmd
 import subprocess
-
 from output_templates import OutputTemplates
 from datetime import datetime
 
@@ -12,7 +11,7 @@ def get_current_GPU_names():
         if CURRENT_OS == SupportedOS.WINDOWS:
             result = subprocess.getoutput(WINDOWS_GET_GPU_INFO)
         elif CURRENT_OS == SupportedOS.LINUX:
-            result = subprocess.getoutput(LINUX_GET_GPU_INFO) # vidi za run da izmenis zbog kompatibilnosti!
+            result = subprocess.getoutput(LINUX_GET_GPU_INFO)
         else:
             raise Exception("Error: Only Windows and Linux are currently supported operating systems for the tool!")
         if result is not None:
@@ -44,17 +43,17 @@ def process_complex_query_output(object, output, nesting_level=4):
     if type(object) == dict:
         for key in object.keys():
             if type(object[key]) not in (dict, list):
-                output += OutputTemplates.catalog_complex_elem_variable_nesting.format(nesting=str(" " * nesting_level), name = str(key), value=object[key])
+                output += OutputTemplates.console_complex_elem_variable_nesting.format(nesting=str(" " * nesting_level), name = str(key), value=object[key])
             else:
-                output += OutputTemplates.catalog_complex_elem_variable_nesting.format(nesting=str(" " * nesting_level), name=str(key), value="")
+                output += OutputTemplates.console_complex_elem_variable_nesting.format(nesting=str(" " * nesting_level), name=str(key), value="")
                 output = process_complex_query_output(object[key], output, nesting_level+4)
     elif type(object) == list:
         if len(object) > 0 and (type(object[0]) not in (dict, list)):
-                output += OutputTemplates.catalog_simple_elem_variable_nesting.format(nesting=str(" " * nesting_level), value=object)
+                output += OutputTemplates.console_simple_elem_variable_nesting.format(nesting=str(" " * nesting_level), value=object)
         else:
             for i in range(0, len(object)):
                 output = process_complex_query_output(object[i], output, nesting_level+2)
     else:
-        output += OutputTemplates.catalog_simple_elem_variable_nesting.format(nesting=str(" " * nesting_level), value=object)
+        output += OutputTemplates.console_simple_elem_variable_nesting.format(nesting=str(" " * nesting_level), value=object)
     
     return output

@@ -28,7 +28,8 @@ class CommandObject():
     def process_gpu_index(self) -> StatusCode:
         if len(self.calling_args) > 2:
             if self.calling_args[2][0:5] != "-gpu=":
-                print("Invalid gpu index parameter input form '{}'. Try again with form: -gpu=<gpu_index>, and replace <gpu_index> with a number.".format(self.calling_args[2]))
+                print("Invalid gpu index parameter input form '{}'. Try again with form: \
+                    -gpu=<gpu_index>, and replace <gpu_index> with a number.".format(self.calling_args[2]))
                 return StatusCode.INVALID_REQUEST
             else:
                 try:
@@ -44,12 +45,10 @@ class CommandObject():
     def prepare_command_object(self) -> StatusCode:
 
         if (SupportedGPU.NVIDIA in self.current_GPUs) and (SupportedGPU.AMD in self.current_GPUs):
-            
             counter = MAX_USER_INPUT_ATTEMPTS
             while (counter > 0):
                 choice = input("There are both NVIDIA and AMD graphics cards on the sytem.\n  \
                         For which one would you like to get information for? Type A or N (A=AMD, N=NVIDIA):\n")
-
                 if choice.upper() == "A":
                     # AMD 
                     if self.current_os == SupportedOS.WINDOWS:
@@ -60,7 +59,6 @@ class CommandObject():
                         # Linux
                         self.apiObject = Linux_ROCm_SMI_Wrapper()
                         break
-
                 elif choice.upper() == "N":
                     # NVIDIA
                     self.apiObject = WindowsLinux_NVIDIA_API()
@@ -68,13 +66,10 @@ class CommandObject():
                 else:
                     counter -= 1
                     print("Invalid choice. Try again ({} times remaining).".format(counter))
-
             if (counter == 0): return StatusCode.TOO_MANY_FAILED_ATTEMPTS
-
         elif SupportedGPU.NVIDIA in self.current_GPUs:
             # Windows and Linux NVIDIA
             self.apiObject = WindowsLinux_NVIDIA_API()
-
         elif SupportedGPU.AMD in self.current_GPUs:
             # AMD
             if self.current_os == SupportedOS.WINDOWS:
@@ -83,18 +78,14 @@ class CommandObject():
             elif self.current_os == SupportedOS.LINUX:
                 # Linux
                 self.apiObject = Linux_ROCm_SMI_Wrapper()
-
         try:
             status = self.process_command_name()
             if status != StatusCode.SUCCESS:
                 return status
-
             status = self.process_gpu_index()
             if status != StatusCode.SUCCESS:
                 return status
-
             return StatusCode.SUCCESS
         except Exception as e:
             print(e)
-
         return StatusCode.SUCCESS
