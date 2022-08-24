@@ -159,6 +159,24 @@ class Linux_ROCm_SMI_Wrapper(CommonAPI):
 
         return ret_value
 
+    def get_device_name_by_handle(self, handle) -> Any:
+        
+        index = ctypes.c_uint32(handle)
+        name = (ctypes.c_char * 500)()
+        len = ctypes.c_size_t(500)
+        name_output = ""
+
+        if self.rocm_clib.functions["rocm_get_device_name_by_handle"] is not None:
+            status = self.rocm_clib.functions["rocm_get_device_name_by_handle"](index, name, len)
+            if status != 0:
+                name_output = "Not supported"
+            else:
+                name_output = bytes(name.value).decode('ASCII')
+        else:
+            name_output = "N/A"
+
+        return name_output
+
     def get_device_handle_by_index(self, index) -> Any:
         return index
 
@@ -258,24 +276,6 @@ class Linux_ROCm_SMI_Wrapper(CommonAPI):
             result_final_output = "Not supported"
                 
         return result_final_output
-
-    def get_device_name_by_handle(self, handle) -> Any:
-        
-        index = ctypes.c_uint32(handle)
-        name = (ctypes.c_char * 500)()
-        len = ctypes.c_size_t(500)
-        name_output = ""
-
-        if self.rocm_clib.functions["rocm_get_device_name_by_handle"] is not None:
-            status = self.rocm_clib.functions["rocm_get_device_name_by_handle"](index, name, len)
-            if status != 0:
-                name_output = "Not supported"
-            else:
-                name_output = bytes(name.value).decode('ASCII')
-        else:
-            name_output = "N/A"
-
-        return name_output
     
     def get_device_memory_info(self, handle) -> Any:
         device_index = ctypes.c_uint32(handle)
