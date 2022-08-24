@@ -78,7 +78,6 @@ class nvmlTemperatureThresholds_t(enum.IntEnum):
     NVML_TEMPERATURE_THRESHOLD_COUNT         = 7
 
 class WindowsLinux_NVIDIA_API(CommonAPI):
-    error_dict = None
     pynvml_lib = None
     def __init__(self) -> None:
         self.pynvml_lib = importlib.import_module("pynvml")
