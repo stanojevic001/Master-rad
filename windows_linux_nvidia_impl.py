@@ -82,7 +82,6 @@ class WindowsLinux_NVIDIA_API(CommonAPI):
     pynvml_lib = None
     def __init__(self) -> None:
         self.pynvml_lib = importlib.import_module("pynvml")
-        self.error_dict = self.pynvml_lib.NVMLError._errcode_to_string
 
     def convert_enum_name_to_readable_string(self, enum_name: str, enum_type: enum.Enum) -> str:
         result = ""
