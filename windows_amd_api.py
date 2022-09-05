@@ -578,6 +578,3 @@ class WindowsAMD_API(CommonAPI):
             result_final_output = "Not supported"
 
         return result_final_output
-
-    def get_device_ecc_info(self, handle) -> Any:
-        return super().get_device_ecc_info(handle)

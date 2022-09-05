@@ -137,6 +137,7 @@ class Linux_ROCm_SMI_Wrapper(CommonAPI):
                 raise Exception("Calling init function failed! Library initialization failed.")
         else:
             raise Exception("Library init function does not exist! Cannot load library properly!")
+
     def finish(self) -> None:
         if self.rocm_clib.functions["rocm_finish"] is not None:
             status = self.rocm_clib.functions["rocm_finish"]()
@@ -720,5 +721,3 @@ class Linux_ROCm_SMI_Wrapper(CommonAPI):
 
         return result_final_output
 
-    def get_device_ecc_info(self, handle) -> Any:
-        return super().get_device_ecc_info(handle)

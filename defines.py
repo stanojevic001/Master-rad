@@ -3,7 +3,6 @@ from enum import Enum, IntEnum, auto
 from platform import system as getOS
 import subprocess
 
-
 #--------SYSTEM ENUMS-------------------#
 class SupportedOS(Enum):
     WINDOWS = 0
@@ -14,6 +13,7 @@ class SupportedGPU(Enum):
     AMD = 0
     NVIDIA = 1
     NOT_SUPPORTED = auto()
+
 #--------SYSTEM CONSTANTS--------#
 CURRENT_OS = SupportedOS[getOS().upper()]
 MAX_USER_INPUT_ATTEMPTS = 5
@@ -28,7 +28,8 @@ class StatusCode(Enum):
 
 #--------COMMAND CONSTANTS-------#
 INSTALL_NVML = "pip install pynvml"
-WINDOWS_GET_GPU_INFO = "wmic path win32_VideoController get adaptercompatibility"
+WINDOWS_GET_GPU_INFO = "wmic path win32_VideoController \
+                        get adaptercompatibility"
 LINUX_GET_GPU_INFO = "lshw -numeric -C display | grep vendor"
 
 
