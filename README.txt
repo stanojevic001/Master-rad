@@ -13,3 +13,5 @@ When installing Nvidia package, when running the app module pynvml (Python nvidi
 pip install --ignore-installed nvidia-ml-py
 
 After that, app should work just fine!
+#########################################################################################################################################################################
+The implementation of this project was written as part of the master's thesis at the Faculty of Electrical Engineering, University of Belgrade
